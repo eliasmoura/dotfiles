@@ -1,0 +1,18 @@
+ out_to_console yes
+ out_to_x no
+ update_interval 1
+ total_run_times 0
+ use_spacer none
+
+ TEXT
+ $mpd_status  Random: $mpd_random
+ Track: $mpd_title
+ Artist: $mpd_artist
+ Album: $mpd_album
+ #${mpd_bar 8,60} 
+ $mpd_elapsed/$mpd_length
+ #controls
+ ^ca(1, mpc prev -q) ^i($HOME/.config/dzen2/icons/prev.xbm) ^ca() \
+ ^ca(1, mpc pause -q) ^i($HOME/.config/dzen2/icons/pause.xbm) ^ca() \
+ ^ca(1, mpc play -q) ^i($HOME/.config/dzen2/icons/play.xbm) ^ca() \
+ ^ca(1, mpc next-q ) ^i($HOME/.config/dzen2/icons/next.xbm) ^ca()
