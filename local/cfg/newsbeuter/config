@@ -1,0 +1,44 @@
+# ~/.config/newsbeuter/config
+
+auto-reload yes
+confirm-exit no
+download-timeout 120
+
+mark-as-read-on-hover no
+text-width 80
+articlelist-format "%4i %f %D %6L %?T?;%-17T; ?%t"
+save-path "/home/kotto/.local/share/newsbeuter/saved/"
+
+notify-beep yes
+notify-always no
+notify-xterm yes
+notify-program notify-send
+notify-format "newsbeuter: %f/%n"
+
+#browser "elinks -remote 'openURL(%u, new-tab)' &> /dev/null &"
+browser qutebrowser
+
+# Key binds
+bind-key h left
+bind-key k up
+bind-key j down
+bind-key l right
+
+bind-key f pageup
+bind-key b pagedown
+
+# Colours
+color listfocus color7 color8
+color info color4 color0 bold
+
+# Macros
+macro q set browser "mpv --loop-file --cache-file=TMP %u &> /dev/null &" ; open-in-browser ; set browser "firefox %u &> /dev/null &"
+
+# Open 4th url in an article
+macro i open ; four ; quit
+
+
+#podcast stuff
+download-path "/media/archive/podcast/%n"
+max-downloads 2
+player mpv
