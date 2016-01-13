@@ -18,8 +18,8 @@ Account gmail
 
 MaildirStore gmail-local
 # The trailing "/" is important
-Path ~/.mail/gmail/
-Inbox ~/.mail/gmail/Inbox
+Path ~/email/gmail/
+Inbox ~/email/gmail/Inbox
 
 Channel gmail
 Master :gmail-remote:

@@ -1,4 +1,4 @@
-call plug#begin('~/.local/share/nvim/plugings')
+call plug#begin('~/local/share/nvim/plugings')
 Plug 'https://github.com/jceb/vim-orgmode.git'
 Plug 'https://github.com/chrisbra/NrrwRgn.git'
 Plug 'https://github.com/vim-scripts/SyntaxRange.git'
@@ -36,7 +36,7 @@ set mouse=n
 syntax on
 filetype indent plugin on
 let base16colorspace=256
-colorscheme base16-ocean
+colorscheme base16-apathy
 set background=dark
 set vb              " visual bell
 set showcmd         " display incomplete commands

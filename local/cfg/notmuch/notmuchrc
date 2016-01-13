@@ -11,7 +11,7 @@
 # configured here named ".notmuch".
 #
 [database]
-path=/home/kotto/.mail
+path=/home/kotto/email
 
 # User configuration
 #
@@ -99,5 +99,5 @@ gpg_path=gpg
 
 
 [addressbook]
-path=/home/kotto/.mail/.notmuch-abook.db
+path=/home/kotto/email/.notmuch-abook.db
 backend=sqlite3
