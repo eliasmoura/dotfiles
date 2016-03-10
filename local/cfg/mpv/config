@@ -1,10 +1,10 @@
-vo=vdpau
-hwdec=vdpau
+vo=opengl-hq
+hwdec=auto
 hwdec-codecs=all
 cache-default=500000
-cache-file=/run/user/1000/mpv
-pause
-loop-file=yes
+#cache-file=/run/user/1000/mpv
+#pause
+#loop-file=yes
 # backend=auto
 #input-unix-socket=/tmp/mpvsocket
 

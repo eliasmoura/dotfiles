@@ -1,15 +1,16 @@
-#! /bin/bash
+#!/usr/bin/bash
 
-out='/tmp/bspwm_debug'
+out='$XDG_RUNTIME_DIR/bspwm_debug'
 wid=$1
 class=$2
 instance=$3
 
 # Debug info
 echo "id $wid" >> $out
-echo "title $(xtitle $wid)" >> $out
+echo "title $(xprop -id $wid | awk -F \" '/WM_NAME/ {print $2}')" >> $out
 echo "class $class" >> $out
 echo "ins $instance" >> $out
+[ -n "$class" ] && notify-send -a BSPWM "$class Created."
 
 function getWinIDByInstance {
     instance=$1
@@ -31,7 +32,7 @@ function getWinIDByTitle {
         desk="-d $2"
     fi
     for id in $(echo bspc query -W $desk| sh); do
-        title="$(xtitle $id)"
+        title="$(xprop -id $wid | awk -F \" '/WM_NAME/ {print $2}')"
         if [[ "$title" == *$titleSearch ]]; then
             echo $id
             break
@@ -41,12 +42,12 @@ function getWinIDByTitle {
 
 # place Steam windows
 if [ "$class" == "Steam" ]; then
-    title=$(xtitle $wid)
+    title=$(xprop -id $wid | awk -F \" '/WM_NAME/ {print $2}')
     case "$title" in
         # main window
         "Steam")
-            echo desktop=5 split_dir=left
-            sleep 0.05 && bspc window $wid -r 0.55 &
+            echo desktop=^4 split_dir=left
+            sleep 0.05 && bspc window $wid -r 0.45 &
             ;;
         # Friend list
         "Friends")
@@ -56,18 +57,18 @@ if [ "$class" == "Steam" ]; then
             echo $chatID $teamspeakID >> $out
             if [ "$chatID" != "" ] && [ "$teamspeakID" != "" ]; then
                 bspc window $chatID -r 0.68
-                echo desktop=5 split_dir=right window=$chatID
+                echo desktop=^4 split_dir=right window=$chatID
                 sleep 0.05 && bspc window $chatID -p up &
                 sleep 0.06 && bspc window $chatID -r 0.55 &
                 sleep 0.07 && bspc window $teamspeakID -w $chatID &
             elif [ "$chatID" != "" ]; then
                 bspc window $chatID -r 0.68
-                echo desktop=5 split_dir=right window=$chatID
+                echo desktop=^4 split_dir=right window=$chatID
             elif [ "$teamspeakID" != "" ]; then
                 bspc window $teamspeakID -r 0.68
-                echo desktop=5 split_dir=right window=$teamspeakID
+                echo desktop=^4 split_dir=right window=$teamspeakID
             else
-                echo desktop=5 split_dir=right
+                echo desktop=^4 split_dir=left
                 sleep 0.05 && bspc window $wid -r 0.55 &
             fi
             ;;
@@ -78,12 +79,12 @@ if [ "$class" == "Steam" ]; then
             teamspeakID=$(getWinIDByTitle 'TeamSpeak 3' '5')
             if [ "$teamspeakID" != "" ]; then
                 bspc window $teamspeakID -r 0.55
-                echo desktop=5 split_dir=down window=$teamspeakID
+                echo desktop=^4 split_dir=down window=$teamspeakID
             elif [ "$freundeID" != "" ]; then
                 bspc window $freundeID -r 0.68
-                echo desktop=5 split_dir=left window=$freundeID
+                echo desktop=^4 split_dir=left window=$freundeID
             else
-                echo desktop=5 split_dir=right
+                echo desktop=^4 split_dir=up
             fi
             ;;
         *)
@@ -91,5 +92,21 @@ if [ "$class" == "Steam" ]; then
     esac
     exit
 fi
+
+#Can't really work this out,
+#if [ "$class" == "Skype" ]; then
+#    title=$(xprop -id $wid | awk -F \" '/WM_NAME/ {print $2}')
+#    win_role=$(xprop -id $wid | awk -F \" '/WM_WINDOW_ROLE/ {print $2}')
+#    if [ "$win_role" != "" ]; then
+#      window="$win_role"
+#    else
+#      window="$title"
+#    fi
+#    case "$window" in
+#        # main window
+#        "eliaskotto - Skype™")
+#          echo 
+#
+#fi
 
 echo >> $out

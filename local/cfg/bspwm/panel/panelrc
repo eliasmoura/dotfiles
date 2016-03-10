@@ -7,15 +7,13 @@ fi
 
 trap 'trap - TERM; kill 0' INT TERM QUIT EXIT
 
-source ~/.config/bspwm/panel/profile
-source ~/.config/bspwm/panel/panel.cfg
+source $XDG_CONFIG_HOME/bspwm/panel/panel.cfg
 
 [ -e "$PANEL_FIFO" ] && rm "$PANEL_FIFO"
 mkfifo "$PANEL_FIFO"
-~/.config/bspwm/panel/info.sh > "$PANEL_FIFO" &
 
+$HOME/local/bin/info > "$PANEL_FIFO" &
 
-
-cat "$PANEL_FIFO" | ~/.config/bspwm/panel/panel_bar | lemonbar -g x$PANEL_HEIGHT -f "$FONT2" -f "$PANEL_FONT_FAMILY1" -f "$ICON_FONT" -F $COLOR_FOREGROUND -B $COLOR_BACKGROUND &
+cat "$PANEL_FIFO" | $XDG_CONFIG_HOME/bspwm/panel/panel_bar | lemonbar -g x$PANEL_HEIGHT -f "$FONT2" -f "$FONT1" -F $COLOR_FOREGROUND -B $COLOR_BACKGROUND -u $UNDERLINE_WIDTH&
 
 wait

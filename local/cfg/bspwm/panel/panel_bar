@@ -1,9 +1,8 @@
 #! /bin/sh
 #
 # Example panel for LemonBoy's bar
-source ~/.config/bspwm/panel/panel_colors
-source ~/.config/bspwm/panel/symbols
-source ~/.config/bspwm/panel/panel.cfg
+source $XDG_CONFIG_HOME/bspwm/panel/symbols
+source $XDG_CONFIG_HOME/bspwm/panel/panel.cfg
 num_mon=$(bspc query -M | wc -l)
 sys_infos=""
 
@@ -13,90 +12,90 @@ cycle='bspc desktop -l next' # cycle tiled/monocle
 winfocus='bspc window -f ' #focus on a window
 
 while read -r line ; do
-    case $line in
-        D*)
-            # clock output
-            clock_info="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG} ${line#?} %{B-}%{F-}"
+  case $line in
+    D*)
+      # clock output
+      clock_info="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG} ${line#?} %{B-}%{F-}"
+      ;;
+    M*)
+      # MPD info output
+      mpd_info="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG} ${line#?} %{B-}%{F-}"
+      ;;
+    V*)
+      # Volume output
+      vol_info="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG} ${line#?} %{B-}%{F-}"
+      ;;
+    N*)
+      #Network info
+      net_info="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG} ${line#?} %{B-}%{F-}"
+      ;;
+    T*)
+      # xtitle output
+      title="%{F$COLOR_TITLE_FG}%{B$COLOR_TITLE_BG} ${line#?} %{B-}%{F-}"
+      ;;
+    I*)
+      # user output
+      user="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG} ${line#?} %{B-}%{F-}"
+      ;;
+    K*)
+      # keyboard layout
+      keyboard_layout="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG} ${line#?} %{B-}%{F-}"
+      ;;
+    W*)
+      # bspwm internal state
+      wm_infos=""
+      IFS=':'
+      set -- ${line#?}
+      while [ $# -gt 0 ] ; do
+        item=$1
+        name=${item#?}
+        case $item in
+          M*)
+            # active monitor
+            if [ $num_mon -gt 1 ] ; then
+              wm_infos="$wm_infos %{F$COLOR_ACTIVE_MONITOR_FG}%{B$COLOR_ACTIVE_MONITOR_BG} ${name} %{B-}%{F-} "
+            fi
             ;;
-        M*)
-            # MPD info output
-            mpd_info="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG} ${line#?} %{B-}%{F-}"
+          m*)
+            # inactive monitor
+            if [ $num_mon -gt 1 ] ; then
+              wm_infos="$wm_infos %{F$COLOR_INACTIVE_MONITOR_FG}%{B$COLOR_INACTIVE_MONITOR_BG} ${name} %{B-}%{F-} "
+            fi
             ;;
-        V*)
-            # Volume output
-            vol_info="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG} ${line#?} %{B-}%{F-}"
+          O*)
+            # focused occupied desktop
+            wm_infos="${wm_infos}%{F$COLOR_FOCUSED_OCCUPIED_FG}%{B$COLOR_FOCUSED_OCCUPIED_BG}%{U$COLOR_FOREGROUND}%{+u} ${name} %{-u}%{B-}%{F-}"
             ;;
-        N*)
-            #Network info
-            net_info="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG} ${line#?} %{B-}%{F-}"
+          F*)
+            # focused free desktop
+            wm_infos="${wm_infos}%{F$COLOR_FOCUSED_FREE_FG}%{B$COLOR_FOCUSED_FREE_BG}%{U$COLOR_FOREGROUND}%{+u} ${name} %{-u}%{B-}%{F-}"
             ;;
-        T*)
-            # xtitle output
-            title="%{F$COLOR_TITLE_FG}%{B$COLOR_TITLE_BG} ${line#?} %{B-}%{F-}"
+          U*)
+            # focused urgent desktop
+            wm_infos="${wm_infos}%{F$COLOR_FOCUSED_URGENT_FG}%{B$COLOR_FOCUSED_URGENT_BG}%{U$COLOR_FOREGROUND}%{+u} ${name} %{-u}%{B-}%{F-}"
             ;;
-        I*)
-            # user output
-            user="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG} ${line#?} %{B-}%{F-}"
+          o*)
+            # occupied desktop
+            wm_infos="${wm_infos}%{F$COLOR_OCCUPIED_FG}%{B$COLOR_OCCUPIED_BG} ${name} %{B-}%{F-}"
             ;;
-        K*)
-            # keyboard layout
-            keyboard_layout="%{F$COLOR_STATUS_FG}%{B$COLOR_STATUS_BG} ${line#?} %{B-}%{F-}"
+          f*)
+            # free desktop
+            wm_infos="${wm_infos}%{F$COLOR_FREE_FG}%{B$COLOR_FREE_BG} ${name} %{B-}%{F-}"
             ;;
-        W*)
-            # bspwm internal state
-            wm_infos=""
-            IFS=':'
-            set -- ${line#?}
-            while [ $# -gt 0 ] ; do
-                item=$1
-                name=${item#?}
-                case $item in
-                M*)
-                    # active monitor
-                    if [ $num_mon -gt 1 ] ; then
-                        wm_infos="$wm_infos %{F$COLOR_ACTIVE_MONITOR_FG}%{B$COLOR_ACTIVE_MONITOR_BG} ${name} %{B-}%{F-} "
-                    fi
-                    ;;
-                m*)
-                    # inactive monitor
-                    if [ $num_mon -gt 1 ] ; then
-                    wm_infos="$wm_infos %{F$COLOR_INACTIVE_MONITOR_FG}%{B$COLOR_INACTIVE_MONITOR_BG} ${name} %{B-}%{F-} "
-                    fi
-                    ;;
-                O*)
-                    # focused occupied desktop
-                    wm_infos="${wm_infos}%{F$COLOR_FOCUSED_OCCUPIED_FG}%{B$COLOR_FOCUSED_OCCUPIED_BG}%{U$COLOR_FOREGROUND}%{+u} ${name} %{-u}%{B-}%{F-}"
-                    ;;
-                F*)
-                    # focused free desktop
-                    wm_infos="${wm_infos}%{F$COLOR_FOCUSED_FREE_FG}%{B$COLOR_FOCUSED_FREE_BG}%{U$COLOR_FOREGROUND}%{+u} ${name} %{-u}%{B-}%{F-}"
-                    ;;
-                U*)
-                    # focused urgent desktop
-                    wm_infos="${wm_infos}%{F$COLOR_FOCUSED_URGENT_FG}%{B$COLOR_FOCUSED_URGENT_BG}%{U$COLOR_FOREGROUND}%{+u} ${name} %{-u}%{B-}%{F-}"
-                    ;;
-                o*)
-                    # occupied desktop
-                    wm_infos="${wm_infos}%{F$COLOR_OCCUPIED_FG}%{B$COLOR_OCCUPIED_BG} ${name} %{B-}%{F-}"
-                    ;;
-                f*)
-                    # free desktop
-                    wm_infos="${wm_infos}%{F$COLOR_FREE_FG}%{B$COLOR_FREE_BG} ${name} %{B-}%{F-}"
-                    ;;
-                u*)
-                    # urgent desktop
-                    wm_infos="${wm_infos}%{F$COLOR_URGENT_FG}%{B$COLOR_URGENT_BG} ${name} %{B-}%{F-}"
-                    ;;
-                L*)
-                    # layout
-                    wm_infos="$wm_infos %{F$COLOR_LAYOUT_FG}%{B$COLOR_LAYOUT_BG} ${name} %{B-}%{F-}"
-                    ;;
-                esac
-                shift
-            done
+          u*)
+            # urgent desktop
+            wm_infos="${wm_infos}%{F$COLOR_URGENT_FG}%{B$COLOR_URGENT_BG} ${name} %{B-}%{F-}"
+            ;;
+          L*)
+            # layout
+            wm_infos="$wm_infos %{F$COLOR_LAYOUT_FG}%{B$COLOR_LAYOUT_BG} ${name} %{B-}%{F-}"
             ;;
         esac
-        sys_infos="${mpd_info} ${vol}${vol_info} | ${net_info} | ${CLOCK}${clock_info} ${KEYBOARD}${keyboard_layout}"
-        #printf "%s\n" "%{l}${user}%{c}${wm_infos}  %{r}${sys_infos}"
-        printf "%s\n" "%{l}${user} ${wm_infos} ${title} %{r}${sys_infos}"
+        shift
+      done
+      ;;
+  esac
+  sys_infos="${mpd_info} ${vol}${vol_info} | ${net_info} | ${CLOCK}${clock_info} ${KEYBOARD}${keyboard_layout}"
+  #printf "%s\n" "%{l}${user}%{c}${wm_infos}  %{r}${sys_infos}"
+  printf "%s\n" "%{l}${user} ${wm_infos} ${title} %{r}${sys_infos}"
 done

@@ -678,3 +678,13 @@ Most of the key binds are set when the packages are loaded through use-package
 #+BEGIN_SRC emacs-lisp
   (autoload 'notmuch "notmuch" "notmuch mail" t)
 #+END_SRC
+
+** Demo-it
+#+BEGIN_SRC emacs-lisp
+(use-package demo-it 
+  :load-path "~/.emacs.d/plugin/demo-it"
+  :config 
+   (load-library "demo-it")
+)
+
+#+END_SRC

@@ -1,4 +1,4 @@
-# ~/.config/newsbeuter/config
+# $XDG_CONFIG_HOME/newsbeuter/config
 
 auto-reload yes
 confirm-exit no
@@ -7,7 +7,7 @@ download-timeout 120
 mark-as-read-on-hover no
 text-width 80
 articlelist-format "%4i %f %D %6L %?T?;%-17T; ?%t"
-save-path "/home/kotto/.local/share/newsbeuter/saved/"
+save-path "/home/kotto/local/share/newsbeuter/saved/"
 
 notify-beep yes
 notify-always no
