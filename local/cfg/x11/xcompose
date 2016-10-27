@@ -1,4 +1,4 @@
- XDG_CONFIG_HOME/x11/xcompose
+#XDG_CONFIG_HOME/x11/xcompose
 
 include "%S/en_US.UTF-8/Compose"
 include "%S/pt_BR.URF-8/Compose"
@@ -44,6 +44,7 @@ include "%S/pt_BR.URF-8/Compose"
 <Multi_key> <t> <l> :                   "ı"
 <Multi_key> <t> <I> :                   "İ"
 <Multi_key> <t> <i> :                   "i"
+<Multi_key> <t> <g> :                   "ğ"
 
 #Russian letters
 #Б б
@@ -66,6 +67,7 @@ include "%S/pt_BR.URF-8/Compose"
 #Ы ы
 #Ь
 #Ъ
+
 # Quotes
 <Multi_key> <bracketleft> <apostrophe> : "｢"
 <Multi_key> <bracketright> <apostrophe> : "｣"
@@ -75,13 +77,13 @@ include "%S/pt_BR.URF-8/Compose"
 <Multi_key> <colon> <apostrophe> :      "‘"
 
 # Misc
-<Multi_key> <colon> <bar> <bar> :       "ಠ_ಠ"
-<Multi_key> <less> <3> :                "❤"
-<Multi_key> <l> <o> <o> <k> :           "ಠ_ಠ"
-<Multi_key> <s> <h> <r> <u> <g> :   "¯\_(ツ)_/¯"
 
 # silly signs
 <Multi_key> <c> <c> <c> <p> :           "☭"
+<Multi_key> <colon> <bar> <bar> :       "ಠ_ಠ"
+<Multi_key> <less> <3> :                "❤"
+<Multi_key> <l> <o> <o> <k> :           "ಠ_ಠ"
+<Multi_key> <s> <h> <r> <u> <g> :   "¯\\\_(ツ)_/¯"
 
 # copyright
 <Multi_key> <c> <o> :                   "©"
@@ -92,24 +94,6 @@ include "%S/pt_BR.URF-8/Compose"
 
 # IRC shortcuts
 <Multi_key> <v> <i> :               "$EDITOR"
-
-# Fun with Paleotypography
-<Multi_key> <T> <H> :                   "Þ" # 'Th'e
-<Multi_key> <t> <h> :                   "þ"
-
-<Multi_key> <D> <H> :                   "Ð"
-<Multi_key> <d> <h> :                   "ð"
-
-<Multi_key> <W> <W> :                   "Ƿ" # 'W'hen
-<Multi_key> <w> <w> :                   "ƿ"
-
-<Multi_key> <s> <s> :                   "ſ" # 'S'ee
-
-<Multi_key> <Y> <Y> :                   "Ȝ" # 'Plo'ugh'
-<Multi_key> <y> <y> :                   "ȝ"
-
-<Multi_key> <N> <G> :                   "Ŋ" # Si'ng'
-<Multi_key> <n> <g> :                   "ŋ"
 
 <Multi_key> <x> <a> :       "http://hyperboleandahalf.blogspot.com.br/2010/04/alot-is-better-than-you-at-everything.html"
 <Multi_key> <t> <r> <a> <i> <n> : "🚂 🚊 🚉 🚞 🚆 🚄 🚅 🚈 🚇 🚝 🚋 🚃 🚟"
