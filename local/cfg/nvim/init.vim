@@ -1,4 +1,9 @@
 call plug#begin('~/local/share/nvim/plugins')
+Plug 'benekastah/neomake'
+autocmd! BufWritePost * Neomake
+" Plug 'https://github.com/fmoralesc/nvimfs'
+Plug 'https://github.com/vim-scripts/TxtBrowser'
+Plug 'https://github.com/beyondmarc/glsl.vim.git'
 Plug 'https://github.com/chrisbra/NrrwRgn.git'
 Plug 'https://github.com/vim-scripts/SyntaxRange.git'
 Plug 'https://github.com/dahu/vim-asciidoc'
@@ -10,68 +15,44 @@ Plug 'https://github.com/tpope/vim-commentary.git'
 Plug 'https://github.com/tommcdo/vim-exchange.git'
 Plug 'https://github.com/gregsexton/gitv.git'
 Plug 'https://github.com/airblade/vim-gitgutter.git'
-Plug 'https://github.com/bbchung/Clamp.git'
-let g:clamp_libclang_file = '/usr/lib/libclang.so'
 Plug 'http://github.com/sjl/gundo.vim.git'
 Plug 'git://github.com/marijnh/tern_for_vim', {
       \ 'do': 'npm install; cd node_modules/tern/plugin; curl -O https://raw.githubusercontent.com/Slava/tern-meteor/master/meteor.js',
       \ 'for': ['javascript', 'html', 'css']
       \ } "javascript/meteor things
 Plug 'https://github.com/mattn/emmet-vim.git', { 'for': 'html' }
-Plug 'https://github.com/Shougo/deoplete.nvim.git'
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#sources = {}
-let g:deoplete#sources.cpp = ['buffer', 'tag', 'clang']
-Plug 'https://github.com/SirVer/ultisnips.git'
+Plug 'https://github.com/sirver/UltiSnips'
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
-Plug 'https://github.com/benekastah/neomake.git'
 call plug#end()
+au BufEnter *.log,*.txt setlocal ft=txt
+nnoremap <leader>t :TlistToggle<CR>
 
-autocmd! BufWritePost * Neomake
-let g:neomake_javascript_jshint_maker = {
-      \ 'args': ['--verbose'],
-      \ 'errorformat': '%A%f: line %l\, col %v\, %m \(%t%*\d\)',
-      \ }
-let g:neomake_javascript_enabled_makers = ['jshint']
-let g:neomake_c_lint_maker = {
-      \ 'args': ['--options', '-std=c99']
-      \ }
-let g:neomake_clang_maker = {
-      \ 'exe': 'make',
-      \ 'args': ['--build'],
-      \ 'errorformat': '%f:%l:%c: %m',
-      \ }
-let g:neomake_javascript_jshint_maker = {
-      \ 'args': ['--verbose'],
-      \ 'errorformat': '%A%f: line %l\, col %v\, %m \(%t%*\d\)',
-      \ }
-let g:neomake_javascript_enabled_makers = ['jshint']
-let g:neomake_c_clang_args = neomake#makers#ft#c#clang()['args'] + ['-std=c99']
-let g:neomake_cpp_clang_args = neomake#makers#ft#cpp#clang()['args'] + ['-std=c++11']
+tnoremap <Esc> <C-\><C-n>
 
 let vimple_init_vn = 0
 set undofile        " keep an undo file (undo changes after closing)
 set ruler           " show the cursor position all the time
+set number
 set cursorline
+set hidden
+autocmd FileType c setlocal path+=/usr/avr/include
 set wildmode=list:full
-set path=**
-set wildignore=*.class,*.pyc,*~
-set suffixesadd=.java,.py,.pl,.js,.html
-set clipboard=unnamed " Use the Xorg's primary buffer as default register.
+set wildignore=,*.pyc,*~
+set suffixesadd=.py,.pl,.js,.html,.c,.h,.cpp,.hh
 set mouse=n
 syntax on
 filetype indent plugin on
+set termguicolors
 let base16colorspace=256
-colorscheme base16-apathy
+colorscheme base16-atelier-seaside
 set background=dark
 set vb              " visual bell
 set showcmd         " display incomplete commands
-set display+=lastline
 set spelllang=en_us
 set spellsuggest=best
 set dictionary+=en.utf-8.add,en.utf-8.spl
@@ -85,13 +66,13 @@ set backupdir=~/local/share/nvim/backup//
 "set shada+=n$HOME/.cache/nvim/nvim.shada
 set shada='1000,f1,<500,h
 set showmode
-set colorcolumn=110
+set colorcolumn=90
 set splitbelow
 set splitright
 set smartcase
 set smartindent
 set list
-set tags+=~/local/share/nvim/systags
+set tags=./tags,tags,~/local/share/nvim/systags,~/local/share/nvim/avr_systags
 set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+,eol:\ 
 set cpoptions+=$        "put a $ in the end of the change mode
 
@@ -117,11 +98,11 @@ endif
 
 map Q gq
 inoremap <C-U> <C-G>u<C-U>
+"change the command key on normal mode to :
 nnoremap ; :
-nnoremap : ;            " change the command key on normal mode to :
-let mapleader = ","
+nnoremap : ;
 nnoremap <leader>rt :%s/\s\+$//<cr>:let @/=''<CR>        "remove trailings
-nnoremap <leader>m :make<CR>
+nnoremap <C-M> :make<CR>
 nnoremap <leader>ct :silent !ctags -R .<CR>:redraw!<CR>
 nnoremap <leader>/ :nohlsearch<CR>
 nnoremap <leader>b :call ToggleBackground()<CR>
@@ -140,6 +121,20 @@ function! ToggleBackground()
     set background=light
   endif
 endfunction
+"
+" XXX Vim doesn't mkdir the backupdir path (bug?) so let's do that ourselves
+" instead.
+if !isdirectory($LOCAL . "/share/nvim/backup")
+    call mkdir($Local . "/share/nvim/backup", "p")
+endif
+
+" Prevent neomake reporting its exit status and suppressing the write message.
+" https://github.com/benekastah/neomake/issues/238
+let neomake_verbose = 0
+
+" Use clang when checking C/C++ syntax.
+let g:neomake_cpp_clang_args = neomake#makers#ft#c#clang()['args'] + ['-std=c99']
+let g:neomake_cpp_clang_args = neomake#makers#ft#cpp#clang()['args'] + ['-std=c++11']
 
 function! AsciidocEnableSyntaxRanges()
   " source block syntax highlighting
@@ -161,3 +156,5 @@ autocmd  FileType asciidoc,adoc call AsciidocEnableSyntaxRanges()
 
 let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
 let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
+
+set statusline=%f%m%r%h%w\ [%n:%{&ff}/%Y]\%{Scope()}%=[0x\%04.4B][%03v][%p%%\ line\ %l\ of\ %L]
