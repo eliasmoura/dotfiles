@@ -160,7 +160,7 @@ Most of the key binds are set when the packages are loaded through use-package
     (use-package org-crypt)
     (use-package org-bbdb)
     ;; (use-package org-devonthink)
-    (use-package org-mac-link)
+    ;;(use-package org-mac-link)
     ;; (require 'org-magit)
     (use-package org-velocity)
     (custom-set-faces
