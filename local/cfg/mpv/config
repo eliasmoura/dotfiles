@@ -1,4 +1,4 @@
-vo=opengl-hq
+profile=opengl-hq
 hwdec=auto
 hwdec-codecs=all
 cache-default=500000
@@ -7,6 +7,8 @@ cache-default=500000
 #loop-file=yes
 # backend=auto
 #input-unix-socket=/tmp/mpvsocket
+volume=30
+script-opts=osc-layout=bottombar
 
 [pseudo-gui]
 terminal=no
