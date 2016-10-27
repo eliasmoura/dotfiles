@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-out='$XDG_RUNTIME_DIR/bspwm_debug'
+out="$XDG_RUNTIME_DIR/bspwm_debug"
 wid=$1
 class=$2
 instance=$3
