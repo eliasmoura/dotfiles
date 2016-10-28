@@ -1,0 +1,37 @@
+#!/bin/sh
+#
+# ~/.xinitrc
+#
+# Executed by `startx` (run your window manager from here)
+
+#maybe will need this
+#if [ ! "$DBUS_SESSION_BUS_ADDRESS" ] && have dbus-launch; then
+#    exec dbus-launch --exit-with-session ~/.xinitrc "$@" || exit
+#fi
+
+source_checked() {
+    local file=$1
+    [[ -f $file ]] && source "$file"
+}
+
+# Import DISPLAY and XAUTHORITY into the systemd --user environment.
+source_checked /etc/X11/xinit/xinitrc.d/50-systemd-user.sh
+
+xsetroot -cursor_name X_cursor
+
+# [ -f /bin/redshift ] && redshift &
+
+setxkbmap -layout br,ru -variant ,phonetic -option grp:menu_toggle,compose:caps
+#feh --bg-tile -gb /media/archive/pictures/wallpapers/2x2/congruent_outline.png
+ponymix unmute &
+dunst -config $XDG_CONFIG_HOME/dunst/dunstrc & # dunst only looks into .config/dunst
+# compton &
+xsetroot -mod 16 16 -fg '#343d46' -bg '#2b303b'
+
+sxhkd &
+#exec bspwm -c ${XDG_CONFIG_HOME:-$HOME/local/cfg}/bspwm/bspwmrc
+#dwm_status &
+#dwm &> ~/local/tmp/log/dwm.log
+#~/arch/linux/programs/stumpwm/stumpwm/stumpwm
+# exec wmii
+exec swm
