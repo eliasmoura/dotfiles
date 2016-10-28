@@ -38,6 +38,7 @@ let vimple_init_vn = 0
 set undofile        " keep an undo file (undo changes after closing)
 set ruler           " show the cursor position all the time
 set number
+set showbreak=…
 set cursorline
 set hidden
 autocmd FileType c setlocal path+=/usr/avr/include
@@ -121,7 +122,7 @@ function! ToggleBackground()
     set background=light
   endif
 endfunction
-"
+
 " XXX Vim doesn't mkdir the backupdir path (bug?) so let's do that ourselves
 " instead.
 if !isdirectory($LOCAL . "/share/nvim/backup")
