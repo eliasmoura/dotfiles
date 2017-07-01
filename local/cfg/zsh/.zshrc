@@ -11,24 +11,24 @@ zle -N zle-keymap-select
 
 # Shell options.
 setopt auto_cd \
-    glob_dots \
-    hist_verify \
-    hist_append \
-    prompt_subst \
-    share_history \
-    extended_glob \
-    rm_star_silent \
-    hist_fcntl_lock \
-    print_exit_value \
-    complete_aliases \
-    numeric_glob_sort \
-    hist_save_no_dups \
-    hist_ignore_space \
-    hist_ignore_space \
-    hist_reduce_blanks \
-    inc_append_history \
-    hist_ignore_all_dups \
-    interactive_comments
+       glob_dots \
+       hist_verify \
+       hist_append \
+       prompt_subst \
+       share_history \
+       extended_glob \
+       rm_star_silent \
+       hist_fcntl_lock \
+       print_exit_value \
+       complete_aliases \
+       numeric_glob_sort \
+       hist_save_no_dups \
+       hist_ignore_space \
+       hist_ignore_space \
+       hist_reduce_blanks \
+       inc_append_history \
+       hist_ignore_all_dups \
+       interactive_comments
 
 READNULLCMD=$EDITOR
 HELPDIR=/usr/share/zsh/$ZSH_VERSION/help
@@ -143,7 +143,7 @@ alias tmux="tmux -f ${XDG_CONFIG_HOME:-$HOME/local/cfg}/tmux/tmux.conf"
 alias mutt="mutt -F ${XDG_CONFIG_HOME:-$HOME/local/cfg}/mutt/muttrc"
 # alias news="newsbeuter -u ${XDG_CONFIG_HOME:-$HOME/local/cfg}/newsbeuter/urls -C ${XDG_CONFIG_HOME:-$HOME/local/cfg}/newsbeuter/confg -c ${XDG_CACHE_HOME:-$HOME/tmp}/newsbeuter/"
 
-alias k='rlwrap k'
+# alias ;q='exit'
 
 alias ix="curl -F 'f:1=<-' ix.io"
 alias sprunge="curl -F 'sprunge=<-' sprunge.us"
@@ -155,7 +155,7 @@ alias aria2c="aria2c --dht-file-path $XDG_CACHE_HOME/aria2/dht.dat"
 alias gdb="gdb -nh -x $XDG_CONFIG_HOME/gdb/init"
 
 # Bash-like help.
-unalias run-help
+# unalias run-help
 alias help='run-help'
 
 # Directory hashes.
@@ -164,17 +164,6 @@ if [[ -d $HOME/dev ]]; then
         hash -d ${d##*/}=$d
     done
 fi
-
-# Enable C-S-t in (vte) termite which opens a new terminal in the same working
-# directory.
-if [[ -n $VTE_VERSION ]]; then
-    source /etc/profile.d/vte.sh
-    __vte_prompt_command
-fi
-
-#Go programming language stuff
-export GOPATH=~/local/share/go
-export PATH=$PATH:$GOPATH/bin
 
 specwave() { ffplay -f lavfi 'amovie='"$1"', asplit[out1][a]; [a]showwaves=mode=p2p:s=1366x768[waves]; [waves] frei0r=filter_name=distort0r:filter_params=0.5|0.01[out0]' }
 
@@ -191,3 +180,7 @@ toggle_tpad() { synclient TouchpadOff=$(synclient -l | awk '/TouchpadOff/ { prin
 
 procswap() { awk '/Name/ { n = $2 }; /VmSwap/ && $2 > 0 { print n, $2, "kB" | "column -t" }' /proc/*/status; }
 soneeded() { readelf -d $1 | awk '/NEEDED/ {gsub(/[\[\]]/, "", $5); print $5}' }  
+
+
+dl-pl() { youtube-dl -i -o '%(playlist)s/%(title)s.%(ext)s' "$1" }
+dl-all() { youtube-dl -i -o '%(uploader)s/%(autonumber)s_-_%(title)s.%(ext)s' "$1" }
