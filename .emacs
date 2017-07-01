@@ -10,7 +10,7 @@
 ;; You may delete these explanatory comments.
 (package-initialize)
 
-(let ((init "~/local/cfg/emacs/init.elc"))
+(let ((init "~/local/cfg/emacs/init.el"))
   (if (file-exists-p init)
       (load-file init)
     (load-file (substring init 0 -1))))
