@@ -21,7 +21,7 @@
     #   %I  iconname (without its path)
     #   %p  progress value if set ([  0%] to [100%]) or nothing
     # Markup is allowed
-    format = "%I<b>%a</b> %p\n%s"
+    format = "<big>%a</big>: <span fgcolor='green'>%s</span>\n<span size='medium'>%b</span>"
 
     # Sort messages by urgency.
     sort = yes
@@ -64,7 +64,7 @@
     # the top and down respectevly.
     # The width can be negative.  In this case the actual width is the
     # screen width minus the width defined in within the geometry option.
-    geometry = "300x5-30+20"
+    geometry = "500x5-30+20"
 
     # Shrink window if it's smaller than the width.  Will be ignored if
     # width is 0.
@@ -94,7 +94,7 @@
     #
     # If this option is set to mouse or keyboard, the monitor option
     # will be ignored.
-    follow = mouse
+    follow = keyboard
 
     # Should a notification popped up from history be sticky or timeout
     # as if it would normally do.
@@ -145,7 +145,7 @@
     icon_position = left
 
     # Paths to default icons.
-    #icon_folders = /usr/share/icons/gnome/16x16/status/:/usr/share/icons/gnome/16x16/devices/
+    icon_folders = /usr/share/icons/gnome/16x16/status/:/usr/share/icons/gnome/16x16/devices/:/usr/share/icons/Adwaita/48x48/categories/
 
 [frame]
     width = 0
@@ -212,6 +212,10 @@
   appname = BSPWM
   urgency = low
 
+[swm]
+  appname = swm
+  urgency = low
+
 [skype]
   appname = Skype
   summary = "*"
@@ -221,28 +225,58 @@
   appname = weechat
   summary = "*"
   urgency = low
-  icon    = user-invisible
+  new_icon    = user-invisible
+
+[mpv-fail]
+  appname     = mpv-fail
+  urgency     = critical
+  new_icon    = applications-multimedia-symbolic.symbolic
 
 [mpv]
-  appname = mpv
-  urgency = low
-  icon    = gnome-multimedia
+  appname     = mpv
+  urgency     = low
+  new_icon    = applications-multimedia-symbolic.symbolic
+
+[mpc]
+  appname     = mpc
+  urgency     = low
+  new_icon    = applications-multimedia-symbolic.symbolic
 
 [mail-new]
   appname = notmuch
-  icon    = mail-new
+  new_icon    = mail-new
   summary = "*new mail*"
 
 [mail-unread]
   appname = notmuch
-  icon    = mail-mark-unread
+  new_icon    = mail-mark-unread
   summary = "*unread:*"
 
 [rss]
   appname = newsbeuter
-  icon    = ""
-  
+  new_icon    = ""
 
+[download]
+  appname = download
+  urgency = critical
+
+[discord]
+  appname = Discord
+  new_icon = user-available
+
+[discord-group]
+  appname = Discord
+  new_icon    = config-users
+  summary = "*(#*)"
+
+    # The format of the message.  Possible variables are:
+    #   %a  appname
+    #   %s  summary
+    #   %b  body
+    #   %i  iconname (including its path)
+    #   %I  iconname (without its path)
+    #   %p  progress value if set ([  0%] to [100%]) or nothing
+    # Markup is allowed
 #icons
 #call-start
 #call-stop
