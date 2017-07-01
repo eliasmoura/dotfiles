@@ -4,8 +4,11 @@ export XDG_CACHE_HOME=$HOME/local/tmp
 export XDG_CONFIG_HOME=$HOME/local/cfg
 export XDG_DATA_HOME=$HOME/local/share
 export LOCAL=$HOME/local
+export X11FSDIR=${XDG_RUNTIME_DIR:-/tmp}/x11/fs
 
 export PATH=$HOME/local/bin:$PATH
+export PATH=$PATH:/usr/lib/jvm/java-8-openjdk/jre/bin/
+export PATH=$PATH:$HOME/local/share/android/tools:$HOME/local/share/android/tools/bin
 export MANPATH=$MANPATH:$LOCAL/share/man
 
 export ABDUCO_SOCKET_DIR=$XDG_RUNTIME_DIR/abduco
@@ -13,11 +16,13 @@ export TMPDIR=$XDG_RUNTIME_DIR
 export PASSWORD_STORE_DIR=$HOME/local/share/pass
 export SLRNHOME=$XDG_CONFIG_HOME/slrn
 
+export STARDICT_DATA_DIR=$HOME/read/docs/dict
+
 # https://github.com/mozilla/rr/issues/1455#issuecomment-89714904
 export _RR_TRACE_DIR=$XDG_DATA_HOME/rr
 
 export CARGO_HOME=$XDG_DATA_HOME/cargo
-export SBCL_HOME=$XDG_CONFIG_HOME/sbcl
+#export SBCL_HOME=$XDG_CONFIG_HOME/sbcl
 export GNUPGHOME=$XDG_CONFIG_HOME/gnupg
 export INPUTRC=$XDG_CONFIG_HOME/inputrc
 export RLWRAP_HOME=$XDG_DATA_HOME/rlwrap
@@ -59,6 +64,7 @@ export PERL_MM_OPT=INSTALL_BASE=$LOCAL
 export PERL_MB_OPT="--install_base $LOCAL"
 export PERLBREW_ROOT=$LOCAL/share/perlbrew
 export GOPATH=$LOCAL/share/go
+export PATH=$PATH:$GOPATH/bin
 
 # Xorg and XKB.
 export GTK_IM_MODULE=xim
@@ -66,8 +72,9 @@ export XKB_DEFAULT_LAYOUT=br
 export XKB_DEFAULT_OPTIONS=compose:caps
 #export XAUTHORITY=$XDG_RUNTIME_DIR/x11/xauthority
 
-export EDITOR=nvim
-export VISUAL=pinfo
+export ALTERNATE_EDITOR=""
+export EDITOR="kak"
+export VISUAL="less"
 export SUDO_EDITOR="nvim -Z"
 
 export LESS=-RX
@@ -90,10 +97,13 @@ export WINEDEBUG=-all
 
 #export GALLIUM_HUD="cpu0+cpu1+cpu2+cpu3;fps"
 
+export PULSE_COOKIE=${LOCAL:-$HOME/local}/tmp/pulse/cookie
+export PULSE_CLIENTCONFIG=${XDG_CONFIG_HOME:-HOME/local/cfg/}/pulse/client.conf
 export SDL_AUDIODRIVER=pulse
 
 
 # Java BS
 export _JAVA_AWT_WM_NONREPARENTING=1
 export _JAVA_OPTIONS="-Dawt.useSystemAAFontSettings=lcd -XX:-UsePerfData"
-export NPM_CONFIG_USERCONFIG={$XDG_CONFIG_HOME:-$HOME/local/cfg}/npm/npmrc
+export JAVA_HOME=/usr/lib/jvm//java-8-openjdk/
+export NPM_CONFIG_USERCONFIG=${XDG_CONFIG_HOME:-$HOME/local/cfg}/npm/npmrc
