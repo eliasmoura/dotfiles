@@ -2,53 +2,123 @@ IMAPAccount gmail
 # Address to connect to
 Host imap.gmail.com
 User eliasmoura.alves@gmail.com
-Pass vapbsogeodrucmvg
+
 # To store the password in an encrypted file use PassCmd instead of Pass
 # PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.mailpass.gpg"
-#
-# Use SSL
-SSLType IMAPS
+
+
 # The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
 CertificateFile /etc/ssl/certs/ca-certificates.crt
 #CertificateFile ~/.cert/imap.gmail.com.pem
 #CertificateFile ~/.cert/Equifax_Secure_CA.pem
 
-IMAPStore gmail-remote
+IMAPStore remote
 Account gmail
 
-MaildirStore gmail-local
+MaildirStore local
 # The trailing "/" is important
-Path ~/email/gmail/
-Inbox ~/email/gmail/Inbox
+Inbox ~/email/isync/gmail/inbox
 
-Channel gmail
-Master :gmail-remote:
-Slave :gmail-local:
-# Exclude everything under the internal [Gmail] folder, except the interesting folders
-Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail"
-# Or include everything
-#Patterns *
-# Automatically create missing mailboxes, both locally and on the server
-Create Both
-# Save the synchronization state files in the relevant directory
+# Channel gmail
+# Master :gmail-remote:
+# Slave :gmail-local:
+# # Exclude everything under the internal [Gmail] folder, except the interesting folders
+# Patterns * ![Gmail]* "[Gmail]/*" "[Gmail]/Sent Mail" "[Gmail]/Inbox" "[Gmail]/Starred" "[Gmail]/All Mail"
+# # Or include everything
+# #Patterns *
+# # Automatically create missing mailboxes, both locally and on the server
+# Create Both
+# # Save the synchronization state files in the relevant directory
+# SyncState *
+CopyArrivalDate yes
+Create both
+Sync All
 SyncState *
+Expunge Both
 
-#Channel sync-googlemail-default
-#Master :googlemail-remote:
-#Slave :googlemail-local:
-## Select some mailboxes to sync
-#Patterns "INBOX" "arch"
-#
-#Channel sync-googlemail-sent
-#Master :googlemail-remote:"[Google Mail]/Gesendet"
-#Slave :googlemail-local:sent
-#
-#Channel sync-googlemail-trash
-#Master :googlemail-remote:"[Google Mail]/Papierkorb"
-#Slave :googlemail-local:trash
-#
-## Get all the channels together into a group.
-#Group googlemail
-#Channel sync-googlemail-default
-#Channel sync-googlemail-sent
-#Channel sync-googlemail-trash
+Path ~/email/isync/gmail/
+channel gmail_all
+  Master  :remote:"[Gmail]/All Mail"
+  Slave   :local:gmail_all
+
+Channel inbox
+  Master :remote:INBOX
+  Slave :local:inbox
+
+Channel sent
+  Master :remote:"[Gmail]/Sent Mail"
+  Slave :local:sent
+
+Channel payment
+  Master :remote:payment
+  Slave :local:payment
+
+Channel humblebundle
+  Master :remote:humblebundle
+  Slave :local:humblebundle
+
+Channel concurso
+  Master :remote:Concurso
+  Slave :local:concurso
+
+Channel desafiosebrae
+  Master :remote:DesafioSebrae
+  Slave :local:desafiosebrae
+
+Channel foreign
+  Master :remote:foreign
+  Slave :local:foreign
+
+Channel personal
+  Master :remote:personal
+  Slave :local:personal
+
+Channel projects
+  Master :remote:projects
+  Slave :local:projects
+
+Channel purchase
+  Master :remote:purchase
+  Slave :local:purchase
+
+Channel security
+  Master :remote:security
+  Slave :local:security
+
+Channel archlinux
+  Master :remote:archlinux
+  Slave :local:archlinux
+
+Channel work
+  Master :remote:work
+  Slave :local:work
+
+Channel software
+  Master :remote:software
+  Slave :local:software
+
+Channel dev
+  Master :remote:dev
+  Slave :local:dev
+
+Channel webdev
+  Master :remote:webdev
+  Slave :local:webdev
+
+Channel travel-pt_br
+  Master :remote:Viagem
+  Slave :local:travel
+
+Channel travel
+  Master :remote:travel
+  Slave :local:travel
+
+Channel unemat
+  Master :remote:Unemat
+  Slave :local:unemat
+
+# Get all the channels together into a group.
+Group googlemail
+  Channel inbox
+  Channel sent
+  Channel payment
