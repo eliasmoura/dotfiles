@@ -42,24 +42,38 @@ zstyle ':completion:*' use-cache on
 zstyle ':completion:*' rehash yes
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
-PROMPT='%m %n %#${vimode}%F{green}${branch}%f%F{cyan}%~%f
+PROMPT='%m %n %F{green}${branch}%f%F{cyan}%~%f${jobs_list}
 -> '
+
+function zle-line-init zle-keymap-select {
+  zle reset-prompt
+}
 
 # Functions.
 # All I want is the git branch for now, vcs_info is way overkill to do this.
 function get_git_branch {
     if [[ -d .git ]]; then
         read -r branch < .git/HEAD
-        branch=" ${branch##*/} "
+        branch="${branch##*/} "
     else
-        branch=" "
+        branch=""
     fi
+}
+
+function list_jobs {
+  if [[ jobs ]]
+  then
+    jobs_list="[$(jobs | wc -l)]"
+  else
+    jobs_list=""
+  fi
 }
 
 # Print basic prompt to the window title.
 function precmd {
     print -Pn "\e];%n %~\a"
     get_git_branch
+    list_jobs
 }
 
 # Print the current running command's name to the window title.
@@ -70,102 +84,20 @@ function preexec {
     fi
 }
 
-# Replace vimode indicators.
-function zle-line-init zle-keymap-select {
-    vimode=${${KEYMAP/vicmd/c}/(main|viins)/i}
-    zle reset-prompt
-}
+bindkey -e emacs
+#
 
-# Simple widget for quoting the current word or the previous if cursor
-# positioned on a blank.
-function quote-word {
-    zle vi-forward-word
-    zle vi-backward-blank-word
-    zle set-mark-command
-    zle vi-forward-blank-word-end
-    zle quote-region
-}
-zle -N quote-word
-
-# Keybinds, use vimode explicitly.
-bindkey -v
-
-# Initialise vimode to insert mode.
-vimode=i
-
-# Remove the default 0.4s ESC delay, set it to 0.1s.
-export KEYTIMEOUT=1
-
-# Shift-tab.
 bindkey $terminfo[kcbt] reverse-menu-complete
 
-# Delete.
-bindkey -M vicmd $terminfo[kdch1] vi-delete-char
-bindkey          $terminfo[kdch1] delete-char
+# bindkey -M emacs '^R' history-incremental-pattern-search-backward
+# bindkey               history-incremental-pattern-search-backward
+bindkey -M emacs  ' '  magic-space
+# bindkey -M emacs  '^P' up-line-or-search
+# bindkey           '^P' up-line-or-search
+# bindkey -M emacs  '^P' down-line-or-search
+# bindkey           '^P' down-line-or-search
 
-# Insert.
-bindkey -M vicmd $terminfo[kich1] vi-insert
-bindkey          $terminfo[kich1] overwrite-mode
-
-# Home.
-bindkey -M vicmd $terminfo[khome] vi-beginning-of-line
-bindkey          $terminfo[khome] vi-beginning-of-line
-
-# End.
-bindkey -M vicmd $terminfo[kend] vi-end-of-line
-bindkey          $terminfo[kend] vi-end-of-line
-
-# Backspace (and <C-h>).
-bindkey -M vicmd $terminfo[kbs] backward-char
-bindkey          $terminfo[kbs] backward-delete-char
-
-# Page up (and <C-b> in vicmd).
-bindkey -M vicmd $terminfo[kpp] beginning-of-buffer-or-history
-bindkey          $terminfo[kpp] beginning-of-buffer-or-history
-
-# Page down (and <C-f> in vicmd).
-bindkey -M vicmd $terminfo[knp] end-of-buffer-or-history
-bindkey          $terminfo[knp] end-of-buffer-or-history
-
-bindkey -M vicmd '^B' beginning-of-buffer-or-history
-
-# Do history expansion on space.
-bindkey ' ' magic-space
-
-# Use M-w for small words.
-bindkey '^[w' backward-kill-word
-bindkey '^W' vi-backward-kill-word
-
-bindkey -M vicmd '^H' backward-char
-bindkey          '^H' backward-delete-char
-
-# h and l whichwrap.
-bindkey -M vicmd 'h' backward-char
-bindkey -M vicmd 'l' forward-char
-
-# Incremental undo and redo.
-bindkey -M vicmd '^R' redo
-bindkey -M vicmd 'u' undo
-
-# Misc.
-bindkey -M vicmd 'ga' what-cursor-position
-
-# Open in editor.
-bindkey -M vicmd 'v' edit-command-line
-
-# History search.
-bindkey '^P' up-line-or-search
-bindkey '^N' down-line-or-search
-
-# Patterned history search with zsh expansion, globbing, etc.
-bindkey -M vicmd '^T' history-incremental-pattern-search-backward
-bindkey          '^T' history-incremental-pattern-search-backward
-
-# Verify search result before accepting.
 bindkey -M isearch '^M' accept-search
-
-# Quote the current or previous word.
-bindkey -M vicmd 'Q' quote-word
 
 # Quick and easy note taking (I should make this into a seperate script).
 function n {
