@@ -1,7 +1,7 @@
 ncmpcpp_directory = "~/local/tmp/ncmpcpp"
 mpd_host = "localhost"
 mpd_port = "6600"
-mpd_music_dir = "~/Music/"
+mpd_music_dir = "/media/archive/music/"
 ### music visualizer #####
 
 audio_output {
@@ -15,7 +15,7 @@ system_encoding = ""
 playlist_disable_highlight_delay = "5"
 message_delay_time = "4"
 
-mpd_crossfade_time = "5"
+mpd_crossfade_time = "0"
 
 # Visualizer
 ## If you set format to 44100:16:2, make it 'yes'.
@@ -27,10 +27,11 @@ visualizer_output_name = "fifo"
 visualizer_type = wave 
 
 # Playlist
-song_columns_list_format = "$L(9)[white]{l} (20)[red]{a} (30)[green]{b}$R(20)[cyan]{t}"
-now_playing_prefix = "$b"
+song_columns_list_format = "$L(6)[white]{l} (20)[red]{a} (30)[green]{b}$R(20)[cyan]{t}"
+now_playing_prefix = "→$b"
 #now_playing_subfix = "/$b"
 playlist_display_mode = "columns" (classic/columns)
+playlist_show_remaining_time = yes
 autocenter_mode = "no"
 centered_cursor = "no"
 cyclic_scrolling = "yes"
@@ -62,16 +63,30 @@ state_flags_color = green
 main_window_color = blue
 color1 = cyan
 color2 = black
-main_window_highlight_color = red
-progressbar_color = black
+#main_window_highlight_color = red
+current_item_prefix = "$(red)$r"
+current_item_suffix = "$/r$(end)"
+progressbar_color = red
 statusbar_color = white
-active_column_color = red
+#active_column_color = red
+current_item_inactive_column_prefix = red
+current_item_inactive_column_suffix = red
 visualizer_color = cyan
 
 # Others
 song_window_title_format = "MPD: {%a > }{%t}{ [%b{ Disc %d}]}|{%f}"
 search_engine_display_mode = "columns" (classic/columns)
+#song_status_format = ""
+#alternative_header_first_line_format = ""
+player_state_color = blue
+
+# Lyrics
 lyrics_directory = /home/kotto/local/share/ncmpcpp/lyrics
 follow_now_playing_lyrics = yes
+fetch_lyrics_for_current_song_in_background = yes
+external_editor = /usr/bin/nvim
+use_console_editor = yes
 #display_screens_numbers_on_start = "no"
+
+
 #  vim: set ts=2 sw=2 tw=0 :
