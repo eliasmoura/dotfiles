@@ -1,19 +1,22 @@
 profile=opengl-hq
-hwdec=auto
+hwdec=no
 hwdec-codecs=all
-cache-default=500000
-#cache-file=/run/user/1000/mpv
-#pause
+# vo=vdpau
+cache-default=1073741824
 #loop-file=yes
-# backend=auto
-#input-unix-socket=/tmp/mpvsocket
 volume=30
-script-opts=osc-layout=bottombar
+# script-opts=osc-layout=bottombar
+
+slang=en
 
 [pseudo-gui]
 terminal=no
 force-window=yes
 idle=once
 screenshot-directory=~/pictures/screenshots
+
+
+#Workarround to stream sites
+user-agent="Mozilla/5.0"
 
 # vim: set filetype=config :
