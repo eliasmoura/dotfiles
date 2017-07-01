@@ -1,4 +1,6 @@
-set home-page=archlinux.org
+set home-page=www.archlinux.org
+set download-path=$HOME/net
+set useragent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.110 Safari/537.36
 
 set spell-checking=true
 set spell-checking-languages=en_US,pt_BR
@@ -26,14 +28,14 @@ set completion-bg-active=#7c6f64
 set completion-fg-active=#ebdbb2
 set completion-bg-normal=#32302f
 set completion-fg-normal=#ebdbb2
-set completion-font=DejaVu Sans Mono 9.5
+set completion-font=Inconsolazi4 12
 
 set input-bg-normal=#32302f
 set input-fg-normal=#ebdbb2
 set input-bg-error=#32302f
 set input-fg-error=#ebdbb2
-set input-font-normal=DejaVu Sans Mono 9.5
-set input-font-error=DejaVu Sans Mono 9.5
+set input-font-normal=Inconsolazi4 12
+set input-font-error=Inconsolazi4 12
 
 # set status-color-bg=#3c3836
 # set status-color-fg=#076678
@@ -41,9 +43,9 @@ set input-font-error=DejaVu Sans Mono 9.5
 # set status-ssl-color-fg=#076678
 # set status-sslinvalid-color-bg=#3c3836
 # set status-sslinvalid-color-fg=#076678
-set status-font=DejaVu Sans Mono 9.5
-set status-ssl-font=DejaVu Sans Mono 9.5
-set status-sslinvalid-font=DejaVu Sans Mono 9.5
+set status-font=Inconsolazi4 12
+set status-ssl-font=Inconsolazi4 12
+set status-sslinvalid-font=Inconsolazi4 12
 
 set accelerated-compositing=true
 set auto-resize-window=true
@@ -64,7 +66,8 @@ nnoremap 9gt :sh! xdotool key --window $(<$XDG_RUNTIME_DIR/tabbed.xid) ctrl+9<CR
 
 augroup whitelist
   au LoadCommited * set scripts=off
-  au LoadCommited http{,s}://www.bb.com.br/* set scripts=on
+  au LoadCommited http{,s}://www.bb.com.br/* set scripts=on | set java-applet=true | set cookie-accept=always
+
   au LoadCommited https://www.duolingo.com/* set scripts=on
   au LoadCommited http{,s}://lang-8.com/* set scripts=on
 augroup end

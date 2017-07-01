@@ -1,5 +1,5 @@
-# ~button1
-#     focus.sh $(underneath.sh)
+~button1
+    ! [ $(pfw) = $(underneath.sh) ] && focus.sh $(underneath.sh)
 
 super + {_, shift +} c
   focus.sh {next,prev}
@@ -10,8 +10,34 @@ super + {h,j,k,l}
 super + shift + k
   killw $(pfw)
 
+super + shift + {1,2,3,4,5,6,7,8,9,0}
+  groups.sh -s "$(pfw)" {1,2,3,4,5,6,7,8,9,0}
+
+super + ctrl + {1,2,3,4,5,6,7,8,9,0}
+  groups.sh -M {1,2,3,4,5,6,7,8,9,0}
+
+super + {1,2,3,4,5,6,7,8,9,0}
+  window=$(pfw);\
+  groups.sh -t {1,2,3,4,5,6,7,8,9,0};\
+  focus.sh "$window"
+
+super + u
+  groups.sh -U
+
+super + r
+  groups.sh -c $(pfw)
+
 super + t
-  GAP=0 MASTER=1200 tile.sh
+  window=$(pfw);\
+  GAP=0 MASTER=1200 tile.sh;\
+  focus.sh "$window"
+
+super + w; f; button1
+  focus.sh $(underneath.sh)
+
+super + w; F
+  resize_window fullscreen
+
 #
 # wm independent hotkeys
 #
@@ -21,22 +47,28 @@ shift + XF86Audio{LowerVolume,RaiseVolume,Mute}
     ponymix {decrease 5,increase 5,toggle}
 
 #Multimedia keyboard hotkeys
-shift + XF86Audio{Prev,Next,Play}
-    mpc -q {prev,next,toggle}
+control + XF86Audio{LowerVolume,RaiseVolume,Prev,Next,Play}
+    mpc -q {volume -5,volume +5,prev,next,toggle} && notify-send -a mpd "Status" "$(mpc)"
 
 {_, control +, shift +} Print
-    printscreen.sh {fullscreen,selection,record}
+    printscreen.sh {fullscreen,area,window} && notify-send "print screen"
 
 super + Return
-    st
+    termite
 
-super + space; {o,p,r}
-  {bemenu_run, mpv-run, read_doc}
+super + space; {o,p,P,r}
+  {bemenu_run, mpv-run "360", mpv-run, read_doc}
+
+super + w; {m,M,s}
+  ~/local/bin/lsw.bash {map,unmap,focus}
 
 super + space; space
   i3lock --dpms --ignore-empty-password
 
 super + Escape
+    pkill -USR1 -x sxhkd
+
+super + ctrl + bracketleft
     pkill -USR1 -x sxhkd
     # pkill panel && $XDG_CONFIG_HOME/bspwm/panel/panelrc & \
     # $XDG_CONFIG_HOME/bspwm/bspwmrc
