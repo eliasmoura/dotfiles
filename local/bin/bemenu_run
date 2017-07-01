@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+function run {
+  while pgrep bemenu; do
+    sleep 1
+  done
+  bemenu-run ${opts[*]} "$@"
+}
+# source ${XDG_CONFIG_HOME:-$HOME/local/cfg}/bemenu/conf
+prefix=(--prefix '⇒')
+bprompt=(--prompt 'Run: ')
+num_lines=(-l 25)
+colors=(--hb '#ffffff' --ff '#007fce' --tf '#d2691e')
+opts=(${prefix[*]} ${bprompt[*]} ${num_lines[*]} ${colors[*]} --ignorecase)
+run "$@"

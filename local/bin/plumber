@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+
+if [[ -f "$1" ]]; then
+  mime=$(file -biL "$1")
+  [[ $mime ]] && case $mime in
+    text/html*)
+      exec vimb "$1" ;;
+    text*)
+      exec nvim-run "$1" ;;
+    *pdf*|*epub*|*djvu*)
+      exec tzathura "$1" ;;
+    image*)
+      exec imv "$1"      ;;
+    video*)
+      exec mpv "$1"      ;;
+    *)
+      notify-send "Error with $1"
+      exec nvim-run ~/local/bin/plumber ;;
+  esac
+fi
+
+#printf '%s' "$1" | xcmenu -ic
+
+echo case: "$1"
+case "$1" in
+    gopher://*)
+      st -e cgo "$1"                   ;;
+    *youtube.com/watch*)
+      exec mpv-run "$1"                ;;
+    *.pdf|*.djvu|*.epub)
+      curl -s "$1" > /tmp/tmp.book
+      exec tzathura /tmp/tmp.book      ;;
+    *youtu.be*|ytdl*|*livestream.com*)
+      exec mpv-run "$1"                ;;
+    *twitch*)
+      exec mpv-run "$1"                ;;
+    *.mkv|*.mp4|*.webm|*.mpg|*.ogg)
+      exec mpv-run "$1"                ;;
+    *.gifv)
+      exec mpv-run "${1::-4}webm"      ;;
+    *.jpg*|*.png|*.jpeg|*.gif)
+      curl -s -S "$1" | imv -            ;;
+    *.tar*)
+      cd /tmp || exit 0
+      curl -s "$1" | tar -xvz
+      exec st                          ;;
+    *xkcd*)
+      curl -s "https://xkcd.com/${1//[^0-9]/}/" | awk '/hotlink/{ print $NF }' | xargs curl | exec imv - ;;
+    *imgur.com/gallery/*)
+      mpv "$1"                         ;;
+    *imgur*|*img.*)
+      curl -s http://i.imgur.com/"${1: -7}".png | exec imv - ;;
+    *twitter*/video/1)
+      exec mpv-run "$1"                ;;
+    *twitter*/photo/1)
+      d=${1#https://twitter.com/}
+      d=${d%%/*}
+      mkdir -p /tmp/net/"$d"
+      cd /tmp/net/"$d" || return
+      wget "$1" -O - | pandoc -t markdown -f html | pandoc -t html -f markdown | awk '/AdaptiveMedia-photoContainer/ { print $4 }' | awk -F\" '{print $2}' | xargs -L 1 curl -s -S -O
+      imv ./*
+      ;;
+    *t.co/*|*bit.ly*)
+      http_thing=$(curl -s -v "$1" |& awk '/^< [lL]ocation/ {print $3}')
+      if [ -z "$http_thing" ]
+      then
+        exec firefox "$1"
+      else
+        plumber "${http_thing//}"
+      fi
+      ;;
+    *\(*)
+      if grep "${1%*\(*}" <<< "$(apropos .)"; then
+        exec "$XDG_DATA_HOME"/dsearch/manual "${1%\(*}"
+      else
+        exec firefox "!g $1"
+      fi                               ;;
+    *)
+      if grep "$1" <<< "$(apropos .)"; then
+        exec "$XDG_DATA_HOME"/dsearch/manual "$1"
+      fi
+      exec firefox "$1"            ;;
+esac

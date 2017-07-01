@@ -1,0 +1,9 @@
+#!/bin/sh
+# From https://raw.githubusercontent.com/Earnestly/dotfiles/cf8896c26f1c7080b8d4d1a96f1ad264d9291c33/local/data/runit/log
+# Get the name of the service from the PWD, this assumes the name of the
+# service is one level above the log directory.
+pwd=${PWD%/*} # $LOCAL/service/foo/log
+service=${pwd##*/} # foo
+
+mkdir -p "$LOCAL/var/log/$service"
+exec svlogd -tt "$LOCAL/var/log/$service"
