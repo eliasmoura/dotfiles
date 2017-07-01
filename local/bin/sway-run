@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+export TERM=termite
+export XKB_DEFAULT_OPTIONS=grp:menu_toggle,compose:caps
+export WLC_DEBUG=xwm
+export _JAVA_AWT_WM_NONREPARENTING=1
+export GTK_IM_MOUDLE=xim
+export XMODIFIERS=@im=ibus
+export QT_IM_MODULE=ibus
+eval $(ssh-agent)
+
+# My PC's headphone jack is fucked up. So set it manually so that I can hear anything from it.
+pactl set-sink-port alsa_output.pci-0000_00_14.2.analog-stereo analog-output-headphones
+
+sway &> "${XDG_CACHE_HOME:-HOME/local/tmp}"/log/sway.log
