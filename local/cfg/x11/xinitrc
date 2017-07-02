@@ -29,14 +29,7 @@ then
   emacs --daemon &
 fi
 
-read_doc create-db &
-
-sxhkd &
-#exec bspwm -c ${XDG_CONFIG_HOME:-$HOME/local/cfg}/bspwm/bspwmrc
-#dwm_status &
-#exec dwm &> ~/local/tmp/log/dwm.log
 # xmodmap "${XDG_CONFIG_HOME:-$HOME/local/cfg}/x11/xmodmap" # When using stump
-# stumpwm
 mkdir -p "${XDG_RUNTIME_DIR:-/tmp/}"/x11/fs
 x11fs "${XDG_RUNTIME_DIR:-/tmp/}"/x11/fs
-exec swm &> "${XDG_CACHE_HOME:-HOME/local/tmp}"/log/swm.log
+exec i3 -c ${XDG_CONFIG_HOME:-$LOCAL/cfg}/i3/config &>${LOCAL:-HOME/local}/var/log/i3-wm.log
