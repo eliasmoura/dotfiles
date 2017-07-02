@@ -1,1 +1,3 @@
 = "Dotfiles"…
+
+I am trying to remove as much of the config — and micelous files — from the "hiden" .dotfile as I can.
