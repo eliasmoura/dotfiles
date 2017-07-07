@@ -111,6 +111,7 @@ call plug#begin('~/local/share/nvim/plugins')
         \ 'for': ['javascript', 'html', 'css']
         \ } "javascript/meteor things
   Plug 'https://github.com/groenewege/vim-less'
+  Plug 'https://github.com/rkennedy/vim-delphi'
   " Plug 'https://github.com/mattn/emmet-vim.git', { 'for': [ 'html', 'css' ] }
   Plug 'https://github.com/sirver/UltiSnips'
   " let g:UltiSnipsExpandTrigger="<tab>"
@@ -137,7 +138,7 @@ nnoremap <leader>gc   :Gcommit -m<cr>
 nnoremap <leader>gm   :Gmerge<cr>
 nnoremap <leader>gl   :Glog<cr>
 
-set foldmethod=syntax
+"set foldmethod=syntax
 
 autocmd! BufWritePost * Neomake
 " Prevent neomake reporting its exit status and suppressing the write message.
@@ -223,6 +224,7 @@ endfunction
 " autocmd FileType asciidoc,adoc  call AsciidocEnableSyntaxRanges()
 autocmd FileType asciidoc,adoc  setlocal formatoptions+=n1 textwidth=70 spell
         \ comments=s1:/*,ex:*/,://,b:#,:%,:XCOMM,fb:-,fb:*,fb:+,fb:.,fb:>
+au BufRead,bufNewFile *.adoc let g:neomake_asciidoc_enabled_makers = [ 'asciidoctor' ]
 
 " let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
 " let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
