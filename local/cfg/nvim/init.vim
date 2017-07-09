@@ -1,7 +1,25 @@
 " XXX Vim doesn't mkdir the backupdir path (bug?) so let's do that ourselves
 " instead.
-if !isdirectory($LOCAL . "/share/nvim/backup")
-    call mkdir($LOCAL . "/share/nvim/backup", "p")
+if has('unix')
+  if empty($LOCAL)
+    let local=$HOME . '/local/'
+  else
+    let local=$LOCAL
+  endif
+  let data = local . '/share/nvim/'
+  let cfg = local . '/cfg/nvim/'
+else
+  if has('win32')
+    if empty($DATA)
+      let data = $USERPROFILE . '/AppData/Local/nvim-data'
+      let cfg = $USERPROFILE . 'AppData/Local/nvim'
+    endif
+  endif
+endif
+
+let back = data . 'backup/'
+if !isdirectory(back)
+  call mkdir(back, "p")
 endif
 set undofile        " keep an undo file (undo changes after closing)
 set ruler           " show the cursor position all the time
@@ -16,9 +34,9 @@ set statusline+=%=[0x%04.4B][%03b][%p%%\ line\ %l\ of\ %L]
 set hidden
 autocmd FileType c setlocal path+=/usr/avr/include
 autocmd BufReadPost *
-    \ if line("'\"") >= 1 && line("'\"") <= line("$") |
-    \   exe "normal! g`\"" |
-    \ endif
+      \ if line("'\"") >= 1 && line("'\"") <= line("$") |
+      \   exe "normal! g`\"" |
+      \ endif
 set wildmode=list:full
 set wildignore=*.pyc,*\~,*.o,*.obj
 set suffixesadd=.py,.pl,.js,.html,.c,.h,.cpp,.hh
@@ -36,7 +54,7 @@ set tabstop=2
 set softtabstop=2
 set shiftwidth=2
 set expandtab
-set backupdir=~/local/share/nvim/backup//
+let &backupdir = back
 set shada='1000,f1,<500,h
 set colorcolumn=90
 set splitright
@@ -76,52 +94,47 @@ if !exists(":DiffOrig")
 endif
 
 call plug#begin('~/local/share/nvim/plugins')
-  Plug 'benekastah/neomake'
-  "Look the changes on the file based on the last commit on the git project
-  Plug 'https://github.com/airblade/vim-gitgutter'
-  
-  " Plug 'https://github.com/fmoralesc/nvimfs'
-  " Plug 'https://github.com/vim-scripts/TxtBrowser',     { 'for': 'txt'}
-  Plug 'https://github.com/vim-pandoc/vim-pandoc'
-  Plug 'https://github.com/beyondmarc/glsl.vim.git',    { 'for': 'gls'}
-  Plug 'https://github.com/vim-scripts/taglist.vim',
-  " Makes vim/nvim slow when there are list blocks in the view
-  " Plug 'https://github.com/chrisbra/NrrwRgn.git',       { 'for': [ 'adoc', 'asciidoc' ] }
-  " Plug 'https://github.com/vim-scripts/SyntaxRange.git',{ 'for': [ 'adoc', 'asciidoc' ] }
-  " Plug 'https://github.com/dahu/vim-asciidoc',          { 'for': [ 'adoc', 'asciidoc' ] }
-  Plug 'https://github.com/dahu/vimple' ",                { 'for': [ 'adoc', 'asciidoc' ] }
-  " Plug 'https://github.com/vim-scripts/rfc-syntax',     { 'for': [ 'rfc' , 'txt'      ] }
-  Plug 'https://github.com/tpope/vim-surround'
-  Plug 'https://github.com/tpope/vim-repeat.git'
-  Plug 'https://github.com/tpope/vim-fugitive.git'    "Git integration
-  Plug 'https://github.com/tpope/vim-commentary.git'
-  Plug 'https://github.com/tommcdo/vim-exchange.git'
-  Plug 'http://github.com/sjl/gundo.vim.git'
-  nnoremap cu :GundoToggle<CR>
-  "This plugin isn't worth. Too sloww when there are a lot of changes.
-  "Plug 'https://github.com/arakashic/chromatica.nvim'
-  Plug 'https://github.com/junegunn/vim-easy-align',
-  nnoremap gl :EasyAlign<CR>
-  vnoremap gl :EasyAlign<CR>
-  Plug 'https://github.com/plasticboy/vim-markdown'
-  Plug 'https://github.com/jceb/vim-orgmode',
-  Plug 'https://github.com/tpope/vim-speeddating'
-  Plug 'git://github.com/marijnh/tern_for_vim', {
-        \ 'do': 'npm install; cd node_modules/tern/plugin; curl -O https://raw.githubusercontent.com/Slava/tern-meteor/master/meteor.js',
-        \ 'for': ['javascript', 'html', 'css']
-        \ } "javascript/meteor things
-  Plug 'https://github.com/groenewege/vim-less'
-  Plug 'https://github.com/rkennedy/vim-delphi'
-  " Plug 'https://github.com/mattn/emmet-vim.git', { 'for': [ 'html', 'css' ] }
-  Plug 'https://github.com/sirver/UltiSnips'
-  " let g:UltiSnipsExpandTrigger="<tab>"
-  let g:UltiSnipsJumpForwardTrigger="<c-b>"
-  let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-  let g:UltiSnipsSnippetDirectories=['/home/kotto/local/cfg/nvim/UltiSnips/']
-  " If you want :UltiSnipsEdit to split your window.
-  let g:UltiSnipsEditSplit="vertical"
+Plug 'benekastah/neomake'
+"Look the changes on the file based on the last commit on the git project
+Plug 'https://github.com/airblade/vim-gitgutter'
 
-  Plug 'https://github.com/dbgx/lldb.nvim'
+" Plug 'https://github.com/fmoralesc/nvimfs'
+" Plug 'https://github.com/vim-scripts/TxtBrowser',     { 'for': 'txt'}
+Plug 'https://github.com/vim-pandoc/vim-pandoc'
+Plug 'https://github.com/beyondmarc/glsl.vim.git',    { 'for': 'gls'}
+Plug 'https://github.com/vim-scripts/taglist.vim',
+" Makes vim/nvim slow when there are list blocks in the view
+" Plug 'https://github.com/chrisbra/NrrwRgn.git',       { 'for': [ 'adoc', 'asciidoc' ] }
+" Plug 'https://github.com/vim-scripts/SyntaxRange.git',{ 'for': [ 'adoc', 'asciidoc' ] }
+" Plug 'https://github.com/dahu/vim-asciidoc',          { 'for': [ 'adoc', 'asciidoc' ] }
+Plug 'https://github.com/dahu/vimple' ",                { 'for': [ 'adoc', 'asciidoc' ] }
+" Plug 'https://github.com/vim-scripts/rfc-syntax',     { 'for': [ 'rfc' , 'txt'      ] }
+Plug 'https://github.com/tpope/vim-surround'
+Plug 'https://github.com/tpope/vim-repeat.git'
+Plug 'https://github.com/tpope/vim-fugitive.git'    "Git integration
+Plug 'https://github.com/tpope/vim-commentary.git'
+Plug 'https://github.com/tommcdo/vim-exchange.git'
+Plug 'http://github.com/sjl/gundo.vim.git'
+nnoremap cu :GundoToggle<CR>
+"This plugin isn't worth. Too sloww when there are a lot of changes.
+"Plug 'https://github.com/arakashic/chromatica.nvim'
+Plug 'https://github.com/junegunn/vim-easy-align',
+nnoremap gl :EasyAlign<CR>
+vnoremap gl :EasyAlign<CR>
+Plug 'https://github.com/plasticboy/vim-markdown'
+Plug 'https://github.com/jceb/vim-orgmode',
+Plug 'https://github.com/tpope/vim-speeddating'
+Plug 'https://github.com/groenewege/vim-less'
+Plug 'https://github.com/rkennedy/vim-delphi'
+Plug 'https://github.com/sirver/UltiSnips'
+" let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsSnippetDirectories=['/home/kotto/local/cfg/nvim/UltiSnips/']
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
+
+Plug 'https://github.com/dbgx/lldb.nvim'
 call plug#end()
 
 nnoremap <M-b>  <Plug>LLBreakSwitch
@@ -158,18 +171,16 @@ let g:neomake_c_clang_args = neomake#makers#ft#c#clang()['args'] + ['-std=c11', 
 let g:neomake_c_gcc_args   = neomake#makers#ft#c#gcc()['args'] + ['-std=c11', '-Werror', '-Wconversion', '-Wpedantic', '-Wformat-security']
 " let g:neomake_c_enabled_makers = [ 'clang' ]
 let g:neomake_c_arm_maker = { 'exe':
-              \ 'arm-none-eabi-gcc', 'args':
-              \ [   '-o > /dev/null',
-                  \ '-DUSE_STDPERIPH_DRIVER',
-                  \ '-I.',
-                  \ '-I../stm32/lib/inc/',
-                  \ '-I../stm32/core',
-                  \ '-I../stm32/device/'],
-              \ 'errorformat': '%f:%l:%c: %m' }
+      \ 'arm-none-eabi-gcc', 'args':
+      \ [   '-o > /dev/null',
+      \ '-DUSE_STDPERIPH_DRIVER',
+      \ '-I.',
+      \ '-I../stm32/lib/inc/',
+      \ '-I../stm32/core',
+      \ '-I../stm32/device/'],
+      \ 'errorformat': '%f:%l:%c: %m' }
 au BufRead,bufNewFile /home/kotto/dev/arm/stm/f1/* let g:neomake_c_gcc_args = neomake#makers#ft#c#gcc()['args'] + [ '-DSTM32F10X_MD_VL' ]
 au BufRead,bufNewFile /home/kotto/dev/arm/stm/* let g:neomake_c_enabled_makers = [ 'arm' ]
-" au BufRead,bufNewFile /home/kotto/dev/arm/stm/* set makeprg =make\ main.o
-" au BufRead,bufNewFile /home/kotto/dev/arm/stm/*  let g:neomake_c_arm_maker = { 'exe': 'arm-none-eabi-gcc', 'args': [ '-o >/dev/null',  '-ISTM32F4xx_StdPeriph_Driver/inc/', '-Ilib' ], 'errorformat': '%f:%l:%c: %m' }
 
 map Q gq
 
@@ -185,7 +196,7 @@ nnoremap <M-m>         :make<CR>
 nnoremap <leader>ct    :silent !ctags -R .<CR>:redraw!<CR>
 nnoremap <leader>/     :silent :nohlsearch<CR>:<CR>
 nnoremap <leader><Tab> :silent :retab!<CR>
-nnoremap <leader>i     :edit ~/local/cfg/nvim/init.vim<CR>
+nnoremap <leader>i     :exec 'edit ' . cfg . '/init.vim'<CR>
 nnoremap <leader>t     :TlistToggle<CR>
 tnoremap <Esc> <C-\><C-n>
 nnoremap <C-S-a>        <C-^>
@@ -223,8 +234,15 @@ function! AsciidocEnableSyntaxRanges()
 endfunction
 " autocmd FileType asciidoc,adoc  call AsciidocEnableSyntaxRanges()
 autocmd FileType asciidoc,adoc  setlocal formatoptions+=n1 textwidth=70 spell
-        \ comments=s1:/*,ex:*/,://,b:#,:%,:XCOMM,fb:-,fb:*,fb:+,fb:.,fb:>
+      \ comments=s1:/*,ex:*/,://,b:#,:%,:XCOMM,fb:-,fb:*,fb:+,fb:.,fb:>
 au BufRead,bufNewFile *.adoc let g:neomake_asciidoc_enabled_makers = [ 'asciidoctor' ]
 
 " let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
 " let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
+
+" Use bsdtar for all the additional formats it supports over GNU tar.
+let g:tar_cmd = 'bsdtar'
+let g:tar_secure = 1
+
+" Tell vim about the additional file extensions we can now use.
+autocmd BufReadCmd *.iso,*.rar,*.7z call tar#Browse(expand("<amatch>"))
