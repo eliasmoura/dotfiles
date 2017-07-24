@@ -42,6 +42,9 @@ set $menu dmenu-run
 #
 # You can get the names of your inputs by running: swaymsg -t get_inputs
 # Read `man 5 sway-input` for more information about this section.
+#
+
+focus_follows_mouse no
 
 ### Key bindings
 #
@@ -61,10 +64,12 @@ bindsym $mod+d exec $menu
 # Despite the name, also works for non-floating windows.
 # Change normal to inverse to use left mouse button for resizing and right
 # mouse button for dragging.
-#floating_modifier $mod normal
+floating_modifier $mod
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+bindsym $mod+shift+t bar mode toggle
 
 # exit sway (logs you out of your wayland session)
 bindsym $mod+Shift+e exit
@@ -141,7 +146,7 @@ bindsym $mod+f fullscreen
 bindsym $mod+Shift+space floating toggle
 
 # Swap focus between the tiling area and the floating area
-bindsym $mod+s focus mode_toggle
+bindsym $mod+shift+s focus mode_toggle
 
 # move focus to the parent container
 bindsym $mod+a focus parent
@@ -153,6 +158,8 @@ bindsym $mod+a focus parent
 
 # Move the currently focused window to the scratchpad
 bindsym $mod+Shift+minus move scratchpad
+
+bindsym $mod+Print exec printscreen.sh area && notify-send "print screen"
 
 # Show the next scratchpad window or hide the focused scratchpad window.
 # If there are multiple scratchpad windows, this command cycles through them.
@@ -183,16 +190,19 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 mode "menu" {
-    bindsym v		exec --no-startup-id mpv-run "360"; mode "default"
+    bindsym v       exec --no-startup-id mpv-run "360"; mode "default"
     bindsym Shift+v exec --no-startup-id mpv-run; mode "default"
-	bindsym o		exec --no-startup-id dmenu-run; mode "default"
-	bindsym p		exec --no-startup-id passmenu -t; mode "default"
-	bindsym shift+p	exec --no-startup-id passmenu; mode "default"
+    bindsym o       exec --no-startup-id dmenu-run; mode "default"
+    bindsym p       exec --no-startup-id passmenu --type; mode "default"
+    bindsym shift+p exec --no-startup-id passmenu; mode "default"
 
-    bindsym return mode "default"
-    bindsym escape mode "default"
+    bindsym l       exec --no-startup-id find ~/local/cfg/i3/ -name '*.json' | dmenu -l 10 | xargs i3-msg append_layout ; mode "default"
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
 }
 bindsym $mod+space mode menu
+
 
 # volume controls (special keys on keyboard)
 bindsym XF86AudioMute exec ponymix toggle
@@ -214,7 +224,7 @@ bindsym $mod+XF86AudioNext exec stewdio dmenu-queue
 
 bindsym Print exec swaygrab ~/pictures/screenshots/$(date +'%Y-%m-%d-%H:%M:%S.png')
 bindsym Ctrl+Print exec swaygrab ~/pictures/screenshots/$(date +'%Y-%m-%d-%H:%M:%S.png') --focused
-#bindsym Shift+Print exec maim
+#bindsym Shift+shift+Print exec maim
 
 # Specific window management.
 for_window [class="Blender" title="Blender User Preferences"] floating enable
@@ -225,7 +235,13 @@ for_window [class="fontforge" title="Tools"] floating enable
 for_window [class="fontforge" title="Point Info"] floating enable
 for_window [class="fontforge" title="Problem explanation"] floating enable
 
-for_window [class="termite"] default_border none
+for_window [class="Lazarus" title="Completion"] floating enable
+for_window [class="Basic_db" title="Form1"] floating enable
+no_focus [class="Lazarus" title="Messages"]
+
+for_window [class="termite"] floating enable
+
+no_focus [class="mpv"]
 
 assign [class="qutebrowser"] 1
 assign [class="Firefox"] 10
@@ -243,10 +259,12 @@ for_window [class="Steam" title="Steam Login"] floating enable
 # Read `man 5 sway-bar` for more information about this section.
 bar {
   position top
+  status_command i3status -c ~/local/cfg/i3status/i3status.conf
+  tray_output none
     colors {
       statusline #ffffff
-        background #323232
-        inactive_workspace #32323200 #32323200 #5c5c5c
+      background #323232
+      inactive_workspace #32323200 #32323200 #5c5c5c
     }
 }
 

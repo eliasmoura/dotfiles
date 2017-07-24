@@ -1,7 +1,7 @@
 profile=opengl-hq
 hwdec=no
 hwdec-codecs=all
-# vo=vdpau
+vo=vdpau
 cache-default=1073741824
 #loop-file=yes
 volume=30

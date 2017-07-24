@@ -60,6 +60,7 @@ set colorcolumn=90
 set splitright
 set splitbelow
 set smartcase
+set title
 set smartindent
 set list
 set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+,eol:\ 
@@ -67,6 +68,11 @@ set cpoptions+=$        "put a $ in the end of the change mode
 set inccommand=""
 let vimple_init_vn = 0
 au BufEnter *.log,*.txt setlocal ft=txt
+
+syntax on
+filetype indent plugin on
+
+runtime! macros/matchit.vim
 
 augroup VimrcSo
   " Automatically reload vimrc when it's saved "{{{
@@ -124,7 +130,7 @@ vnoremap gl :EasyAlign<CR>
 Plug 'https://github.com/plasticboy/vim-markdown'
 Plug 'https://github.com/jceb/vim-orgmode',
 Plug 'https://github.com/tpope/vim-speeddating'
-Plug 'https://github.com/groenewege/vim-less'
+" Plug 'https://github.com/groenewege/vim-less'
 Plug 'https://github.com/rkennedy/vim-delphi'
 Plug 'https://github.com/sirver/UltiSnips'
 " let g:UltiSnipsExpandTrigger="<tab>"
@@ -134,7 +140,8 @@ let g:UltiSnipsSnippetDirectories=['/home/kotto/local/cfg/nvim/UltiSnips/']
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
 
-Plug 'https://github.com/dbgx/lldb.nvim'
+Plug 'https://github.com/hsanson/vim-android'
+" Plug 'https://github.com/dbgx/lldb.nvim'
 call plug#end()
 
 nnoremap <M-b>  <Plug>LLBreakSwitch
