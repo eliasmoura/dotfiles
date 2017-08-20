@@ -1,0 +1,92 @@
+colorscheme desertex
+
+set global tabstop 4
+set global identwidth 2
+set global aligntab false
+hook global InsertChar \t %{
+  exec -draft -itersel h@
+}
+set global ignored_files '.*\.o|.*\.pyc|.*\~|^\#*\#|.*\.obj|.*\.git'
+
+hook global WinCreate .* %{
+    addhl show_matching
+    addhl number_lines
+}
+
+map global goto m gc
+map global goto c :comment-line<ret>
+map global goto C :comment-block<ret>
+map global goto d :ctags-search<ret>
+
+def ide %{
+    rename-client main
+    set global jumpclient main
+
+    tmux-new-horizontal rename-client docs
+    set global docsclient docs
+
+    tmux-new-vertical rename-client tools
+    set global toolsclient tools
+
+    %sh{tmux select-pane -t :.+}
+}
+
+set global ui_options ncurses_assistant=dilbert
+
+hook global WinSetOption filetype=c %{
+    %sh{
+    	switches="-std=c99 -Werror -Wextra -Wall -Wno-unused-parameter -Wno-missing-field-initializers"
+        if [[ $PWD =~ /home/kotto/dev/c/gui-playground/ ]]; then
+            switches="$switches -I/usr/include/freetype2"
+        elif [[ $PWD =~ /home/kotto/dev/c/atmega ]]; then
+           printf "set buffer clang_options '%s'\n" "$switches"
+        elif [[ $PWD =~ /home/kotto/dev/c/ ]]; then
+           printf "set buffer clang_options '%s'\n" "$switches"
+        elif [[ $PWD =~ /home/kotto/dev/arm/stm/f1 ]]; then
+           switches="$switches -I/home/kotto/dev/arm/stm/f1/stm32/device/"
+        elif [[ $PWD =~ /home/kotto/dev/arm/stm/f4 ]]; then
+           switches="$switches -I/home/kotto/dev/arm/stm/f4/stm32/device/"
+        else
+           #switches="$switches -fsanitize=address -fsanitize=undefined"
+       fi
+       printf "set buffer clang_options '%s'\n" "$switches"
+    }
+}
+hook global WinSetOption filetype=(c|cpp) %{
+    clang-enable-autocomplete 
+    clang-enable-diagnostics
+    set global tabstop 2
+    alias window lint clang-parse
+    alias window lint-next clang-diagnostics-next
+    hook global BufWritePost .* lint
+    map global normal <a-m> :make
+    map global normal <a-n> :lint-next<ret>
+}
+
+hook global WinSetOption filetype=python %{
+    jedi-enable-autocomplete
+    flake8-enable-diagnostics
+    alias window lint flake8-lint
+    alias window lint-next flake8-diagnostics-next
+    %sh{
+        if [ $PWD = "/home/mawww/prj/kakoune/src" ]; then
+           echo "set buffer jedi_python_path '/usr/share/gdb/python'"
+           echo "set buffer path './:/usr/share/gdb/python'"
+        fi
+    }
+}
+
+hook global WinSetOption filetype=(asciidoc) %{
+    addhl wrap # softwrap
+    hook buffer BufWritePost .* %{
+        %sh{asciidoctor $kak_buffile}
+    }
+}
+
+hook global BufCreate (.*/)?PKGBUILD %{
+    set buffer filetype sh
+}
+
+map global normal 	<c-w> :tmux-new-horizontal<ret>
+map global normal 	<c-e> :tmux-new-vertical<ret>
+map global user		K	:man<ret>
