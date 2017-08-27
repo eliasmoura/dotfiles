@@ -1,7 +1,6 @@
 colorscheme desertex
 
 set global tabstop 4
-set global identwidth 2
 set global aligntab false
 hook global InsertChar \t %{
   exec -draft -itersel h@
@@ -14,9 +13,14 @@ hook global WinCreate .* %{
 }
 
 map global goto m gc
-map global goto c :comment-line<ret>
-map global goto C :comment-block<ret>
-map global goto d :ctags-search<ret>
+map global normal '#' :comment-line<ret>
+map global normal '<a-#>' :comment-block<ret>
+# #
+# ^
+# -
+# _
+# =
+# +
 
 def ide %{
     rename-client main
