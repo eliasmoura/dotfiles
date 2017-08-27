@@ -158,6 +158,17 @@ alias gdb="gdb -nh -x $XDG_CONFIG_HOME/gdb/init"
 # unalias run-help
 alias help='run-help'
 
+function gl {
+    branch="${1:-master}"
+    printf 'Fetching commits…\n'
+    git fetch "$(git config remote.origin.url)" "$branch" 2> /dev/null
+    if [ $(git rev-list HEAD...FETCH_HEAD --count "$branch") -gt 0 ]; then
+        git log --pretty=format:'%C(auto)%h %C(blue)%an %C(green bold)(%cr) %C(reset)%s' -- HEAD...FETCH_HEAD
+    else
+        printf 'Nothing new :(\n'
+    fi
+}
+
 # Directory hashes.
 if [[ -d $HOME/dev ]]; then
     for d in $HOME/dev/*(/); do
