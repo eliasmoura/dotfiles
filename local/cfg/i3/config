@@ -203,6 +203,24 @@ mode "menu" {
 }
 bindsym $mod+space mode menu
 
+mode "mouse" {
+    bindsym h       exec --no-startup-id xdotool mousemove_relative --sync -- -10   0; 
+    bindsym j 		exec --no-startup-id xdotool mousemove_relative --sync --   0  10; 
+    bindsym k       exec --no-startup-id xdotool mousemove_relative --sync --   0 -10; 
+    bindsym l       exec --no-startup-id xdotool mousemove_relative --sync --  10   0; 
+    bindsym space   exec --no-startup-id xdotool click       1; 
+    bindsym c       exec --no-startup-id xdotool click       2; 
+    bindsym x       exec --no-startup-id xdotool click       3; 
+     
+	bindsym Print exec swaygrab ~/pictures/screenshots/$(date +'%Y-%m-%d-%H:%M:%S.png')
+	bindsym Ctrl+Print exec swaygrab ~/pictures/screenshots/$(date +'%Y-%m-%d-%H:%M:%S.png') --focused
+	bindsym Ctrl+shift+Print exec --no-startup-id maim -i $(xdotool getactivewindow)  ~/pictures/screenshots/$(date +'%Y-%m-%d-%H:%M:%S.png')
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+m mode mouse
+
 
 # volume controls (special keys on keyboard)
 bindsym XF86AudioMute exec ponymix toggle
@@ -247,6 +265,7 @@ assign [class="qutebrowser"] 1
 assign [class="Firefox"] 10
 assign [class="Chromium"] 9
 assign [class="mpv"] 4
+assign [class="Steam"] 5
 assign [class="Wine"] 6
 assign [class="discord"] 7
 assign [class="explorer.exe"] 6
