@@ -90,7 +90,7 @@ include "%S/pt_BR.URF-8/Compose"
 <Multi_key> <c> <o> :                   "©"
 <Multi_key> <r> <o> :                   "®"
 <Multi_key> <t> <m> :                   "™"
-<Multi_key> <bar> <asciicircum> :       "↑"
+<Multi_key> <bar> <V> :       "↑"
 <Multi_key> <bar> <v> :                 "↓"
 
 # IRC shortcuts
