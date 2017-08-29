@@ -64,7 +64,9 @@ hook global WinSetOption filetype=(c|cpp) %{
     alias window lint-next clang-diagnostics-next
     hook global BufWritePost .* lint
     map global normal <a-m> :make
-    map global normal <a-n> :lint-next<ret>
+    map global normal <a-n> :make-next-error<ret>
+    map global normal <a-p> :make-previous-error<ret>
+    map global normal <a-N> :lint-next<ret><ret>
 }
 
 hook global WinSetOption filetype=python %{
