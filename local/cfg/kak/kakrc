@@ -1,4 +1,4 @@
-colorscheme desertex
+colorscheme base16_default
 
 set global tabstop 4
 set global aligntab false
@@ -91,6 +91,14 @@ hook global WinSetOption filetype=(asciidoc) %{
 
 hook global BufCreate (.*/)?PKGBUILD %{
     set buffer filetype sh
+}
+
+hook global WinSetOption filetype=pascal %{
+    map buffer object c :begin,end<ret> -docstring 'Pascal/Delphi begin/end block'
+}
+
+hook global WinSetOption filetype=ada %{
+    map buffer object c :begin,end<ret> -docstring 'Ada begin/end block'
 }
 
 map global normal 	<c-w> :tmux-new-horizontal<ret>
