@@ -104,7 +104,7 @@
 ;; Packages required by other packages
 (use-package let-alist  :defer t :load-path "plugin/let-alist")
 (use-package dash       :defer t :load-path "plugin/dash")
-(use-package ter        :defer t :load-path "plugin/tern")
+(use-package tern        :defer t :load-path "plugin/tern")
 (use-package popwin     :defer t :load-path "plugin/popwin-el")
 (use-package s          :defer t :load-path "plugin/s")
 (use-package function-args :load-path "plugin/function-args"
@@ -133,6 +133,8 @@
   (add-to-list 'sml/replacer-regexp-list '("^~/writings/org/" ":ORG:"))
   (add-to-list 'sml/replacer-regexp-list '("^~/writings/lang-8/users/kosa/" ":KOSA:"))
   (sml/setup))
+
+(global-set-key (kbd "C-x f") 'elfeed)
 
 (use-package undo-tree
   :diminish undo-tree-mode
