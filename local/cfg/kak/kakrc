@@ -1,26 +1,49 @@
 colorscheme base16_default
 
-set global tabstop 4
+set global tabstop 2
 set global aligntab false
-hook global InsertChar \t %{
-  exec -draft -itersel h@
+set global indentwidth 0
+set global scrolloff 3,5
+set global incsearch true
+
+set global modelinefmt 'face volatile %sh<git branch | awk \'/^\*/ {print "git:"$2}\'> %opt{filetype} %val{bufname} %val{cursor_line}:%val{cursor_char_column} {{context_info}} {{mode_info}} - %val{client}@[%val{session}]'
+
+hook global WinSetOption filetype=(?!makefile|vbs|batch).* %{
+    echo hi
+    hook global InsertChar \t %{
+      exec -draft -itersel h@
+    }
 }
-set global ignored_files '.*\.o|.*\.pyc|.*\~|^\#*\#|.*\.obj|.*\.git'
+
+hook global NormalKey [/?*nN]|<a-[/?*nN]> %{ try %{
+  add-highlighter dynregex '%reg{/}' 0:search
+}}
+
+hook global NormalKey <esc> %{ try %{
+  remove-highlighter dynregex_%reg{<slash>}
+}}
+
+set global ignored_files '.*\.o|.*\.pyc|.*\~|^\#.*\#|.*\.obj|\.git'
 
 hook global WinCreate .* %{
     addhl show_matching
     addhl number_lines
 }
 
-map global goto m gc
 map global normal '#' :comment-line<ret>
 map global normal '<a-#>' :comment-block<ret>
+
+map global normal   <c-w>   :tmux-new-horizontal<ret>
+map global normal   <c-e>   :tmux-new-vertical<ret>
+map -docstring 'Search word in `man <word>`' global user k :man<ret> 
 # #
 # ^
 # -
 # _
 # =
 # +
+map global user P '!xsel --output --clipboard<ret>' -docstring 'Paste before'
+map global user p '<a-!>xsel --output --clipboard<ret>' -docstring 'Paste after'
 
 def ide %{
     rename-client main
@@ -39,7 +62,7 @@ set global ui_options ncurses_assistant=dilbert
 
 hook global WinSetOption filetype=c %{
     %sh{
-    	switches="-std=c99 -Werror -Wextra -Wall -Wno-unused-parameter -Wno-missing-field-initializers"
+        switches="-std=c11 -Werror -Wextra -Wall -Wno-unused-parameter -Wno-missing-field-initializers"
         if [[ $PWD =~ /home/kotto/dev/c/gui-playground/ ]]; then
             switches="$switches -I/usr/include/freetype2"
         elif [[ $PWD =~ /home/kotto/dev/c/atmega ]]; then
@@ -59,7 +82,7 @@ hook global WinSetOption filetype=c %{
 hook global WinSetOption filetype=(c|cpp) %{
     clang-enable-autocomplete 
     clang-enable-diagnostics
-    set global tabstop 2
+    set buffer tabstop 2
     alias window lint clang-parse
     alias window lint-next clang-diagnostics-next
     hook global BufWritePost .* lint
@@ -95,12 +118,13 @@ hook global BufCreate (.*/)?PKGBUILD %{
 
 hook global WinSetOption filetype=pascal %{
     map buffer object c :begin,end<ret> -docstring 'Pascal/Delphi begin/end block'
+    lint-enable
 }
 
 hook global WinSetOption filetype=ada %{
     map buffer object c :begin,end<ret> -docstring 'Ada begin/end block'
 }
 
-map global normal 	<c-w> :tmux-new-horizontal<ret>
-map global normal 	<c-e> :tmux-new-vertical<ret>
-map global user		K	:man<ret>
+hook global WinSetOption filetype=(batch|vbs|vb) %{
+    set buffer eolformat crlf
+}

@@ -8,6 +8,11 @@ hook global BufCreate .*[.](pas|lpr) %{
     set buffer filetype pascal
 }
 
+# Linter
+#
+
+set lintcmd fpc
+
 # Highlighters
 # ‾‾‾‾‾‾‾‾‾‾‾‾
 
