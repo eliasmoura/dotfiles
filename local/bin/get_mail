@@ -1,14 +1,13 @@
 #!/bin/env bash
 
-STATE=$(connmanctl state | awk '/State/ {print $3}')
+#STATE=$(connmanctl state | awk '/State/ {print $3}')
 
-if [ "$STATE" = 'online' ]
-then
-  mbsync -c "${XDG_CONFIG_HOME:-HOME/local/cfg}"/mbsync/mbsyncrc inbox sent payment humblebundle concurso desafiosebrae foreign personal projects purchase security archlinux work software webdev travel unemat dev gmail_all
-
+mbsync -c "${XDG_CONFIG_HOME:-HOME/local/cfg}"/mbsync/mbsyncrc inbox sent payment humblebundle concurso desafiosebrae foreign personal projects purchase security archlinux work software webdev travel unemat dev gmail_all
+status=$?
+if [ $status ]; then
   notmuch new 2>/dev/null
   notmuch tag --batch --input="${XDG_CONFIG_HOME:-HOME/local/cfg}"/notmuch/tag_batch
   exit 0
 fi
-echo "No internet connection."
+printf "No internet connection.\n" 1>2
 exit 1
