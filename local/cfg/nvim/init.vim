@@ -27,12 +27,12 @@ set number
 set showbreak=…
 set cursorline
 set laststatus=2
-set statusline=%1* "I couldn't remove the highlighting or change the color, so I'm using this shit to remove it
+"set statusline=%1* "I couldn't remove the highlighting or change the color, so I'm using this shit to remove it
 set statusline+=%h%w%f%m%r\ 
 set statusline+=%=[%n:%{&ff}/%Y]
 set statusline+=%=[0x%04.4B][%03b][%p%%\ line\ %l\ of\ %L]
 set hidden
-autocmd FileType c setlocal path+=/usr/avr/include
+"autocmd FileType c setlocal path+=/usr/avr/include
 autocmd BufReadPost *
       \ if line("'\"") >= 1 && line("'\"") <= line("$") |
       \   exe "normal! g`\"" |
@@ -42,8 +42,7 @@ set wildignore=*.pyc,*\~,*.o,*.obj
 set suffixesadd=.py,.pl,.js,.html,.c,.h,.cpp,.hh
 set mouse=n
 set termguicolors
-let base16colorspace=256
-colorscheme base16-atelier-seaside
+" let base16colorspace=256
 hi StatusLine   ctermbg=white   ctermfg=4
 hi StatusLineNC ctermbg=red     ctermfg=blue
 set vb              " visual bell
@@ -65,7 +64,7 @@ set smartindent
 set list
 set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+,eol:\ 
 set cpoptions+=$        "put a $ in the end of the change mode
-set inccommand=""
+set inccommand="split"
 let vimple_init_vn = 0
 au BufEnter *.log,*.txt setlocal ft=txt
 
@@ -100,21 +99,23 @@ if !exists(":DiffOrig")
 endif
 
 call plug#begin('~/local/share/nvim/plugins')
-Plug 'benekastah/neomake'
+Plug 'https://github.com/benekastah/neomake'
 "Look the changes on the file based on the last commit on the git project
 Plug 'https://github.com/airblade/vim-gitgutter'
 
 " Plug 'https://github.com/fmoralesc/nvimfs'
-" Plug 'https://github.com/vim-scripts/TxtBrowser',     { 'for': 'txt'}
 Plug 'https://github.com/vim-pandoc/vim-pandoc'
 Plug 'https://github.com/beyondmarc/glsl.vim.git',    { 'for': 'gls'}
-Plug 'https://github.com/vim-scripts/taglist.vim',
 " Makes vim/nvim slow when there are list blocks in the view
 " Plug 'https://github.com/chrisbra/NrrwRgn.git',       { 'for': [ 'adoc', 'asciidoc' ] }
 " Plug 'https://github.com/vim-scripts/SyntaxRange.git',{ 'for': [ 'adoc', 'asciidoc' ] }
 " Plug 'https://github.com/dahu/vim-asciidoc',          { 'for': [ 'adoc', 'asciidoc' ] }
 Plug 'https://github.com/dahu/vimple' ",                { 'for': [ 'adoc', 'asciidoc' ] }
 " Plug 'https://github.com/vim-scripts/rfc-syntax',     { 'for': [ 'rfc' , 'txt'      ] }
+Plug 'https://github.com/mhinz/vim-rfc'
+Plug 'https://github.com/mhinz/vim-startify'
+Plug 'https://github.com/MaxSt/FlatColor'
+Plug 'https://github.com/itchyny/lightline.vim'
 Plug 'https://github.com/tpope/vim-surround'
 Plug 'https://github.com/tpope/vim-repeat.git'
 Plug 'https://github.com/tpope/vim-fugitive.git'    "Git integration
@@ -128,10 +129,7 @@ Plug 'https://github.com/junegunn/vim-easy-align',
 nnoremap gl :EasyAlign<CR>
 vnoremap gl :EasyAlign<CR>
 Plug 'https://github.com/plasticboy/vim-markdown'
-Plug 'https://github.com/jceb/vim-orgmode',
-Plug 'https://github.com/tpope/vim-speeddating'
 " Plug 'https://github.com/groenewege/vim-less'
-Plug 'https://github.com/rkennedy/vim-delphi'
 Plug 'https://github.com/sirver/UltiSnips'
 " let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
@@ -141,8 +139,12 @@ let g:UltiSnipsSnippetDirectories=['/home/kotto/local/cfg/nvim/UltiSnips/']
 let g:UltiSnipsEditSplit="vertical"
 
 Plug 'https://github.com/hsanson/vim-android'
-" Plug 'https://github.com/dbgx/lldb.nvim'
+Plug 'https://github.com/dbgx/lldb.nvim'
+"
+
+Plug 'https://github.com/Shougo/denite.nvim'
 call plug#end()
+colorscheme flatcolor " base16-atelier-seaside
 
 nnoremap <M-b>  <Plug>LLBreakSwitch
 nnoremap <M-c>  :LL continue<cr>
@@ -160,7 +162,8 @@ nnoremap <leader>gl   :Glog<cr>
 
 "set foldmethod=syntax
 
-autocmd! BufWritePost * Neomake
+" When writing a buffer, and on normal mode changes (after 750ms).
+call neomake#configure#automake('nw', 750)
 " Prevent neomake reporting its exit status and suppressing the write message.
 " https://github.com/benekastah/neomake/issues/238
 let neomake_verbose = 0
@@ -174,8 +177,25 @@ let g:neomake_python_flake8_args = neomake#makers#ft#python#flake8()['args'] +  
 let g:neomake_c_avr_maker = { 'exe': 'avr-gcc', 'args': [ '-o >/dev/null', '-mmcu=atmega328p' ], 'errorformat': '%f:%l:%c: %m' }
 au BufRead,bufNewFile /home/kotto/dev/arduino/* let g:neomake_c_enabled_makers = [ 'avr' ]
 au BufRead,bufNewFile /home/kotto/dev/arduino/* let g:neomake_CPP_enabled_makers = [ 'avr' ]
-let g:neomake_c_clang_args = neomake#makers#ft#c#clang()['args'] + ['-std=c11', '-Werror', '-Wconversion', '-Wpedantic', '-Wformat-security', '-Wno-missing-field-initializers' ]
-let g:neomake_c_gcc_args   = neomake#makers#ft#c#gcc()['args'] + ['-std=c11', '-Werror', '-Wconversion', '-Wpedantic', '-Wformat-security']
+let g:neomake_c_clang_args = neomake#makers#ft#c#clang()['args'] + [ '-I/usr/include/ClearSilver/', '-std=c11', '-Werror',
+          \ '-Wconversion', '-Wpedantic', '-Wformat-security', '-Wno-missing-field-initializers',
+          \ '-Wno-unused-parameter' ]
+let g:neomake_c_clang_maker = {
+          \ 'exe' : 'clang',
+          \ 'args': [
+          \ '-fsyntax-only',
+          \ '-std=c11',
+          \ '-Wall',
+          \ '-Wextra',
+          \ '-Wconversion',
+          \ '-Wformat-security',
+          \ '-Wno-missing-field-initializers',
+          \ '-Wno-unused-parameter',
+          \ '-I/usr/include/ClearSilver/',
+          \ '-I./', ],
+          \ 'errorformat': '%-G%f:%s:,%f:%l:%c: %trror: %m,%f:%l:%c: %tarning: %m,%I%f:%l:%c: note: %m,%f:%l:%c: %m,%f:%l: %trror: %m,%f:%l: %tarning: %m,%I%f:%l: note: %m,%f:%l: %m' }
+let g:neomake_c_gcc_args   = neomake#makers#ft#c#gcc()['args'] + ['-std=c11', '-Werror', '-Wconversion',
+          \ '-Wpedantic', '-Wformat-security', '-I/usr/include/ClearSilver' ]
 " let g:neomake_c_enabled_makers = [ 'clang' ]
 let g:neomake_c_arm_maker = { 'exe':
       \ 'arm-none-eabi-gcc', 'args':
@@ -193,10 +213,10 @@ map Q gq
 
 inoremap <C-U> <C-G>u<C-U>
 "change the command key on normal mode to :
-nnoremap ; :
-nnoremap : ;
-vnoremap ; :
-vnoremap : ;
+" nnoremap ; :
+" nnoremap : ;
+" vnoremap ; :
+" vnoremap : ;
 let mapleader = ' '
 nnoremap <leader>rt    :%s/\s\+$//g<cr>:let @/=''<CR> "remove trailings
 nnoremap <M-m>         :make<CR>
@@ -205,6 +225,7 @@ nnoremap <leader>/     :silent :nohlsearch<CR>:<CR>
 nnoremap <leader><Tab> :silent :retab!<CR>
 nnoremap <leader>i     :exec 'edit ' . cfg . '/init.vim'<CR>
 nnoremap <leader>t     :TlistToggle<CR>
+nnoremap <leader>b     :Denite buffer file_rec<CR>
 tnoremap <Esc> <C-\><C-n>
 nnoremap <C-S-a>        <C-^>
 
@@ -214,7 +235,7 @@ inoremap ^F ^X^F
 inoremap ^D ^X^D
 inoremap ^L ^X^L
 
-nnoremap <leader>b :call ToggleBackground()<CR>
+" nnoremap <leader>b :call ToggleBackground()<CR>
 function! ToggleBackground()
   if &background == "light"
     set background=dark
@@ -243,9 +264,6 @@ endfunction
 autocmd FileType asciidoc,adoc  setlocal formatoptions+=n1 textwidth=70 spell
       \ comments=s1:/*,ex:*/,://,b:#,:%,:XCOMM,fb:-,fb:*,fb:+,fb:.,fb:>
 au BufRead,bufNewFile *.adoc let g:neomake_asciidoc_enabled_makers = [ 'asciidoctor' ]
-
-" let $NVIM_TUI_ENABLE_CURSOR_SHAPE = 1
-" let $NVIM_TUI_ENABLE_TRUE_COLOR = 1
 
 " Use bsdtar for all the additional formats it supports over GNU tar.
 let g:tar_cmd = 'bsdtar'
