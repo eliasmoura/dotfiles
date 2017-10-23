@@ -56,7 +56,7 @@
   (message "Let the hacking begin!"))
                                         ; Cosmetics
 ;; Removing all unnecessary stuff and setting up a cool color scheme and mode-line
-(server-start)
+;(server-start)
 ;; Show matching brackets
 (show-paren-mode 1)
 ;;  auto close brackets
