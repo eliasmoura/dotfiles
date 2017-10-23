@@ -253,6 +253,8 @@ for_window [class="fontforge" title="Tools"] floating enable
 for_window [class="fontforge" title="Point Info"] floating enable
 for_window [class="fontforge" title="Problem explanation"] floating enable
 
+for_window [title="pinetry"] floating enable
+
 for_window [class="Lazarus" title="Completion"] floating enable
 for_window [class="Basic_db" title="Form1"] floating enable
 no_focus [class="Lazarus" title="Messages"]
