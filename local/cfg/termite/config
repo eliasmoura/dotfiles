@@ -31,39 +31,27 @@ browser = plumber
 #modify_other_keys = false
 
 [colors]
-# Base16 Twilight
-# Scheme: David Hart (http://hart-dev.com)
 
-foreground      = #a7a7a7
-foreground_bold = #a7a7a7
-cursor          = #a7a7a7
-background      = #1e1e1e
+foreground   = #cbe3e7
+background   = #1e1c31
+cursorColor  = #fbfcfc
 
-# 16 color space
-color0  = #1e1e1e
-color1  = #cf6a4c
-color2  = #8f9d6a
-color3  = #f9ee98
-color4  = #7587a6
-color5  = #9b859d
-color6  = #afc4db
-color7  = #a7a7a7
-color8  = #5f5a60
-color9  = #cf6a4c
-color10 = #8f9d6a
-color11 = #f9ee98
-color12 = #7587a6
-color13 = #9b859d
-color14 = #afc4db
-color15 = #ffffff
-
-# 256 color space
-color16 = #cda869
-color17 = #9b703f
-color18 = #323537
-color19 = #464b50
-color20 = #838184
-color21 = #c3c3c3
+color0       = #565575
+color8       = #100e23
+color1       = #ff8080
+color9       = #ff5458
+color2       = #95ffa4
+color10      = #62d196
+color3       = #ffe9aa
+color11      = #ffb378
+color4       = #91ddff
+color12      = #65b2ff
+color5       = #c991e1
+color13      = #906cff
+color6       = #aaffe4
+color14      = #63f2f1
+color7       = #cbe3e7
+color15      = #a6b3cc
 
 [hints]
 #font = Monospace 12
