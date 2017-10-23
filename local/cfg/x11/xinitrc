@@ -25,10 +25,10 @@ pactl set-sink-port alsa_output.pci-0000_00_14.2.analog-stereo analog-output-hea
 dunst -config "${XDG_CONFIG_HOME:-$HOME/local/cfg}"/dunst/dunstrc & # dunst only looks into .config/dunst
 xsetroot -mod 16 16 -fg '#343d46' -bg '#2b303b'
 
-if ! [ "$(pgrep emacs)" ]
-then
-  emacs --daemon &
-fi
+# if ! [ "$(pgrep emacs)" ]
+# then
+#   emacs --daemon &
+# fi
 
 # xmodmap "${XDG_CONFIG_HOME:-$HOME/local/cfg}/x11/xmodmap" # When using stump
 mkdir -p "${XDG_RUNTIME_DIR:-/tmp/}"/x11/fs
