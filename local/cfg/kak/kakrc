@@ -5,14 +5,27 @@ set global aligntab false
 set global indentwidth 0
 set global scrolloff 3,5
 set global incsearch true
+hook global WinDisplay .* %{ addhl wrap } # softwrap
 
-set global modelinefmt 'face volatile %sh<git branch | awk \'/^\*/ {print "git:"$2}\'> %opt{filetype} %val{bufname} %val{cursor_line}:%val{cursor_char_column} {{context_info}} {{mode_info}} - %val{client}@[%val{session}]'
+map global normal <a-m> :make
+map global normal <a-n> :make-next-error<ret>
+map global normal <a-p> :make-previous-error<ret>
+map global normal <a-N> :lint-next<ret><ret>
 
-hook global WinSetOption filetype=(?!makefile|vbs|batch).* %{
-    echo hi
+set global modelinefmt '{red}%val{bufname}{default} %opt{filetype} %val{cursor_line}:%val{cursor_char_column} {{context_info}} {{mode_info}} - %val{client}@[%val{session}]'
+
+hook global WinSetOption filetype=(vbs|batch) %{
+	set buffer indentwidth 1
+}
+
+hook global WinSetOption filetype=(?!vbs|batch).* %{
     hook global InsertChar \t %{
       exec -draft -itersel h@
     }
+}
+
+hook global WinSetOption filetype=(?!makefile).* %{
+    set buffer indentwidth 2
 }
 
 hook global NormalKey [/?*nN]|<a-[/?*nN]> %{ try %{
@@ -23,7 +36,7 @@ hook global NormalKey <esc> %{ try %{
   remove-highlighter dynregex_%reg{<slash>}
 }}
 
-set global ignored_files '.*\.o|.*\.pyc|.*\~|^\#.*\#|.*\.obj|\.git'
+set global ignored_files '.*\.exe|.*\.dll|.*\.o|.*\.pyc|.*\~|^\#.*\#|.*\.obj|\.git'
 
 hook global WinCreate .* %{
     addhl show_matching
@@ -42,6 +55,8 @@ map -docstring 'Search word in `man <word>`' global user k :man<ret>
 # _
 # =
 # +
+map global normal <a-c> :gdb-advance<ret>
+
 map global user P '!xsel --output --clipboard<ret>' -docstring 'Paste before'
 map global user p '<a-!>xsel --output --clipboard<ret>' -docstring 'Paste after'
 
@@ -56,26 +71,33 @@ def ide %{
     set global toolsclient tools
 
     %sh{tmux select-pane -t :.+}
+
+    gdb-enable-autojump
 }
 
 set global ui_options ncurses_assistant=dilbert
 
 hook global WinSetOption filetype=c %{
     %sh{
-        switches="-std=c11 -Werror -Wextra -Wall -Wno-unused-parameter -Wno-missing-field-initializers"
-        if [[ $PWD =~ /home/kotto/dev/c/gui-playground/ ]]; then
-            switches="$switches -I/usr/include/freetype2"
-        elif [[ $PWD =~ /home/kotto/dev/c/atmega ]]; then
-           printf "set buffer clang_options '%s'\n" "$switches"
-        elif [[ $PWD =~ /home/kotto/dev/c/ ]]; then
-           printf "set buffer clang_options '%s'\n" "$switches"
-        elif [[ $PWD =~ /home/kotto/dev/arm/stm/f1 ]]; then
-           switches="$switches -I/home/kotto/dev/arm/stm/f1/stm32/device/"
-        elif [[ $PWD =~ /home/kotto/dev/arm/stm/f4 ]]; then
-           switches="$switches -I/home/kotto/dev/arm/stm/f4/stm32/device/"
-        else
-           #switches="$switches -fsanitize=address -fsanitize=undefined"
+        switches="-Werror -Wextra -Wall -Wno-unused-parameter -Wno-missing-field-initializers"
+        if [[ $PWD =~ /home/kotto/dev/c/ ]]; then
+           switches="$switches -std=c11"
+          if [[ $PWD =~ /home/kotto/dev/c/gui-playground/ ]]; then
+              switches="$switches -I/usr/include/freetype2"
+          elif [[ $PWD =~ /home/kotto/dev/c/atmega ]]; then
+             switches="$switches"
+          elif [[ $PWD =~ /home/kotto/dev/c/cgi ]]; then
+             switches="$switches -I/usr/include/ClearSilver"
+         fi
+        switches="$switches -I/usr/include/ClearSilver"
+        switches="$switches -I/usr/include/freetype2"
        fi
+       if [[ $PWD =~ /home/kotto/dev/arm/stm/f1 ]]; then
+         switches="$switches -std=c11 -I/home/kotto/dev/arm/stm/f1/stm32/device/"
+       elif [[ $PWD =~ /home/kotto/dev/arm/stm/f4 ]]; then
+         switches="$switches -std=c11 -I/home/kotto/dev/arm/stm/f4/stm32/device/"
+       fi
+       printf "echo -debug hi \'$switches\'\n"
        printf "set buffer clang_options '%s'\n" "$switches"
     }
 }
@@ -86,10 +108,6 @@ hook global WinSetOption filetype=(c|cpp) %{
     alias window lint clang-parse
     alias window lint-next clang-diagnostics-next
     hook global BufWritePost .* lint
-    map global normal <a-m> :make
-    map global normal <a-n> :make-next-error<ret>
-    map global normal <a-p> :make-previous-error<ret>
-    map global normal <a-N> :lint-next<ret><ret>
 }
 
 hook global WinSetOption filetype=python %{
@@ -106,7 +124,6 @@ hook global WinSetOption filetype=python %{
 }
 
 hook global WinSetOption filetype=(asciidoc) %{
-    addhl wrap # softwrap
     hook buffer BufWritePost .* %{
         %sh{asciidoctor $kak_buffile}
     }
