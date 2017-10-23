@@ -1,5 +1,5 @@
 profile=opengl-hq
-hwdec=no
+hwdec=yes
 hwdec-codecs=all
 vo=vdpau
 cache-default=1073741824
