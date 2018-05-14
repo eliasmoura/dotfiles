@@ -24,12 +24,12 @@
   (mapc #'(lambda (path)
             (add-to-list 'load-path
                          (expand-file-name path user-emacs-directory)))
-        '("plugin" "plugin/diminish" "plugin/use-package"))
+        '("plugin" "plugin/diminish.el" "plugin/use-package"))
   (setq use-package-enable-imenu-support t)
   (require 'use-package))
 (setq plugin-directory "~/local/cfg/emacs/plugin")
 (package-initialize nil)
-(require 'diminish)                ;; if you use :diminish
+(use-package diminish :load-path "plugin/diminish.el")                ;; if you use :diminish
 ;; This sets up the load path so that we can override it
 (setq backup-directory-alist '(("." . "~/local/tmp/emacs/backups")))
 (setq delete-old-versions -1)
