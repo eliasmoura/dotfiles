@@ -1,2 +1,0 @@
-#!/usr/bin/env sh
-${XDG_DATA_HOME:-$HOME/local/share}/anki/bin/anki-2.0.43/bin/anki
