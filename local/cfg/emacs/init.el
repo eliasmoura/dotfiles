@@ -64,7 +64,7 @@
 ;; update files when changed
 (global-auto-revert-mode 1)
 ;; hilight the current line
-(global-hl-line-mode 1)
+(global-hl-line-mode t)
 ;; break the lines
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq-default truncate-partial-width-windows 50) (menu-bar-mode -1)
@@ -92,6 +92,11 @@
 (setq sentence-end-double-space nil)
 (setq default-process-coding-system '(utf-8-unix . utf-8-unix))
 (setq-default indent-tabs-mode nil)
+(setq confirm-kill-processes nil)
+
+(display-time-mode 1)
+(setq display-time-24hr-format t)
+
 
                                         ;(setq hl-todo-keyword-faces '(("TODO"  . hl-todo)
                                         ;("NOTE"  . hl-todo)
@@ -107,17 +112,23 @@
 (use-package tern        :defer t :load-path "plugin/tern")
 (use-package popwin     :defer t :load-path "plugin/popwin-el")
 (use-package s          :defer t :load-path "plugin/s")
-(use-package function-args :load-path "plugin/function-args"
-  :config (fa-config-default))
-;;(use-package popup :defer t :load-path "~/.emacs.d/plugin/popup-el")
+
 (use-package base16-theme
-  :disabled t
   :load-path ("plugin/base16-emacs" "plugin/base16-emacs/build/")
   :init
   (add-to-list 'custom-theme-load-path "~/local/cfg/emacs/plugin/base16-emacs")
   (add-to-list 'custom-theme-load-path "~/local/cfg/emacs/plugin/base16-emacs/build/")
   (load-theme 'base16-brewer t)
+  ;; Set the cursor color based on the evil state
+  (defvar my/base16-colors base16-brewer-colors)
+  (setq evil-emacs-state-cursor   `(,(plist-get my/base16-colors :base0D) box)
+      evil-insert-state-cursor  `(,(plist-get my/base16-colors :base0D) bar)
+      evil-motion-state-cursor  `(,(plist-get my/base16-colors :base0E) box)
+      evil-normal-state-cursor  `(,(plist-get my/base16-colors :base0B) box)
+      evil-replace-state-cursor `(,(plist-get my/base16-colors :base08) box)
+      evil-visual-state-cursor  `(,(plist-get my/base16-colors :base09) box))
   )
+
 (use-package smart-mode-line
   :load-path ("plugin/smart-mode-line" "plugin/rich-minority")
   :init
@@ -168,104 +179,14 @@
 (my/defshortcut ?j "~/writings/org/journal.org")
 (my/defshortcut ?C "~/writings/org/calendar.org")
 (my/defshortcut ?q "~/writings/org/questions.org")
+
 (use-package org
-  :load-path ("plugin/org-mode/lisp/" "plugin/org-mode/contrib/lisp")
-  :defer t
-  :init
-  (setq org-global-properties
-        '("Effort_ALL". "0:05 0:15 0:30 1:00 2:00 3:00 4:00 5:00 6:00 7:00"))
-  (setq org-export-coding-system 'utf-8)
-  ;; (org-babel-load-file "~/.emacs.d/config.org")
-  (setq calendar-date-style "ISO")
-  (setq org-default-directory "~/writings/org")
-  (setq org-directory "~/writings/org")
-  (setq org-startup-folded nil)
-  (setq org-startup-truncated nil)
-  (setq org-log-into-drawer "LOGBOOK")
-  (setq org-clock-into-drawer 1)
   :config
-  (defun endless/org-ispell ()
-    "Configure `ispell-skip-region-alist' for `org-mode'."
-    (make-local-variable 'ispell-skip-region-alist)
-    (add-to-list 'ispell-skip-region-alist '(org-property-drawer-re))
-    (add-to-list 'ispell-skip-region-alist '("~" "~"))
-    (add-to-list 'ispell-skip-region-alist '("=" "="))
-    (add-to-list 'ispell-skip-region-alist '("^#\\+BEGIN_SRC" . "^#\\+END_SRC")))
-  (add-hook 'org-mode-hook #'endless/org-ispell)
-
-  ;;  Too many clock entries clutter up a heading.
-  (defvar my/org-basic-task-template "* TODO %^{Task}
-    :PROPERTIES:
-    :END:
-    Captured %<%Y-%m-%d %H:%M>
-    %?
-
-    %a
-
-    %i
-    " "Basic task data")
-  (setq org-capture-templates
-        `(("t" "Tasks" entry
-           (file+headline "~/writings/org/organizer.org" "Tasks")
-           "* TODO %? \n")
-          ("T" "Quick task" entry
-           (file+headline "~/writings/org/organizer.org" "Tasks")
-           "* TODO %^{Task}\nSCHEDULED: %t\n"
-           :immediate-finish t)
-          ("m" "Mixedlang tasks" entry
-           (file+headline "~/dev/c/mixedlang/TODOS.org" "Tasks")
-           "* TODO %?\n" "todo…")
-          ("i" "Idea" entry (file org-default-notes-file)
-           "* %? :idea: \n" :clock-in t :clock-resume t)))
-
-  (use-package org-agenda
-    :defer t
-    :init
-    
-    
-    )
-  :config
-  (setq org-columns-default-format "%50ITEM(Task) %10Effort(Effort){:} %8CLOCKSUM %10TIMESTAMP_IA %10TAGS")
-  (setq org-agenda-files '("~/writings/org/"))
-  (setq org-default-notes-file (concat org-directory "/notes.org"))
-  (use-package org-velocity
-    :config
-    (setq org-velocity-bucket (expand-file-name "base.org" org-directory))
-    )
-  (custom-set-faces
-   '(org-mode-line-clock ((t (:foreground "red" :box (:line-width -1 :style released-button)))) t))
-  (setq org-src-fontify-natively t)
-  (setq org-log-done 'time)
-  (setq org-log-done 'note)
-  (add-hook 'org-mode-hook 'turn-on-flyspell 'append)
-  (put 'upcase-region 'disabled nil)
-  (setcar (nthcdr 2 org-emphasis-regexp-components) " \t\r\n\"'")
-  (org-set-emph-re 'org-emphasis-regexp-components org-emphasis-regexp-components)
-  ;; (add-hook 'org-mode-hook #'(lambda () (yas-minor-mode 1)))
-  (setq org-todo-keywords
-        '((sequence "TODO(t)" "WAITING(w@!/!)" "|" "DONE")
-          (sequence "READ(r)" "READING(R!)" "HALTED(h!/!)" "|" "DONE" "GIVEUP")
-          (sequence "SELF(s)" "|" "DONE(d@!)" "GIVEUP(g@)")
-          (sequence "REPORT(p)" "BUG(b!@)" "KNOWNCAUSE(k@!)" "|" "FIXED(f@!)")
-          (sequence "|" "CANCELED")))
-  (setq org-cycle-separator-lines 1)
-  )
-
-(use-package dired
-  :defer t
-  :init
-  (setq wdired-allow-to-change-permissions t)
-  
-  :config
-  (progn
-    (add-hook 'dired-mode-hook #'toggle-truncate-lines)
-    (setf dired-listing-switches "-alhG"
-          dired-guess-shell-alist-user
-          '(("\\(\\.pdf\\|\\.ps\\|\\.epub\\)\\'" "zathura")
-            ("\\(\\.ods\\|\\.xlsx?\\|\\.docx?\\|\\.csv\\)\\'" "libreoffice")
-            ("\\(\\.png\\|\\.jpe?g\\)\\'" "imv")
-            ("\\(\\.gif\\|\\.mp4\\|\\.mkv\\)\\'" "mpv"))))
-  )
+  (setq org-agenda-files (list "~/writings/org/base.org"
+                             "~/writings/org/books.org" 
+                             "~/writings/org/questions.org" 
+                             "~/writings/org/routine.org" 
+                             "~/writings/org/agenda.org")))
 
 (use-package flycheck
   :defer 3
@@ -318,7 +239,11 @@
   (setq ivy-height 15)
   (setq ivy-count-format "(%d/%d) ")
   (setq ivy-extra-directories nil)
-
+  (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+  (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+  (global-set-key (kbd "<f1> l") 'counsel-find-library)
+  (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+  (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
   
   (ivy-mode 1)
                                         ;open directory, type "C-f"
@@ -361,53 +286,9 @@
                 (flyspell-mode)))
   (add-hook 'magit-status-mode-hook #'(lambda () (magit-monitor t))))
 
-(use-package cc-mode
-  :mode (("\\.h\\(h?\\|xx\\|pp\\)\\'" . c++-mode)
-         ("\\.m\\'"                   . c-mode)
-         ("\\.c\\'"                   . c-mode)
-         ("\\.mm\\'" . c++-mode))
-  :config
-  (setq c-default-style '((java-mode . "java")
-                          (awk-mode . "awk")
-                          (other . "gnu")))
-  (c-add-style "mine"
-               '(nil
-                 (c-basic-offset . 2)     ; Guessed value
-                 (c-offsets-alist
-                  (block-close . 0)       ; Guessed value
-                  (case-label . 0)        ; Guessed value
-                  (class-close . 0)       ; Guessed value
-                  (cpp-define-intro . +)  ; Guessed value
-                  (defun-block-intro . +) ; Guessed value
-                  (defun-close . 0)       ; Guessed value
-                  (defun-open . 0)        ; Guessed value
-                  (else-clause . 0)       ; Guessed value
-                  (inclass . +)           ; Guessed value
-                  (label . *)             ; Guessed value
-                  (statement . 0)         ; Guessed value
-                  (statement-block-intro . +) ; Guessed value
-                  (statement-case-intro . +) ; Guessed value
-                  (statement-case-open . +)  ; Guessed value
-                  (statement-cont . +)    ; Guessed value
-                  (substatement . +)      ; Guessed value
-                  (substatement-open . +) ; Guessed value
-                  (topmost-intro . 0)     ; Guessed value
-                  (arglist-close . c-lineup-close-paren)
-                  (arglist-cont-nonempty . c-lineup-arglist)
-                  (c . c-lineup-C-comments)
-                  (comment-intro . c-lineup-comment)
-                  (cpp-macro . -1000)
-                  (inher-cont . c-lineup-multi-inher)
-                  (string . -1000))))
-  
-  (font-lock-add-keywords 'c++-mode '(("\\<\\(assert\\|DEBUG\\)("
-                                       1 font-lock-warning-face t)))
-  (setq font-lock-maximum-decoration '((c-mode . 1) (c++-mode . 1) (t . 2)))
-  (add-hook 'c-mode-hook 'turn-on-lock)
-  )
-
 (use-package elfeed
   :load-path ("plugin/elfeed")
+  :disabled
   :init
   (setq elfeed-set-max-connections 5)
   (setf url-queue-timeout 40)
@@ -445,73 +326,13 @@
     "Add the `unread' tag to all selected entries.")
   )
 
-(use-package ace-jump-mode
-  :load-path "plugin/ace-jump-mode"
-  :disabled t
-  :config
-  )
 (use-package pkgbuild-mode
   :load-path "plugin/pkgbuild-mode"
-  :disabled t
+  :disabled 0
   :init
   (setq auto-mode-alist (append '(("/PKGBUILD$" . pkgbuild-mode))
                                 auto-mode-alist))
   :config
-  )
-(use-package markdown-mode
-  :load-path "plugin/markdown-mode"
-  :mode (("\\`README\\.md\\'" . gfm-mode)
-         ("\\.md\\'"          . markdown-mode)
-         ("\\.markdown\\'"    . markdown-mode))
-  :config)
-(use-package simple-httpd :load-path "plugin/emacs-web-server"
-  :init
-  (setq httpd-root "~/local/tmp/http/")
-  :config
-  (httpd-start)
-  )
-(use-package js2-mode :load-path "plugin/js2-mode"
-  :config)
-(use-package skewer-mode :load-path "plugin/skewer-mode"
-  :config
-  (use-package skewer-html
-    :config
-    (add-hook 'html-mode-hook 'skewer-html-mode)
-    )
-  (use-package skewer-css
-    :config
-    (add-hook 'css-mode-hook 'skewer-css-mode)
-    )
-  (add-hook 'js2-mode-hook 'skewer-mode)
-  )
-(use-package nasm-mode :load-path "plugin/nasm-mode"
-  :config
-  :disabled t
-  )
-(use-package rainbow-delimiters
-  :load-path "plugin/rainbow-delimiters"
-  :config (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
-(use-package smartparens
-  :load-path "plugin/smartparens"
-  :disabled t
-  :init
-  :config
-  (require 'smartparens-config)
-  )
-
-(use-package slime
-  :defer t
-  :load-path "plugin/slime"
-  :config
-  (setq inferior-lisp-program "sbcl")
-  ;;(slime-setup '(slime-company))
-  (load (expand-file-name "~/quicklisp/slime-helper.el"))
-  )
-(use-package stumpwm-mode :load-path "plugin/swm-emacs"
-  :config
-  (setq stumpwm-shell-program "~/local/bin/stumpish")
-  (load "~/local/cfg/emacs/plugin/swm-emacs/stumpwm-utils.el")
-  
   )
 
 (use-package company
@@ -543,33 +364,10 @@
     :config)
   )
 
-(use-package irony
-  :load-path "plugin/irony-mode/"
-  :config
-  (use-package company-irony :load-path "plugin/company-irony/"
-    :disabled t
-    :config
-    (eval-after-load 'company
-      '(add-to-list 'company-backends 'company-irony)))
-  
-  (add-hook 'c++-mode-hook 'irony-mode)
-  (add-hook 'c-mode-hook 'irony-mode)
-  (add-hook 'objc-mode-hook 'irony-mode)
-  (require 'irony-cdb)
-  ;; replace the `completion-at-point' and `complete-symbol' bindings in
-  ;; irony-mode's buffers by irony-mode's function
-  (defun my-irony-mode-hook ()
-    (define-key irony-mode-map [remap completion-at-point]
-      'irony-completion-at-point-async)
-    (define-key irony-mode-map [remap complete-symbol]
-      'irony-completion-at-point-async))
-  (add-hook 'irony-mode-hook 'my-irony-mode-hook)
-  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-  )
 ;; Language Dictionaries
 ;;https://github.com/gucong/emacs-sdcv
 (use-package sdcv-mode
-  :load-path "plugin/emacs-sdcv/"
+  :load-path "plugin/sdcv-mode/"
   :init
   :config
   )
@@ -597,10 +395,47 @@
 
 (use-package irfc
   :init
+  :disabled
   (setq irfc-directory "~/read/rfc/")
   (setq irfc-assoc-mode t) 
   :config
   )
+
+(use-package evil :load-path "plugin/evil"
+  :config
+  (evil-mode 1)
+  (setq evil-emacs-state-modes nil)
+  (setq evil-insert-state-modes nil)
+  (setq evil-motion-state-modes nil)
+   ;; change mode-line color by evil state
+   (lexical-let ((default-color (cons (face-background 'mode-line)
+                                      (face-foreground 'mode-line))))
+     (add-hook 'post-command-hook
+       (lambda ()
+         (let ((color (cond ((minibufferp) default-color)
+                            ((evil-insert-state-p) '("#e80000" . "#ffffff"))
+                            ((evil-emacs-state-p)  '("#444488" . "#ffffff"))
+                            ((buffer-modified-p)   '("#006fa0" . "#ffffff"))
+                            (t default-color))))
+           (set-face-background 'mode-line (car color))
+           (set-face-foreground 'mode-line (cdr color))))))
+
+   ;; org-mode stuff
+   (evil-global-set-key 'normal (kbd "<SPC>") nil)
+   (evil-global-set-key 'motion (kbd "<SPC>") nil)
+   (evil-global-set-key 'normal
+                        (kbd "<SPC>l") 'org-store-link
+                        
+                      )
+   (define-key global-map (kbd "C-c a") 'org-agenda)
+   )
+;  (setq evil-emacs-state-cursor   `(,(plist-get my/base16-colors :base0D) box)
+;      evil-insert-state-cursor  `(,(plist-get my/base16-colors :base0D) bar)
+;      evil-motion-state-cursor  `(,(plist-get my/base16-colors :base0E) box)
+;      evil-normal-state-cursor  `(,(plist-get my/base16-colors :base0B) box)
+;      evil-replace-state-cursor `(,(plist-get my/base16-colors :base08) box)
+;      evil-visual-state-cursor  `(,(plist-get my/base16-colors :base09) box))
+
 
 (defun xah-toggle-margin-right ()
   "Toggle the right margin between `fill-column' or window width.
