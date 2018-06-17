@@ -2,7 +2,7 @@
 
 ex=dmenu
 # shellcheck source=/home/kotto/local/cfg/bemenu/conf
-source "$HOME/local/cfg/dmenu/conf"
+#source "$HOME/local/cfg/dmenu/conf"
 switches=("--really-quiet" "--keep-open" "--pause" "--force-window=yes") #show the window even if it's just audio
 title=""
 formats=""
@@ -61,7 +61,6 @@ choose_format () {
   else
     opts=(${opts[*]} -p "PLAY: [$duration] $title")
   fi
-  printf "%s %s\n" "$ex" "${opts[@]}"
   format=$(printf "%s\n" "${formats[@]}" | $ex "${opts[@]}" | awk '{print $1}')
   if [ "$format" ] && ! [ "$format" = "no" ]; then
     return 0;
@@ -104,6 +103,9 @@ watch (){
 
 if ! [ -f "$1" ]; then
   case "$1" in
+    720)
+      format="22/43/18"
+      ;;
     360)
       format="43/18"
       ;;
