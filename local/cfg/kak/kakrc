@@ -1,16 +1,16 @@
-colorscheme base16_default
 
 set global tabstop 2
 set global aligntab false
 set global indentwidth 0
 set global scrolloff 3,5
 set global incsearch true
-hook global WinDisplay .* %{ addhl wrap } # softwrap
 
 map global normal <a-m> :make
 map global normal <a-n> :make-next-error<ret>
 map global normal <a-p> :make-previous-error<ret>
 map global normal <a-N> :lint-next<ret><ret>
+map global normal   <c-w>   :tmux-new-horizontal<ret>
+map global normal   <c-e>   :tmux-new-vertical<ret>
 
 set global modelinefmt '{red}%val{bufname}{default} %opt{filetype} %val{cursor_line}:%val{cursor_char_column} {{context_info}} {{mode_info}} - %val{client}@[%val{session}]'
 
@@ -18,7 +18,7 @@ hook global WinSetOption filetype=(vbs|batch) %{
 	set buffer indentwidth 1
 }
 
-hook global WinSetOption filetype=(?!vbs|batch).* %{
+hook global WinSetOption filetype=(?!vbs\|batch).* %{
     hook global InsertChar \t %{
       exec -draft -itersel h@
     }
@@ -36,18 +36,17 @@ hook global NormalKey <esc> %{ try %{
   remove-highlighter dynregex_%reg{<slash>}
 }}
 
-set global ignored_files '.*\.exe|.*\.dll|.*\.o|.*\.pyc|.*\~|^\#.*\#|.*\.obj|\.git'
+set global ignored_files '.*\.exe|.*\.dll|.*\.o|.*\.pyc|.*~|^#.*#|.*\.obj|\.git'
 
 hook global WinCreate .* %{
-    addhl show_matching
-    addhl number_lines
+    addhl window show_matching
+    addhl window number_lines -hlcursor
+    addhl window wrap -word -indent
 }
 
 map global normal '#' :comment-line<ret>
 map global normal '<a-#>' :comment-block<ret>
 
-map global normal   <c-w>   :tmux-new-horizontal<ret>
-map global normal   <c-e>   :tmux-new-vertical<ret>
 map -docstring 'Search word in `man <word>`' global user k :man<ret> 
 # #
 # ^
@@ -97,10 +96,10 @@ hook global WinSetOption filetype=c %{
        elif [[ $PWD =~ /home/kotto/dev/arm/stm/f4 ]]; then
          switches="$switches -std=c11 -I/home/kotto/dev/arm/stm/f4/stm32/device/"
        fi
-       printf "echo -debug hi \'$switches\'\n"
        printf "set buffer clang_options '%s'\n" "$switches"
     }
 }
+
 hook global WinSetOption filetype=(c|cpp) %{
     clang-enable-autocomplete 
     clang-enable-diagnostics
@@ -117,13 +116,13 @@ hook global WinSetOption filetype=python %{
     alias window lint-next flake8-diagnostics-next
     %sh{
         if [ $PWD = "/home/mawww/prj/kakoune/src" ]; then
-           echo "set buffer jedi_python_path '/usr/share/gdb/python'"
-           echo "set buffer path './:/usr/share/gdb/python'"
+           printf "set buffer jedi_python_path '/usr/share/gdb/python'\n"
+           printf "set buffer path './:/usr/share/gdb/python'\n"
         fi
     }
 }
 
-hook global WinSetOption filetype=(asciidoc) %{
+hook global WinSetOption filetype=asciidoc %{
     hook buffer BufWritePost .* %{
         %sh{asciidoctor $kak_buffile}
     }
@@ -145,3 +144,6 @@ hook global WinSetOption filetype=ada %{
 hook global WinSetOption filetype=(batch|vbs|vb) %{
     set buffer eolformat crlf
 }
+
+
+colorscheme gruvbox
