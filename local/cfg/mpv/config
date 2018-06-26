@@ -1,8 +1,9 @@
 profile=opengl-hq
 hwdec=yes
 hwdec-codecs=all
-vo=vdpau
-cache-default=1073741824
+#vo=vdpau
+cache-default=50000
+#cache-default=1073741824
 #loop-file=yes
 volume=30
 # script-opts=osc-layout=bottombar
