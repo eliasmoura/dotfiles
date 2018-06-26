@@ -159,7 +159,7 @@ bindsym $mod+a focus parent
 # Move the currently focused window to the scratchpad
 bindsym $mod+Shift+minus move scratchpad
 
-bindsym $mod+Print exec printscreen.sh area && notify-send "print screen"
+bindsym XF86LaunchA exec screenshot area && notify-send "print screen"
 
 # Show the next scratchpad window or hide the focused scratchpad window.
 # If there are multiple scratchpad windows, this command cycles through them.
@@ -190,11 +190,17 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 mode "menu" {
-    bindsym v       exec --no-startup-id mpv-run "360"; mode "default"
+    bindsym v       exec --no-startup-id mpv-run "720"; mode "default"
     bindsym Shift+v exec --no-startup-id mpv-run; mode "default"
     bindsym o       exec --no-startup-id dmenu-run; mode "default"
     bindsym p       exec --no-startup-id passmenu --type; mode "default"
     bindsym shift+p exec --no-startup-id passmenu; mode "default"
+
+#Screenshots
+      bindsym s exec exec screenshot; mode "default"
+      bindsym Ctrl+s exec screenshot "fullscreen"; mode "default"
+      bindsym Ctrl+shift+s exec screenshot; mode "default"
+
 
     bindsym l       exec --no-startup-id find ~/local/cfg/i3/ -name '*.json' | dmenu -l 10 | xargs i3-msg append_layout ; mode "default"
 
@@ -212,9 +218,6 @@ mode "mouse" {
     bindsym c       exec --no-startup-id xdotool click       2; 
     bindsym x       exec --no-startup-id xdotool click       3; 
      
-	bindsym Print exec swaygrab ~/pictures/screenshots/$(date +'%Y-%m-%d-%H:%M:%S.png')
-	bindsym Ctrl+Print exec swaygrab ~/pictures/screenshots/$(date +'%Y-%m-%d-%H:%M:%S.png') --focused
-	bindsym Ctrl+shift+Print exec --no-startup-id maim -i $(xdotool getactivewindow)  ~/pictures/screenshots/$(date +'%Y-%m-%d-%H:%M:%S.png')
 
     bindsym Return mode "default"
     bindsym Escape mode "default"
@@ -246,6 +249,8 @@ bindsym Ctrl+Print exec swaygrab ~/pictures/screenshots/$(date +'%Y-%m-%d-%H:%M:
 
 # Specific window management.
 for_window [class="Blender" title="Blender User Preferences"] floating enable
+
+for_window [title="OpenGL, Yay"] floating enable
 
 # Fontforge floating toolboxes.
 for_window [class="fontforge" title="Layers"] floating enable
