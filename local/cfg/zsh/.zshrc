@@ -42,7 +42,7 @@ zstyle ':completion:*' use-cache on
 zstyle ':completion:*' rehash yes
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
-PROMPT='%m %n %F{green}${branch}%f%F{cyan}%~%f${jobs_list}
+PROMPT='%m %n %F{green}${branch}%f ${jobs_count} %F{cyan}%~%f
 -> '
 
 function zle-line-init zle-keymap-select {
@@ -54,18 +54,20 @@ function zle-line-init zle-keymap-select {
 function get_git_branch {
     if [[ -d .git ]]; then
         read -r branch < .git/HEAD
-        branch="${branch##*/} "
+        branch="${branch##*/}"
     else
         branch=""
     fi
 }
 
 function list_jobs {
-  if [[ jobs ]]
+  job_list=$(jobs)
+  j=$(printf "%s\n" "$job_list" | wc -l)
+  if [[ "$j" -ne 0 ]]
   then
-    jobs_list="[$(jobs | wc -l)]"
+    jobs_count="[$j]"
   else
-    jobs_list=""
+    jobs_count=""
   fi
 }
 

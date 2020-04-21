@@ -1,12 +1,15 @@
-profile=opengl-hq
+#profile=opengl-hq
 hwdec=yes
 hwdec-codecs=all
 #vo=vdpau
-cache-default=50000
 #cache-default=1073741824
 #loop-file=yes
-volume=30
+volume=60
 # script-opts=osc-layout=bottombar
+#cache-default=50000
+cache-on-disk=yes
+cache-secs=960
+cache-dir=/home/kotto/local/share/mpv
 
 slang=en
 

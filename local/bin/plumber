@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
+browser=qutebrowser
+
 if [[ -f "$1" ]]; then
   mime=$(file -biL "$1")
   [[ $mime ]] && case $mime in
     text/html*)
-      exec vimb "$1" ;;
+      exec $browser "$1" ;;
     text*)
       exec nvim-run "$1" ;;
     *pdf*|*epub*|*djvu*)
-      exec tzathura "$1" ;;
+      exec zathura "$1" ;;
     image*)
       exec imv "$1"      ;;
     video*)
@@ -64,7 +66,7 @@ case "$1" in
       http_thing=$(curl -s -v "$1" |& awk '/^< [lL]ocation/ {print $3}')
       if [ -z "$http_thing" ]
       then
-        exec firefox "$1"
+        exec $browser "$1"
       else
         plumber "${http_thing//}"
       fi
@@ -73,11 +75,11 @@ case "$1" in
       if grep "${1%*\(*}" <<< "$(apropos .)"; then
         exec "$XDG_DATA_HOME"/dsearch/manual "${1%\(*}"
       else
-        exec firefox "!g $1"
+        exec $browser "!g $1"
       fi                               ;;
     *)
       if grep "$1" <<< "$(apropos .)"; then
         exec "$XDG_DATA_HOME"/dsearch/manual "$1"
       fi
-      exec firefox "$1"            ;;
+      exec $browser "$1"            ;;
 esac

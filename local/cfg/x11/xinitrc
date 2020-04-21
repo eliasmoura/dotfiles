@@ -25,6 +25,8 @@ pactl set-sink-port alsa_output.pci-0000_00_14.2.analog-stereo analog-output-hea
 dunst -config "${XDG_CONFIG_HOME:-$HOME/local/cfg}"/dunst/dunstrc & # dunst only looks into .config/dunst
 xsetroot -mod 16 16 -fg '#343d46' -bg '#2b303b'
 
+xrandr --output DP1 --mode 2560x1440 --primary --left-of eDP1
+
 # xmodmap "${XDG_CONFIG_HOME:-$HOME/local/cfg}/x11/xmodmap" # When using stump
 log_dir="${LOCAL:-$HOME/local}/var/log/"
 mkdir -p "$log_dir"

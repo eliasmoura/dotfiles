@@ -3,7 +3,7 @@
 ex=dmenu
 # shellcheck source=/home/kotto/local/cfg/bemenu/conf
 #source "$HOME/local/cfg/dmenu/conf"
-switches=("--really-quiet" "--keep-open" "--pause" "--force-window=yes") #show the window even if it's just audio
+switches=("--really-quiet" "--keep-open" "--pause" "--force-window=yes" "--ytdl-raw-options=yes-playlist=") #show the window even if it's just audio
 title=""
 formats=""
 format=""
@@ -39,7 +39,7 @@ get_title_duration () {
   # youtube-dl don't care the order of the switches
   # and it return the title first
   opt=(--get-title --get-duration)
-  if [[ $1 =~ http[s]?://www.youtube.com/playlist\?.* ]]; then
+  if [[ $1 =~ http[s]?://www.youtube.com/playlist\?.* ]] || [[ $1 =~ http[s]?://www.youtube.com/watch.*list=.* ]]; then
 	opt=("${opt[@]}" --no-playlist)
   else
     echo not playlist
@@ -61,7 +61,7 @@ choose_format () {
   else
     opts=(${opts[*]} -p "PLAY: [$duration] $title")
   fi
-  format=$(printf "%s\n" "${formats[@]}" | $ex "${opts[@]}" | awk '{print $1}')
+  format=$(printf "%s\n" "${formats[@]}" | awk '!/^\[|^format code/' | $ex "${opts[@]}" | awk '{print $1}')
   if [ "$format" ] && ! [ "$format" = "no" ]; then
     return 0;
   fi
@@ -73,14 +73,13 @@ save_video() {
   save=$(find "$HOME/videos/" -type d | $ex "${opts[@]}")
   if [ "$save" ]; then
     ! [ -d "$save" ] && mkdir -p "$save"
-    mv "$file" "$save"
-    if [[ $? ]]; then
-      notify-send "File \"${file##*/}\" saved in \"$save\""
-    else
-      notify-send -u critical "Cound'n save file \"$file\"!"
-    fi
+    #if [[ $? ]]; then
+      #notify-send "File \"${file##*/}\" saved in \"$save\""
+    #else
+      #notify-send -u critical "Cound'n save file \"$file\"!"
+    #fi
   else
-    rm "$file"
+    return 0
   fi
 }
 
@@ -90,6 +89,7 @@ watch (){
   if [[ "$format" != "yes" ]]; then
     switches=("${switches[@]}" "--ytdl-format=$format")
   fi
+  printf "HERE: %s\n" "${switches[@]}" "$format"
   mpv "${switches[@]}" "$1"
   s="$?"
   rm "$mpv_dir/$f"
@@ -104,12 +104,12 @@ watch (){
 if ! [ -f "$1" ]; then
   case "$1" in
     720)
-      format="22/43/18"
+      format="137+140/248+140/248+251/247+140/247+251/22/43/18/1080p/720p/420p/0/best"
       ;;
     360)
       format="43/18"
       ;;
-    http*)
+    *)
       url="$1"
       ;;
   esac
@@ -137,11 +137,6 @@ if ! [ -f "$1" ]; then
   f=${f//\//|}
   f=${f// /_}
 
-  mpv_cache="$HOME/tmp/mpv"
-  ! [ -d "$mpv_cache" ] && mkdir -p "$mpv_cache"
-  file="$mpv_cache/$f.mp4"
-  touch "$file"
-  switches=("${switches[@]}" "--cache-file=$file")
 else
   title="${1##*/}"
   watch "$1"
