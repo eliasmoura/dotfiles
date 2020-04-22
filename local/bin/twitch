@@ -1,0 +1,257 @@
+#!/bin/sh --
+# twsh - gather info and play from twitch.tv chanels/games/etc
+
+# requires curl jq youtube-dl mpv
+
+argv0=twsh
+
+dir=${XDG_DATA_HOME:-$HOME/share}/twitch
+info=${dir:-.}/info
+user_list=${dir:-.}/users
+c_id=$(awk '/client-id/{print $2}' "$info")
+base_url="https://www.twitch.tv"
+
+cmds="!list !game_list !programming !user !game_name !update_list"
+usage() {
+  cat <<EOF
+usage: $argv0 [!cmd [user/game]
+ !list            - Show channels live from the ${XDG_DATA_HOME:-$HOME/share}/twitch/users file
+ !game_list       - Show the list of all Streams Categories
+ !programming     - Show the channels live from the Science & Technology category
+ !user <user>     - Show the <user> archived videos
+ !game_name <cat> - Show the channels live from the <cat> category
+ !update_list     - Update the ${XDG_DATA_HOME:-$HOME/share}/twitch/users
+EOF
+}
+
+get_users_status() {
+  list=$(awk '{printf "user_login=%s&", $2}' "$user_list")
+  get_list "streams?${list%&}" '.data[]  | [.user_name, .game_id, .type, .language, .title] | @tsv' |
+  while read -r user game _ lang title; do
+    game=$(get_game_name "$game")
+    game=$(printf "%s" "$game" | sed -e 's/ /_/g')
+    printf '%-18ls %-20ls %ls %ls\n' "$user" "$game" "$lang" "\"$title\""
+  done
+}
+
+get() {
+  query="$1"
+  jq_query="$2"
+  curl -sH "Client-ID: $c_id" -X GET "https://api.twitch.tv/helix/$query" | jq -r "$jq_query"
+}
+
+get_game_name() {
+  get "games?id=$1" '.data[]  | .name'
+}
+
+get_game_id() {
+  get "games?name=$1" '.data[]  | .id'
+}
+
+get_list() {
+  query="$1"
+  jq_query="$2"
+  cursor=""
+  r=$(curl -sH "Client-ID: $c_id" -X GET "https://api.twitch.tv/helix/$query&first=100&after=$cursor")
+
+  while test -n "$r"; do
+    printf "%s\n" "$r" | jq -r "$jq_query" || return
+    cursor=$(printf "%s\n" "$r" | jq -r '.pagination[]')
+
+    # NOTE(elias): Twitch ends the end of the pagination depending what
+    # you are quering
+    if test "$cursor" = "IA" || test -z "$cursor"; then
+      return
+    fi
+    # NOTE(elias): POSIX does not have regex checks like =~ in bash.
+    #              Using case to make that happens
+    case "$cursor" in
+      *IA) return ;;
+    esac
+
+    r="$(curl -sH "Client-ID: $c_id" -X GET "https://api.twitch.tv/helix/$query&first=100&after=$cursor")"
+  done
+}
+
+get_games_list() {
+  get_list "games/top?" '.data[] | .name'
+}
+
+get_game_status() {
+  list="$1"
+
+  # _ type
+  get_list "streams?$list" '.data[] | [.viewer_count, .user_name, .game_id, .type, .language, .title] | @tsv' |
+  while read -r views uname gid _ lang title; do
+    if [ "$tgid" != "$gid" ]; then
+      tgid="$gid"
+      gname=$(get_game_name "$gid")
+      tgname="$gname"
+    else
+      gname="$tgname"
+    fi
+    gname=$(printf "%s\n" "$gname" | sed -e 's/ /_/g')
+    printf "%-6s %-20s  %-20s [%s] %s\n" "$views" "$uname" "$gname" "$lang" "$title"
+  done
+}
+
+get_user_id() {
+  get "users?login=$1" '.data[] | .id'
+}
+
+get_user_name() {
+  get "users?id=$1" '.data[] | .login'
+}
+
+get_video() {
+  id=$2
+  user=$1
+  get_list "videos?user_id=$id" '.data[] | [.url, .published_at, .language, .title] | @tsv' |
+  while read -r url pub lang title; do
+    printf "%s %s %s %s %s\n" "$id" "$pub" "$url" "$lang" "$title"
+  done
+}
+
+update_user_list() {
+  list=""
+  while read -r id name category _; do
+    nid=$(get_user_id "$name")
+    if [ -n "$nid" ]; then
+      printf "%-15s%-20s%-30s\n" "$nid" "$name" "$category"
+    else
+     onegone=$(printf "%-15s%-20s%-30s\n" "$id" "$name" "$category")
+     list="$list$onegone"
+    fi
+  done < "$user_list"
+  if [ -n "$onegone" ]; then
+    printf "#The following users aren't avalible anymore.\n"
+    printf "%s\n" "$list"
+  fi
+}
+
+menu() {
+  title=$(printf "%.60s\n" "$1")
+  while pgrep dmenu; do
+    sleep 2
+  done
+  dmenu -i -l 20 -p "$title"
+}
+
+get_format (){
+  url="$1"
+  title="$2"
+  youtube-dl --no-playlist --list-formats "$url" | awk '!/^\[|^format code/' | menu "$title" | awk '{print $1}'
+}
+
+play() {
+  o="$o --keep-open --pause --force-window=yes"
+  read -r user game url lang title
+  if [ "$user" ]; then
+    format=$(get_format "$url" "$user [$game] $title")
+    if [ "$format" ]; then
+      o="$o --ytdl-format=$format"
+      game=$(printf "%s" "$game" | sed -e 's/_/ /')
+      set -f
+      # set -f disable shell glob expansion
+      # shellcheck disable=2086
+      mpv $o --title="$user [$lang|$game] - $title" -- "$url"
+      set +f
+    fi
+  fi
+}
+
+run(){
+  opt="$1"
+  shift 1
+  case "$opt" in
+    !game_list)
+      name="$*"
+
+      if [ "$name" ]; then
+        title="$name"
+        name=$(printf "%s\n" "$name" | sed -e 's/ /%20/g')
+        name=$(printf "%s\n" "$name" | sed -e 's/&/%26/g')
+        gid=$(get_game_id "$name")
+
+        list=$(get_game_status "game_id=$gid" | menu "$title")
+
+        printf "%s\n" "$list" |
+        while read -r _ u g lang t; do
+          lang=$(printf "%s\n" "$lang" | sed -e 's/[\]\[]//g')
+          printf "%s %s %s %s %s\n" "$u" "$g" "$base_url/$user" "$lang" "$t" |  play
+        done
+      else
+        game=$(get_games_list | menu Games) && run "!game" "$game"
+      fi
+    ;;
+    !programming)
+      #Science & Technology  509670
+      get_game_status "game_id=509670" | menu "Programming"  |
+      while read -r _ user game lang title; do
+        set -x
+        lang=$(printf "%s\n" "$lang" | sed -e 's/[\]\[]//g')
+        printf "%s %s %s %s %s\n" "$user" "$game" "$base_url/$user" "$lang" "$title" |  play
+        set +x
+      done
+    ;;
+    !list)
+      get_users_status | menu 'List of users' |
+      while read -r user game lang title; do
+        printf '%-18ls %-20ls %ls %ls\n' "$user" "$game" "$lang" "$title"
+        [ -n "$user" ] && printf "%s %s %s %s %s\n" "$user" "$game" "$base_url/$user" "$lang" "$title" | play
+      done
+    ;;
+    !menu)
+      opt=$(export IF= ; for c in $cmds; do printf "%s\n" "$c"; done | menu "Cmd: ")
+      if [ "$opt" ]; then
+        run "$opt"
+      fi
+    ;;
+    !user_id)
+      get_user_id "$1"
+    ;;
+    !user)
+      id=$1
+      user=$2
+      if [ -n "$id" ]; then
+        if [ -z "$user" ]; then
+          user=$id
+          id=$(get_user_id "$user")
+        fi
+
+        get_video "$user" "$id" | menu "Video:" |
+        while read -r _ pub url lang title; do
+          [ -n "$url" ] && printf "%s %s %s %s %s\n" "$user" "??" "$url" "$lang" "$title" | play
+        done
+      else
+        menu 'Name: ' < "$user_list" |
+        while read -r id user _; do
+          [ -n "$id" ] && run "!user" "$id" "$user"
+        done
+      fi
+    ;;
+    !game_id)
+      get_game_id "$1"
+    ;;
+    !game_name)
+      get_game_name "$1"
+    ;;
+    !update_list)
+      set -x
+      updated=$(update_user_list | tee "$user_list") && printf "%s\n" "$updated" > "$user_list"
+      set +x
+    ;;
+    help|--help|-h|-help)
+      usage
+    ;;
+    *)
+      run "!menu"
+    ;;
+  esac
+}
+
+if [ "$1" ]; then
+  run "$@"
+else
+  run "!menu"
+fi
