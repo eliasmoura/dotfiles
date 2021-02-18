@@ -78,7 +78,7 @@
     # Don't remove messages, if the user is idle (no mouse or keyboard input)
     # for longer than idle_threshold seconds.
     # Set to 0 to disable.
-    idle_threshold = 120
+    idle_threshold = 480
 
     # Which monitor should the notifications be displayed on.
     monitor = 0
@@ -159,7 +159,7 @@
     # Xev might be helpful to find names for keys.
 
     # Close notification.
-    close = ctrl+space
+    close = ctrl+shift+space
 
     # Close all notifications.
     close_all = ctrl+shift+space
