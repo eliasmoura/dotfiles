@@ -1,19 +1,20 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 ex=dmenu
 # shellcheck source=/home/kotto/local/cfg/bemenu/conf
 #source "$HOME/local/cfg/dmenu/conf"
-switches=("--really-quiet" "--keep-open" "--pause" "--force-window=yes" "--ytdl-raw-options=yes-playlist=") #show the window even if it's just audio
+switches="--really-quiet --keep-open --pause --force-window=yes --ytdl-raw-options=yes-playlist=" #show the window even if it's just audio
 title=""
 formats=""
 format=""
 url=""
+prog=dmenu
+menuopt="-i -l 20"
 
 # prefix=(--prefix '⇒')
-# bprompt=(--prompt 'Run: ')
-num_lines=(-l 25)
+num_lines="-l 25"
 # colors=(--hb '#ffffff' --ff '#007fce' --tf '#d2691e')
-opts=(${prefix[*]} ${bprompt[*]} ${num_lines[*]} ${colors[*]} -i)
+opts="$num_lines -i"
 
 mpv_dir=${XDG_RUNTIME_DIR:-/tmp}/mpv
 if ! [ -d "$mpv_dir" ]; then
@@ -21,56 +22,24 @@ if ! [ -d "$mpv_dir" ]; then
 fi
 
 get_formats (){
-  count=0
-  while read -r f
-  do
-    if [[ $f =~ ^[0-9] ]]
-    then
-      formats[count]="$f";
-      ((count = count + 1))
-    fi
-  done <<< "$(youtube-dl --no-playlist --list-formats "$1" 2> /dev/null)"
+  youtube-dl --no-playlist --list-formats "$1" 2> /dev/null | awk '!/^\[|^format code/' |
+  while read -r format; do printf "%s\n" "$format"; done
 }
 
 get_title_duration () {
-  counter=1
-  # XXX: I would like to do format,title and duration all at one, but youtube-dl doesn't allow that.
-  # I don't want to do two queries as I have a shity internet
-  # youtube-dl don't care the order of the switches
-  # and it return the title first
-  opt=(--get-title --get-duration)
-  if [[ $1 =~ http[s]?://www.youtube.com/playlist\?.* ]] || [[ $1 =~ http[s]?://www.youtube.com/watch.*list=.* ]]; then
-	opt=("${opt[@]}" --no-playlist)
-  else
-    echo not playlist
-  fi
-  while read -r line; do
-    if [ $counter -eq 1 ]; then
-      title=$line
-    else
-      duration=$line
-    fi
-    let counter=counter+1
-  done <<< "$(youtube-dl "${opt[@]}" "$1")"
-}
-
-choose_format () {
-  if ! [ "${formats[*]}" ]; then
-    opts=(${opts[*]} -p "No video format found to: [$duration] \"$title\" (url: $input). Play it anyway?")
-    formats=(yes no)
-  else
-    opts=(${opts[*]} -p "PLAY: [$duration] $title")
-  fi
-  format=$(printf "%s\n" "${formats[@]}" | awk '!/^\[|^format code/' | $ex "${opts[@]}" | awk '{print $1}')
-  if [ "$format" ] && ! [ "$format" = "no" ]; then
-    return 0;
-  fi
-  exit 1
+  case "$1" in
+    https://www.youtube.com/playlist?*|https://www.youtube.com/watch*list=*)
+  	opt="$opt --no-playlist"
+	;;
+  esac
+  # shellcheck disable=2086
+  youtube-dl --get-title --get-duration $opt "$1" |
+  while read -r this; do printf '%s' "$this"; done | awk 'duration=$(NF), NF=(NF-1) { print duration,$0}'
 }
 
 save_video() {
-  opts=("${opts[@]}" -p "Save video $title ?")
-  save=$(find "$HOME/videos/" -type d | $ex "${opts[@]}")
+  opts="$opts -p \"Save video $title ?\""
+  save=$(find "$HOME/videos/" -type d | $ex "$opts")
   if [ "$save" ]; then
     ! [ -d "$save" ] && mkdir -p "$save"
     #if [[ $? ]]; then
@@ -83,22 +52,46 @@ save_video() {
   fi
 }
 
-watch (){
-  notify-send -a mpv "PLAYING" "<span fgcolor='white'>$title</span>\nDuration: <span fgcolor='white'>$duration</span>\t Format:<span fgcolor='white'>$format</span>\nURL: <span fgcolor='white'>$url</span>"
-  switches=("${switches[@]}"  "--input-ipc-server=$mpv_dir/$f")
-  if [[ "$format" != "yes" ]]; then
-    switches=("${switches[@]}" "--ytdl-format=$format")
+play (){
+  read -r format
+  url=$1
+  if ! [ -e "$1" ]; then
+    ytdl="ytdl://"
+    shift
+    duration=$1
+    shift
+    title=$1
+    if [ -z "$format" ] || [ "$format" = "no" ]; then
+      return 0;
+    fi
+    ipc_file=$(sed -e 's,|\|(\|)\|\$\|\\\|/\|?\|%\|>\|<\|&\|^\|}\|{,_,' "$title")
+    switches="$switches --input-ipc-server=$mpv_dir/$ipc_file"
+    if [ "$format" != "yes" ]; then
+      switches="$switches --ytdl-format=$format"
+    fi
   fi
-  printf "HERE: %s\n" "${switches[@]}" "$format"
-  mpv "${switches[@]}" "$1"
+  notify-send -a mpv "PLAYING" "<span fgcolor='white'>$title</span>\nDuration: <span fgcolor='white'>$duration</span>\t Format:<span fgcolor='white'>$format</span>\nURL: <span fgcolor='white'>$url</span>"
+  # shellcheck disable=SC2086
+  mpv $switches "$ytdl$url"
   s="$?"
   rm "$mpv_dir/$f"
-  if ! [ $s -eq 0 ]; then
+  if [ $s -ne 0 ]; then
     notify-send -a mpv-fail "STOPED" "<span fgcolor='white'>mpv cound't open: $url</span>"
     return 1
   fi
-  save_video "$s"
+  #save_video "$s"
   return "$s"
+}
+
+menu() {
+  prompt=$1
+
+  while pgrep "$prog"; do
+    sleep 2
+  done
+  # set -f disable shell glob expansion
+  # shellcheck disable=2086
+  $prog $menuopt -p "$prompt"
 }
 
 if ! [ -f "$1" ]; then
@@ -120,28 +113,29 @@ if ! [ -f "$1" ]; then
   fi
   ! [ "$url" ] && return 1
   notify-send -a mpv " " "<span fgcolor='white'>Getting info for $url</span>"
-  get_title_duration "$url"
-  if ! [ "$title" ]
-  then
-    title="$url"
-  fi
+  get_title_duration "$url" |
+  while read -r duration title; do
+    [ -z "$title" ] && title="$url"
 
-  if ! [ "$format" ]; then
-    get_formats "$url"
-    while pgrep dmenu &>/dev/null; do
-      sleep 1
-    done
-    choose_format "$url"
-  fi
-  f=${title}
-  f=${f//\//|}
-  f=${f// /_}
+    [ -z "$formats" ] && formats=$(get_formats "$url")
+    if [ -z "$formats" ]; then
+      prompt="No video format found to: [$duration] \"$title\" (url: $url). Play it anyway?"
+      formats=$(printf '%s\n' "yes" "no")
+    else
+      title=$(printf '%.60s\n' "$title")
+      prompt="PLAY: [$duration] $title"
+    fi
+    # shellcheck disable=2086
+    printf "%s\n" "$formats" | menu "$prompt" | awk '{print $1}' | play "$url" "$duration" "$title"
+    
 
+    f=${title}
+    f=$(sed -e 's//\//|/' "$f")
+    f=$(sed -e 's// /_/' "$f")
+  done
 else
   title="${1##*/}"
-  watch "$1"
+  play "$1"
   return 0
 fi
-
-watch "$url"
 exit 0
