@@ -60,6 +60,7 @@ hook global BufCreate .* %{
 hook global WinSetOption filetype=sh %{
   set global lintcmd 'run() { shlint $kak_buffile; } && run'
   lint-enable
+    hook global BufWritePost .* lint
 }
 
 hook global WinSetOption filetype=man %{ remove-highlighter buffer/number_lines }
@@ -98,6 +99,21 @@ def ide %{
     set global docsclient tools
     set global toolsclient tools
     #gdb-enable-autojump
+}
+
+hook global KakBegin .* %{
+    evaluate-commands %sh{
+        path="$PWD"
+        while [ "$path" != "$HOME" ] && [ "$path" != "/" ]; do
+            if [ -e "./tags" ]; then
+                printf "%s\n" "set-option -add current ctagsfiles %{$path/tags}"
+                break
+            else
+                cd ..
+                path="$PWD"
+            fi
+        done
+    }
 }
 
 set global ui_options ncurses_assistant=dilbert
@@ -142,11 +158,16 @@ hook global WinSetOption filetype=python %{
     alias window lint-next flake8-diagnostics-next
 }
 
-#hook global WinSetOption filetype=asciidoc %{
-#    hook buffer BufWritePost .* %{
-#        %sh{asciidoc $kak_buffile}
-#    }
-#}
+hook global InsertChar k %{ try %{
+  exec -draft hH <a-k>jk<ret> d
+  exec <esc>
+}}
+
+hook global WinSetOption filetype=asciidoc %{
+  set global lintcmd 'arun() { lint-asciidoc $kak_buffile; } && arun'
+  lint-enable
+    hook global BufWritePost .* lint
+}
 
 hook global BufCreate (.*/)?PKGBUILD %{
     set buffer filetype sh
@@ -155,6 +176,7 @@ hook global BufCreate (.*/)?PKGBUILD %{
 hook global WinSetOption filetype=pascal %{
     map buffer object c :begin,end<ret> -docstring 'Pascal/Delphi begin/end block'
     lint-enable
+    hook global BufWritePost .* lint
 }
 
 hook global WinSetOption filetype=ada %{
