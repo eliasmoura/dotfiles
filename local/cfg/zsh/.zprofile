@@ -75,7 +75,7 @@ export XKB_DEFAULT_OPTIONS=compose:caps
 export ALTERNATE_EDITOR=""
 export EDITOR="kak"
 export VISUAL="less"
-export SUDO_EDITOR="nvim -Z"
+export SUDO_EDITOR="kak"
 
 export LESS=-RX
 
