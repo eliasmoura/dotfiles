@@ -162,25 +162,25 @@ mode "resize" {
     bindsym Right resize grow width 10 px or 10 ppt
 
 # return to default mode
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
+    bindsym Return mode default
+    bindsym Escape mode default
 }
 bindsym $mod+r mode "resize"
 
 mode "menu" {
-    bindsym v       exec --no-startup-id mpv-run "720"; mode "default"
-    bindsym Shift+v exec --no-startup-id mpv-run; mode "default"
-    bindsym o       exec --no-startup-id dmenu-run; mode "default"
-    bindsym p       exec --no-startup-id passmenu --type; mode "default"
-    bindsym shift+p exec --no-startup-id passmenu; mode "default"
+    bindsym v       exec --no-startup-id mpv-run "720"; mode default
+    bindsym Shift+v exec --no-startup-id mpv-run; mode default
+    bindsym o       exec --no-startup-id dmenu-run; mode default
+    bindsym p       exec --no-startup-id passmenu --type; mode default
+    bindsym shift+p exec --no-startup-id passmenu; mode default
 
 #Screenshots
-      bindsym s exec exec screenshot; mode "default"
-      bindsym Ctrl+s exec screenshot "fullscreen"; mode "default"
-      bindsym Ctrl+shift+s exec screenshot; mode "default"
+      bindsym s exec exec screenshot; mode default
+      bindsym Ctrl+s exec screenshot "fullscreen"; mode default
+      bindsym Ctrl+shift+s exec screenshot; mode default
 
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
+    bindsym Return mode default
+    bindsym Escape mode default
 }
 bindsym $mod+space mode menu
 
@@ -194,8 +194,8 @@ mode "mouse" {
     bindsym x       exec --no-startup-id xdotool click       3; 
      
 
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
+    bindsym Return mode default
+    bindsym Escape mode default
 }
 bindsym $mod+m mode mouse
 
@@ -230,10 +230,12 @@ for_window [class="Lazarus" title="Completion"] floating enable
 for_window [class="Basic_db" title="Form1"] floating enable
 no_focus [class="Lazarus" title="Messages"]
 
+for_window [instance="calibre-edit-book" title="Edit book"] floating enable
+
 no_focus [class="mpv"]
 
 assign [class="qutebrowser"] 1
-assign [class="Firefox"] 10
+assign [class="firefox"] 10
 assign [class="Chromium"] 9
 assign [class="mpv"] 4
 assign [class="Steam"] 5
