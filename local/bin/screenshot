@@ -1,30 +1,16 @@
 #!/bin/sh --
 
-area(){
-  maim -s "$1" && notify-send -a maim -c general "Screenshot taken." "$1" || notify-send -u critical -a maim -c general "Screenshot failed." "$1"
+screenshot(){
+  if maim -s "$1"; then
+    notify-send -a maim -c general "Screenshot taken." "$1"
+  else
+    notify-send -u critical -a maim -c general "Screenshot failed." "$1"
+  fi
 }
 
-fullscreen(){
-  maim "$1" && notify-send -a maim -c general "Fullscreen screenshot taken." "$1" || notify-send -u critical -a maim -c general "Screenshot failed." "$1"
-}
-
-record(){
-  eval "$(slop)"
-  maim -w "$W" -h "$H" -x "$X" -y "$Y" "$1"
-}
-#                         yyyy-mm-dd_hh-mm-ss
 path=~/pictures/screenshots/$(date +%F_%T).png
 case $1 in
-  window)
-    area "$path"
-    ;;
-  record)
-    record "$path"
-    ;;
-  fullscreen)
-    fullscreen "$path"
-    ;;
     *)
-      area "$path"
+      screenshot "$path"
     ;;
 esac
