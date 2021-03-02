@@ -1,9 +1,9 @@
-#!/usr/bin/env sh
+#!/bin/sh --
 
 ex=dmenu
 # shellcheck source=/home/kotto/local/cfg/bemenu/conf
 #source "$HOME/local/cfg/dmenu/conf"
-switches="--really-quiet --keep-open --pause --force-window=yes --ytdl-raw-options=yes-playlist=" #show the window even if it's just audio
+switches="--really-quiet --keep-open --pause --ytdl-raw-options=yes-playlist= --force-window=yes" #show the window even if it's just audio
 title=""
 formats=""
 format=""
