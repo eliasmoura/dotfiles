@@ -32,6 +32,7 @@ usage: $argv0 [!cmd [user/game]
  !bookmarks       - Show channels live from the ${XDG_DATA_HOME:-$HOME/share}/twitch/users file
  !game_list       - Show the list of all Streams Categories
  !programming     - Show the channels live from the Science & Technology category
+ !chess           - Show the channels live in the Chess category
  !user <user>     - Show the <user> archived videos and [live] if it is streaming now
  !game_name <cat> - Show the channels live from the <cat> category
  !update_user_list         - Update the ${XDG_DATA_HOME:-$HOME/share}/twitch/users
@@ -225,6 +226,14 @@ run(){
     !programming)
       #Science & Technology  509670
       get_game_status "game_id=509670" | menu "Programming"  |
+      while read -r _ user game lang title; do
+        lang=$(printf "%s\n" "$lang" | sed -e 's/[\]\[]//g')
+        printf "%s %s %s %s %s\n" "$user" "$game" "$base_url/$user" "$lang" "$title" |  play
+      done
+    ;;
+    !chess)
+      #Chess 743
+      get_game_status "game_id=743" | menu "Chess"  |
       while read -r _ user game lang title; do
         lang=$(printf "%s\n" "$lang" | sed -e 's/[\]\[]//g')
         printf "%s %s %s %s %s\n" "$user" "$game" "$base_url/$user" "$lang" "$title" |  play
