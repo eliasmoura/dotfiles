@@ -64,7 +64,8 @@ play (){
     if [ -z "$format" ] || [ "$format" = "no" ]; then
       return 0;
     fi
-    ipc_file=$(sed -e 's,|\|(\|)\|\$\|\\\|/\|?\|%\|>\|<\|&\|^\|}\|{,_,' "$title")
+    
+    ipc_file=$(printf "%s\n" "$title" | sed -e 's, \||\|(\|)\|\$\|\\\|/\|?\|%\|>\|<\|&\|^\|}\|{,_,g')
     switches="$switches --input-ipc-server=$mpv_dir/$ipc_file"
     if [ "$format" != "yes" ]; then
       switches="$switches --ytdl-format=$format"
@@ -74,7 +75,7 @@ play (){
   # shellcheck disable=SC2086
   mpv $switches "$ytdl$url"
   s="$?"
-  rm "$mpv_dir/$f"
+  rm "$mpv_dir/$ipc_file"
   if [ $s -ne 0 ]; then
     notify-send -a mpv-fail "STOPED" "<span fgcolor='white'>mpv cound't open: $url</span>"
     return 1
@@ -96,8 +97,11 @@ menu() {
 
 if ! [ -f "$1" ]; then
   case "$1" in
+    1080)
+      format="299+140/137+140/248+140/248+251/247+140/247+251/22/43/18/1080p/720p/420p/0/best"
+      ;;
     720)
-      format="137+140/248+140/248+251/247+140/247+251/22/43/18/1080p/720p/420p/0/best"
+      format="137+140/248+140/248+251/247+140/247+251/22/43/18/720p/420p/0/best"
       ;;
     360)
       format="43/18"
@@ -117,21 +121,20 @@ if ! [ -f "$1" ]; then
   while read -r duration title; do
     [ -z "$title" ] && title="$url"
 
-    [ -z "$formats" ] && formats=$(get_formats "$url")
-    if [ -z "$formats" ]; then
-      prompt="No video format found to: [$duration] \"$title\" (url: $url). Play it anyway?"
-      formats=$(printf '%s\n' "yes" "no")
+    if [ -z "$format" ]; then
+      formats=$(get_formats "$url")
+      if [ -z "$formats" ]; then
+        prompt="No video format found to: [$duration] \"$title\" (url: $url). Play it anyway?"
+        formats=$(printf '%s\n' "yes" "no")
+      else
+        title=$(printf '%.60s\n' "$title")
+        prompt="PLAY: [$duration] $title"
+      fi
+      # shellcheck disable=2086
+      printf "%s\n" "$formats" | menu "$prompt" | awk '{print $1}' | play "$url" "$duration" "$title"
     else
-      title=$(printf '%.60s\n' "$title")
-      prompt="PLAY: [$duration] $title"
+      printf "%s\n" "$format" | play "$url" "$duration" "$title"
     fi
-    # shellcheck disable=2086
-    printf "%s\n" "$formats" | menu "$prompt" | awk '{print $1}' | play "$url" "$duration" "$title"
-    
-
-    f=${title}
-    f=$(sed -e 's//\//|/' "$f")
-    f=$(sed -e 's// /_/' "$f")
   done
 else
   title="${1##*/}"
