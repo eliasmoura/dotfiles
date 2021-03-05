@@ -167,9 +167,10 @@ add_user() {
   user=$1
   user_list=$(cat "$user_list_file")
 
+  printf '%s\n' "$user_list"
   while read -r id bookmarked_user _; do
     [ "$user" = "$bookmarked_user" ] && return 1
-  done <<< "$user_list"
+  done
 
   id=$(get_user_id "$user")
   [ -z "$id" ] && return 1
