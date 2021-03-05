@@ -163,6 +163,21 @@ update_user_list() {
   fi
 }
 
+add_user() {
+  user=$1
+  user_list=$(cat "$user_list_file")
+
+  while read -r id bookmarked_user _; do
+    [ "$user" = "$bookmarked_user" ] && return 1
+  done <<< "$user_list"
+
+  id=$(get_user_id "$user")
+  [ -z "$id" ] && return 1
+
+  user=$(printf "%-15s%-20s\n" "$id" "$user")
+  printf '%s\n' "$user_list" "$user" | tee "$user_list_file"
+}
+
 menu() {
   title=$(printf "%.60s\n" "$1")
 
@@ -284,18 +299,13 @@ run(){
     !user_bookmark_add)
       user=$1
       if [ -n "$user" ]; then
-        printf '%s\n' "$user" >> "$user_list_file"
-        updated=$(update_user_list < "$user_list_file") && printf "%s\n" "$updated" | tee "$user_list_file"
+        add_user "$user"
       else
         # if no username is passed, then try to find from any `mpv` command
-        # that has 'www.twitch.tv/something. Where `something` is an alphanumeric word
-        pgrep -a mpv | awk 'BEGIN { FS = "/" } /www\.twitch\.tv/ $(NF) ~ /[:alnum:]|[:alpha:]/{print $(NF)}' |
+        # that has 'www.twitch.tv/username.
+        pgrep --list-full --exact mpv | awk 'BEGIN { FS = "/" } /www\.twitch\.tv/ && $(NF-1) !~ /videos/{print $(NF)}' |
         menu User: | while read -r user; do
-          new="true"
-          while read -r id bookmarked_user _; do
-            [ "$user" = "$bookmarked_user" ] && new= && break
-          done < "$user_list_file"
-        [ -n "$new" ] && run "!user_bookmark_add" "$user"
+        [ -n "$user" ] && run "!user_bookmark_add" "$user"
       done
       fi
     ;;
