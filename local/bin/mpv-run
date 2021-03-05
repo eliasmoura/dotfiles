@@ -1,25 +1,12 @@
 #!/bin/sh --
 
-ex=dmenu
-# shellcheck source=/home/kotto/local/cfg/bemenu/conf
-#source "$HOME/local/cfg/dmenu/conf"
 switches="--really-quiet --keep-open --pause --ytdl-raw-options=yes-playlist= --force-window=yes" #show the window even if it's just audio
-title=""
-formats=""
-format=""
-url=""
 prog=dmenu
 menuopt="-i -l 20"
-
-# prefix=(--prefix '⇒')
-num_lines="-l 25"
-# colors=(--hb '#ffffff' --ff '#007fce' --tf '#d2691e')
-opts="$num_lines -i"
-
-mpv_dir=${XDG_RUNTIME_DIR:-/tmp}/mpv
-if ! [ -d "$mpv_dir" ]; then
-  mkdir -p "$mpv_dir"
-fi
+dur_title_f=$(mktemp "${TMPDIR:-/tmp}"/dur_title.XXX)
+exec 3>"$dur_title_f"
+exec 4<"$dur_title_f"
+rm "$dur_title_f"
 
 get_formats (){
   youtube-dl --no-playlist --list-formats "$1" 2> /dev/null | awk '!/^\[|^format code/' |
@@ -27,61 +14,36 @@ get_formats (){
 }
 
 get_title_duration () {
-  case "$1" in
-    https://www.youtube.com/playlist?*|https://www.youtube.com/watch*list=*)
-  	opt="$opt --no-playlist"
-	;;
-  esac
   # shellcheck disable=2086
-  youtube-dl --get-title --get-duration $opt "$1" |
-  while read -r this; do printf '%s' "$this"; done | awk 'duration=$(NF), NF=(NF-1) { print duration,$0}'
-}
-
-save_video() {
-  opts="$opts -p \"Save video $title ?\""
-  save=$(find "$HOME/videos/" -type d | $ex "$opts")
-  if [ "$save" ]; then
-    ! [ -d "$save" ] && mkdir -p "$save"
-    #if [[ $? ]]; then
-      #notify-send "File \"${file##*/}\" saved in \"$save\""
-    #else
-      #notify-send -u critical "Cound'n save file \"$file\"!"
-    #fi
-  else
-    return 0
-  fi
+  youtube-dl --no-playlist --get-title --get-duration "$1" |
+  while read -r this; do printf ' %s' "$this"; done | awk 'duration=$(NF), NF=(NF-1) { print duration,$0}'
 }
 
 play (){
-  read -r format
   url=$1
-  if ! [ -e "$1" ]; then
-    ytdl="ytdl://"
-    shift
-    duration=$1
-    shift
-    title=$1
-    if [ -z "$format" ] || [ "$format" = "no" ]; then
-      return 0;
-    fi
-    
-    ipc_file=$(printf "%s\n" "$title" | sed -e 's, \||\|(\|)\|\$\|\\\|/\|?\|%\|>\|<\|&\|^\|}\|{,_,g')
-    switches="$switches --input-ipc-server=$mpv_dir/$ipc_file"
-    if [ "$format" != "yes" ]; then
-      switches="$switches --ytdl-format=$format"
-    fi
+  shift
+  format=$1
+  shift
+  duration=$1
+  shift
+  title=$1
+  if [ -z "$format" ] || [ "$format" = "no" ]; then
+    return 1;
   fi
-  notify-send -a mpv "PLAYING" "<span fgcolor='white'>$title</span>\nDuration: <span fgcolor='white'>$duration</span>\t Format:<span fgcolor='white'>$format</span>\nURL: <span fgcolor='white'>$url</span>"
+
+  if [ "$format" != "yes" ]; then
+    switches="$switches --ytdl-format=$format"
+    [ -z "$nformat" ] && nformat=$format
+  fi
+
+  notify-send -a mpv "PLAYING" "$title\nDuration: $duration\t Format:$nformat\nURL: $url"
   # shellcheck disable=SC2086
-  mpv $switches "$ytdl$url"
+  mpv $switches -- "$url"
   s="$?"
-  rm "$mpv_dir/$ipc_file"
   if [ $s -ne 0 ]; then
-    notify-send -a mpv-fail "STOPED" "<span fgcolor='white'>mpv cound't open: $url</span>"
+    notify-send -a mpv-fail "STOPED" "mpv cound't open: $url"
     return 1
   fi
-  #save_video "$s"
-  return "$s"
 }
 
 menu() {
@@ -98,27 +60,34 @@ menu() {
 if ! [ -f "$1" ]; then
   case "$1" in
     1080)
-      format="299+140/137+140/248+140/248+251/247+140/247+251/22/43/18/1080p/720p/420p/0/best"
+      format="299+140/248+140/248+251/247+140/247+251/137+140/136+140/22/43/18/1080p/720p/420p/0/best"
+      nformat=1080p
       ;;
     720)
-      format="137+140/248+140/248+251/247+140/247+251/22/43/18/720p/420p/0/best"
+      format="136+140/137+140/247+140/247+251/22/43/18/720p/420p/0/best"
+      nformat=720p
       ;;
     360)
       format="43/18"
+      nformat=360p
       ;;
     *)
       url="$1"
       ;;
   esac
 
-  if ! [ "$url" ]
-  then
+  if ! [ "$url" ]; then
     url=$(xsel --clipboard)
   fi
   ! [ "$url" ] && return 1
-  notify-send -a mpv " " "<span fgcolor='white'>Getting info for $url</span>"
-  get_title_duration "$url" |
-  while read -r duration title; do
+
+  notify-send -a mpv-run "Info" "Getting info for $url"
+
+  get_title_duration "$url" >&3
+
+  while read -r d t; do
+    title="$t"
+    duration="$d"
     [ -z "$title" ] && title="$url"
 
     if [ -z "$format" ]; then
@@ -130,15 +99,14 @@ if ! [ -f "$1" ]; then
         title=$(printf '%.60s\n' "$title")
         prompt="PLAY: [$duration] $title"
       fi
-      # shellcheck disable=2086
-      printf "%s\n" "$formats" | menu "$prompt" | awk '{print $1}' | play "$url" "$duration" "$title"
-    else
-      printf "%s\n" "$format" | play "$url" "$duration" "$title"
+      format=$(printf "%s\n" "$formats" | menu "$prompt" | awk '{print $1}')
     fi
-  done
+  done <&4
 else
-  title="${1##*/}"
-  play "$1"
-  return 0
+  format="??"
+  url="$1"
+  title="${url#*/}"
+  duration="??"
 fi
-exit 0
+
+play "$url" "$format" "$duration" "$title"
