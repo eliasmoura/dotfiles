@@ -169,10 +169,11 @@ bindsym $mod+r mode "resize"
 
 mode "menu" {
     bindsym v       exec --no-startup-id mpv-run "720"; mode default
+    bindsym Ctrl+v   exec --no-startup-id mpv-run "1080"; mode default
     bindsym Shift+v exec --no-startup-id mpv-run; mode default
     bindsym o       exec --no-startup-id dmenu-run; mode default
-    bindsym p       exec --no-startup-id passmenu --type; mode default
-    bindsym shift+p exec --no-startup-id passmenu; mode default
+    bindsym p       exec --no-startup-id passmenu --type -p "Passmenu" -l 10;  mode default
+    bindsym shift+p exec --no-startup-id passmenu -p "Passmenu" -l 10; mode default
 
 #Screenshots
       bindsym s exec exec screenshot; mode default
