@@ -1,40 +1,58 @@
 set global tabstop 2
-set global aligntab false
 set global indentwidth 2
 set global scrolloff 3,5
-set global incsearch true
 
-map global normal <a-m> :make
-map global normal <a-n> :make-next-error<ret>
-map global normal <a-p> :make-previous-error<ret>
-map global normal <a-M> :lint<ret><ret>
-map global normal <a-N> :lint-next-message<ret><ret>
-map global normal <a-P> :lint-prev-message<ret><ret>
-map global normal <c-w> %{:tmux-terminal-horizontal kak -c %val{session}<ret>}
-map global normal <c-e> %{:tmux-terminal-vertical kak -c %val{session}<ret>'}
+# plug-kak
+source "%val{config}/plugins/plug.kak/rc/plug.kak"
+plug "robertmeta/plug.kak" noload
+plug "occivink/kakoune-gdb"
+plug "whereswaldon/myrddin-kak"
+# plug-kak
 
-#set global modelinefmt '{red}%val{bufname}{default} %opt{filetype} %val{cursor_line}:%val{cursor_char_column} {{context_info}} {{mode_info}} - %val{client}@[%val{session}]'
+map global normal <c-a> ': alt<ret>'
+map global normal <a-m> ': make '
+map global normal <a-n> ': make-next-error<ret>'
+map global normal <a-p> ': make-previous-error<ret>'
+map global normal <a-M> ': lint<ret><ret>'
+map global normal <a-N> ': lint-next-message<ret><ret>'
+map global normal <a-P> ': lint-prev-message<ret><ret>'
+map global normal <c-w> ': tmux-terminal-horizontal kak -c %val{session}<ret>'
+map global normal <c-e> ': tmux-terminal-vertical kak -c %val{session}<ret>'
+map global normal '#'   ': comment-line<ret>'
+map global normal <a-#> ': comment-block<ret>'
+
+map global normal <F12> ': w<ret>: make<ret>'
+map global insert <F12> '<esc>: w<ret>: make<ret>'
+map global normal <F10> '<esc>: make-next-error<ret>'
+map global normal <F9>  '<esc>: make-next-error<ret>'
+
+map global normal <a-c> ': gdb-advance<ret>'
+map global normal <F5>  ': gdb-start<ret>'
+map global normal <F7>  ': gdb-next<ret>'
+map global normal <F8>  ': gdb-advance<ret>'
+map global normal <F4>  ': gdb-jump-to-location<ret>'
+map global normal <F6>  ': gdb-run<ret>'
+
+map global user b ': gdb-toggle-breakpoint<ret>'
+map global user k ': man<ret>' -docstring 'search selection in `man <word>`'
+map global user P '! xsel       --clipboard<ret>' -docstring 'Paste before'
+map global user p '<a-!> xsel   --clipboard<ret>' -docstring 'Paste after'
+map global user y '<a-|> xsel --clipboard<ret>' -docstring 'Yank selected text'
+
+hook global WinSetOption filetype=(?!makefile).* %{
+  set buffer indentwidth 1
+}
 
 hook global WinSetOption filetype=(vbs|batch) %{
-	set buffer indentwidth 1
+  set buffer indentwidth 1
   set buffer eolformat crlf
 }
 
 hook global WinSetOption filetype=(?!vbs\|batch\|makefile).* %{
-    hook global InsertChar \t %{
-      exec -draft -itersel h@
-    }
+  hook global InsertChar \t %{
+    exec -draft -itersel h@
+  }
 }
-
-#plug-kak
-source "%val{config}/plugins/plug.kak/rc/plug.kak"
-plug "andreyorst/plug.kak"
-plug "occivink/kakoune-gdb"
-plug "whereswaldon/myrddin-kak"
-
-# hook global WinSetOption filetype=(?!makefile).* %{
-    # set buffer indentwidth 1
-# }
 
 hook global NormalKey [/?*nN]|<a-[/?*nN]> %{ try %{
   add-highlighter dynregex '%reg{/}' 0:search
@@ -44,10 +62,7 @@ hook global NormalKey <esc> %{ try %{
   remove-highlighter dynregex_%reg{<slash>}
 }}
 
-hook global WinCreate .* %{
-  add-highlighter buffer/ regex (//|\*|#)\h*(TODO)[^\n]*      0:cyan 2:yellow
-  add-highlighter buffer/ regex (//|\*|#)\h*(XXX|NOTE)[^\n]*  0:cyan 2:yellow
-}
+add-highlighter global/ regex \b(TODO|FIXME|XXX|NOTE|TODO)\b 0:default+rb
 
 set global ignored_files '.*\.exe|.*\.dll|.*\.o|.*\.pyc|.*~|^#.*#|.*\.obj|\.git|tags'
 
@@ -58,104 +73,86 @@ hook global BufCreate .* %{
 }
 
 hook global WinSetOption filetype=sh %{
-  set global lintcmd 'run() { shlint $kak_buffile; } && run'
-  lint-enable
-    hook global BufWritePost .* lint
+  set-option window lintcmd 'run() { shellcheck --format=gcc $kak_buffile; } && run'
+  hook global BufWritePost .* lint
+}
+
+hook global WinSetOption filetype=make %{
+  set-option window lintcmd 'run() { make --dry-run $kak_buffile; } && run'
+  hook global BufWritePost .* lint
 }
 
 hook global WinSetOption filetype=man %{ remove-highlighter buffer/number_lines }
 
-map global normal '#' :comment-line<ret>
-map global normal '<a-#>' :comment-block<ret>
-
-map global normal '<F12>' %{ :w<ret>:make<ret> }
-map global insert '<F12>' %{ <esc>:w<ret>:make<ret> }
-map global normal '<F10>' %{ <esc>:make-next-error<ret> }
-map global normal '<F9>'  %{ <esc>:make-next-error<ret> }
-
-map -docstring 'Search word in `man <word>`' global user k :man<ret> 
-map global user p '!xsel --output --clipboard<ret>' -docstring 'Paste before'
-map global user p '<a-!>xsel --output --clipboard<ret>' -docstring 'Paste after'
-# #
-# ^
-# -
-# _
-# =
-# +
-map global normal <a-c> :gdb-advance<ret>
-map global normal <F5>  :gdb-start<ret>
-map global normal <F7>  :gdb-next<ret>
-map global normal <F8>  :gdb-advance<ret>
-map global normal <F4>  :gdb-jump-to-location<ret>
-map global normal <F6>  :gdb-run<ret>
-map global user   b     :gdb-toggle-breakpoint<ret>
-
 
 def ide %{
-    rename-client main
-    set global jumpclient main
+  rename-client main
+  set global jumpclient main
 
-    tmux-terminal-horizontal kak -c %val{session} -e 'rename-client tools'
-    set global docsclient tools
-    set global toolsclient tools
-    #gdb-enable-autojump
+  tmux-terminal-horizontal kak -c %val{session} -e 'rename-client tools'
+  set global docsclient tools
+  set global toolsclient tools
+  #gdb-enable-autojump
 }
 
 hook global KakBegin .* %{
-    evaluate-commands %sh{
-        path="$PWD"
-        while [ "$path" != "$HOME" ] && [ "$path" != "/" ]; do
-            if [ -e "./tags" ]; then
-                printf "%s\n" "set-option -add current ctagsfiles %{$path/tags}"
-                break
-            else
-                cd ..
-                path="$PWD"
-            fi
-        done
-    }
+  evaluate-commands %sh{
+      path="$PWD"
+      while [ "$path" != "$HOME" ] && [ "$path" != "/" ]; do
+          if [ -e "./tags" ]; then
+              printf "%s\n" "set-option -add current ctagsfiles %{$path/tags}"
+              break
+          else
+              cd ..
+              path="$PWD"
+          fi
+      done
+  }
 }
 
 set global ui_options ncurses_assistant=dilbert
 
 hook global WinSetOption filetype=c %{
-    %sh{
-        switches="-Werror -Wextra -Wall -std=c99 -pedantic -Wno-unused-parameter -Wno-missing-field-initializers"
-        if [[ $PWD =~ /home/kotto/code/c/ ]]; then
+  evaluate-commands %sh{
+      switches="-Werror -Wextra -Wall -std=c99 -pedantic -Wno-unused-parameter -Wno-missing-field-initializers"
+      if [[ $PWD =~ "/home/kotto/code/c/" ]]; then
+         switches="$switches"
+        if [[ $PWD =~ "/home/kotto/code/c/gui-playground/" ]]; then
+            switches="$switches -I/usr/include/freetype2"
+        elif [[ $PWD =~ "/home/kotto/code/c/atmega" ]]; then
            switches="$switches"
-          if [[ $PWD =~ /home/kotto/code/c/gui-playground/ ]]; then
-              switches="$switches -I/usr/include/freetype2"
-          elif [[ $PWD =~ /home/kotto/code/c/atmega ]]; then
-             switches="$switches"
-          elif [[ $PWD =~ /home/kotto/code/c/cgi ]]; then
-             switches="$switches -I/usr/include/ClearSilver"
-         fi
-        switches="$switches -I/usr/include/ClearSilver"
-        switches="$switches -I/usr/include/freetype2"
+        elif [[ $PWD =~ "/home/kotto/code/c/cgi" ]]; then
+           switches="$switches -I/usr/include/ClearSilver"
        fi
-       if [[ $PWD =~ /home/kotto/code/arm/stm/f1 ]]; then
-         switches="$switches -I/home/kotto/code/arm/stm/f1/stm32/device/"
-       elif [[ $PWD =~ /home/kotto/code/arm/stm/f4 ]]; then
-         switches="$switches -I/home/kotto/code/arm/stm/f4/stm32/device/"
-       fi
-       #printf "set buffer clang_options '%s'\n" "$switches"
-    }
+      switches="$switches -I/usr/include/freetype2"
+     fi
+     if [[ $PWD =~ "/home/kotto/code/arm/stm/f1" ]]; then
+       switches="$switches -I/home/kotto/code/arm/stm/f1/stm32/device/"
+     elif [[ $PWD =~ "/home/kotto/code/arm/stm/f4" ]]; then
+       switches="$switches -I/home/kotto/code/arm/stm/f4/stm32/device/"
+     fi
+     printf "set-option -add buffer clang_options '%s'\n" "$switches"
+  }
 }
 
 hook global WinSetOption filetype=(c|cpp) %{
-    clang-enable-autocomplete 
-    clang-enable-diagnostics
-    set buffer tabstop 2
-    alias window lint clang-parse
-    alias window lint-next clang-diagnostics-next
-    hook global BufWritePost .* lint
+  clang-enable-autocomplete 
+  clang-enable-diagnostics
+  set buffer tabstop 2
+  alias window clang clang-parse
+  alias window clang-next clang-diagnostics-next
+  hook global BufWritePost .* clang
+  set-option window lintcmd "cppcheck --language=c++ --enable=warning,style,information --template='{file}:{line}:{column}: {severity}: {message}' --suppress='*:*.h' --suppress='*:*.hh' 2>&1"
+  hook global BufWritePost .* lint
+  set window formatcmd 'clang-format'
+  hook buffer BufWritePre .* %{format}
 }
 
 hook global WinSetOption filetype=python %{
-    jedi-enable-autocomplete
-    flake8-enable-diagnostics
-    alias window lint flake8-lint
-    alias window lint-next flake8-diagnostics-next
+  jedi-enable-autocomplete
+  flake8-enable-diagnostics
+  alias window lint flake8-lint
+  alias window lint-next flake8-diagnostics-next
 }
 
 hook global InsertChar k %{ try %{
@@ -164,23 +161,21 @@ hook global InsertChar k %{ try %{
 }}
 
 hook global WinSetOption filetype=asciidoc %{
-  set global lintcmd 'arun() { lint-asciidoc $kak_buffile; } && arun'
-  lint-enable
-    hook global BufWritePost .* lint
+  set-option window lintcmd 'run() { lint-asciidoc $kak_buffile; } && run'
+  hook global BufWritePost .* lint
 }
 
 hook global BufCreate (.*/)?PKGBUILD %{
-    set buffer filetype sh
+  set buffer filetype sh
 }
 
 hook global WinSetOption filetype=pascal %{
-    map buffer object c :begin,end<ret> -docstring 'Pascal/Delphi begin/end block'
-    lint-enable
-    hook global BufWritePost .* lint
+  map buffer object c :begin,end<ret> -docstring 'Pascal/Delphi begin/end block'
+  hook global BufWritePost .* lint
 }
 
 hook global WinSetOption filetype=ada %{
-    map buffer object c :begin,end<ret> -docstring 'Ada begin/end block'
+  map buffer object c :begin,end<ret> -docstring 'Ada begin/end block'
 }
 
 colorscheme desertex
