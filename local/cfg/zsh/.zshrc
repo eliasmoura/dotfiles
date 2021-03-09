@@ -137,7 +137,7 @@ alias chgrp='chgrp -c --preserve-root'
 
 alias ls='ls --color=auto --show-control-chars --group-directories-first -AhXF'
 alias ll='ls --color=auto --show-control-chars --group-directories-first -AlhXF'
-alias lsblk='lsblk -oNAME,SIZE,OWNER,GROUP,MODE,FSTYPE,LABEL,MOUNTPOINT,UUID'
+alias lsblk='lsblk -oNAME,SIZE,FSAVAIL,OWNER,GROUP,MODE,FSTYPE,LABEL,MOUNTPOINT,UUID'
 
 alias dmesg=dmesg -exL
 alias weechat='weechat - $XDG_CONFIG_HOME/weechat'
