@@ -13,9 +13,10 @@ rm "$dur_title_f"
 
 usage() {
  cat <<EOF
-usage: $argv0 [(resolution/format)|url]
+usage: $argv0 [(resolution/format)|url|-h]
   resolution/format is either 1080p/720p/360p
   url is the url to the video. If the url is not passed in the program args, it will try to it from the clipboard.
+  -h|--help show this help
 EOF
 }
 
@@ -81,6 +82,9 @@ if ! [ -f "$1" ]; then
       format="43/18"
       nformat=360p
       ;;
+    -h|--help)
+     usage
+     ;;
     *)
       url="$1"
       ;;
