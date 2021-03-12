@@ -1,4 +1,6 @@
 #!/bin/sh --
+# Open whatever video either local or remote using mpv and youtube-dl
+# requires awk pgrep(procps-ng) youtube-dl mpv
 
 argv0=$(basename "$0")
 switches="--really-quiet --keep-open --pause --ytdl-raw-options=yes-playlist= --force-window=yes" #show the window even if it's just audio
