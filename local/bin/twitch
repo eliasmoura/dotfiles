@@ -25,18 +25,19 @@ fi
 
 
 usage() {
-  # This  "\r" is used to check if the command passed has the description on it.
-  # So, it is not possible to pass a "\r" to a command as it will get the first string before a \s
+  # This usage helper is used as a menu of some sort. And Those  "\r" are used
+  # to check if the command passed has the description on it. So, it is not
+  # possible to pass a "\r" to a command as it will get the first string before a \r
   cat <<EOF
 usage: $argv0 [!cmd [user/game]
- !bookmarks       - Show channels live from the ${XDG_DATA_HOME:-$HOME/share}/twitch/users file
+ !bookmarks       - Show channels live from the "$user_list_file bookmark file
  !game_list       - Show the list of all Streams Categories
  !programming     - Show the channels live from the Science & Technology category
  !chess           - Show the channels live in the Chess category
- !user <user>     - Show the <user> archived videos and [live] if it is streaming now
- !game_name <cat> - Show the channels live from the <cat> category
- !update_user_list         - Update the ${XDG_DATA_HOME:-$HOME/share}/twitch/users
- !user_bookmark_add <user> - Add user to the !user_list bookmarks file
+ !user [user]     - Show the user archived videos and the [live] if it is streaming now
+ !game_name [cat] - Show the channels live from the <cat> category
+ !update_user_list         - Update the "$user_list_file"
+ !user_bookmark_add [user] - Add user to the "$user_list_file" bookmarks file
 EOF
 }
 
