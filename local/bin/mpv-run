@@ -18,8 +18,7 @@ EOF
 }
 
 get_formats (){
-  youtube-dl --no-playlist --list-formats "$1" 2> /dev/null | awk '!/^\[|^format code/' |
-  while read -r format; do printf "%s\n" "$format"; done
+  youtube-dl --no-playlist --list-formats "$1" 2> /dev/null | awk '!/^\[|^format code/'
 }
 
 get_title_duration () {
