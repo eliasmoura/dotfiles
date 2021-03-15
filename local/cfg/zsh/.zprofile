@@ -79,7 +79,7 @@ export WWW_HOME=archlinux.org
 export PAGER=less
 
 export BROWSER=plumber
-export TERMINAL=termite
+export TERMINAL=alacritty
 
 # Disable Mono and Gecko installation and .desktop creation.
 export WINEDLLOVERRIDES=winemenubuilder.exe,mscoree,mshtml=d
