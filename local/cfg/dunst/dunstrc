@@ -208,14 +208,6 @@
 # to "".
 # NOTE: It might be helpful to run dunst -print in a terminal in order
 # to find fitting options for rules.
-[bspwm]
-  appname = BSPWM
-  urgency = low
-
-[swm]
-  appname = swm
-  urgency = low
-
 [skype]
   appname = Skype
   summary = "*"
@@ -233,6 +225,11 @@
   new_icon    = applications-multimedia-symbolic.symbolic
 
 [mpv]
+  appname     = mpv
+  urgency     = low
+  new_icon    = applications-multimedia-symbolic.symbolic
+
+[mpv-run]
   appname     = mpv
   urgency     = low
   new_icon    = applications-multimedia-symbolic.symbolic
