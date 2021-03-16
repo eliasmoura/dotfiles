@@ -1,0 +1,33 @@
+#!/usr/bin/sh --
+# Simple tool to output data to tmux
+
+color='#[fg=colour0]'
+red='#[fg=colour1]'
+blue='#[fg=colour4]'
+yellow='#[fg=colour3]'
+
+status=''
+type=''
+
+while true; do 
+  for power in /sys/class/power_supply/*; do
+    type=$(cat "$power"/type)
+    if [ "$type" = "Mains" ]; then
+      type="AC"
+      status=$(cat "$power"/online)
+      [ "$status" = "1" ] && printf '%s%s\n' "$blue" "$type" && break
+    else
+      type=$(basename "$power")
+      status=$(cat "$power"/status)
+      capacity=$(cat "$power"/capacity)
+      if [ "$status" = "Dischargin" ]; then
+        if [ "$capacity" -lt 30 ]; then color="$red"
+        else color="$yellow"; fi
+      elif [ "$status" = "Charging" ]; then color="$yellow"
+      else color="$blue"; fi
+      
+       printf '%s%s:%s\n' "$color" "$type" "$status" && break
+    fi
+  done
+  sleep 10
+done
