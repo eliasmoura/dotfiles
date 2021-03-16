@@ -5,11 +5,10 @@ hwdec-codecs=all
 #cache-default=1073741824
 #loop-file=yes
 volume=60
-# script-opts=osc-layout=bottombar
-#cache-default=50000
 cache-on-disk=yes
-cache-secs=960
+demuxer-max-bytes=2048MiB
 cache-dir=/home/kotto/local/share/mpv
+screenshot-directory=~/pictures/screenshots/mpv
 
 slang=en
 
@@ -17,7 +16,6 @@ slang=en
 terminal=no
 force-window=yes
 idle=once
-screenshot-directory=~/pictures/screenshots
 
 
 #Workarround to stream sites
