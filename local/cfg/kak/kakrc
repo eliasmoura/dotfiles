@@ -14,8 +14,10 @@ map global normal <a-m> ': make '
 map global normal <a-n> ': make-next-error<ret>'
 map global normal <a-p> ': make-previous-error<ret>'
 map global normal <a-M> ': lint<ret><ret>'
-map global normal <a-N> ': lint-next-message<ret><ret>'
-map global normal <a-P> ': lint-prev-message<ret><ret>'
+map global normal <a-N> ': lint-next-message<ret>'
+map global normal <a-P> ': lint-prev-message<ret>'
+map global normal <c-l> ': clang-parse<ret>'
+map global normal <c-n> ': clang-diagnostics-next<ret>'
 map global normal <c-w> ': tmux-terminal-horizontal kak -c %val{session}<ret>'
 map global normal <c-e> ': tmux-terminal-vertical kak -c %val{session}<ret>'
 map global normal '#'   ': comment-line<ret>'
@@ -34,10 +36,10 @@ map global normal <F4>  ': gdb-jump-to-location<ret>'
 map global normal <F6>  ': gdb-run<ret>'
 
 map global user b ': gdb-toggle-breakpoint<ret>'
-map global user k ': man<ret>' -docstring 'search selection in `man <word>`'
+map global user k ': man<ret>'  -docstring 'search selection in `man <word>`'
 map global user P '! xsel       --clipboard<ret>' -docstring 'Paste before'
 map global user p '<a-!> xsel   --clipboard<ret>' -docstring 'Paste after'
-map global user y '<a-|> xsel --clipboard<ret>' -docstring 'Yank selected text'
+map global user y '<a-|> xsel   --clipboard<ret>' -docstring 'Yank selected text'
 
 hook global WinSetOption filetype=(?!makefile).* %{
   set buffer indentwidth 1
@@ -139,13 +141,12 @@ hook global WinSetOption filetype=(c|cpp) %{
   clang-enable-autocomplete 
   clang-enable-diagnostics
   set buffer tabstop 2
-  alias window clang clang-parse
-  alias window clang-next clang-diagnostics-next
-  hook global BufWritePost .* clang
-  set-option window lintcmd "cppcheck --language=c++ --enable=warning,style,information --template='{file}:{line}:{column}: {severity}: {message}' --suppress='*:*.h' --suppress='*:*.hh' 2>&1"
-  hook global BufWritePost .* lint
+  set buffer indentwidth 2
   set window formatcmd 'clang-format'
-  hook buffer BufWritePre .* %{format}
+  hook buffer BufWritePre .* format
+  hook global BufWritePost .* clang-parse
+  set-option window lintcmd "cppcheck --language=c++ --std=c11 --enable=warning,style,information --template='{file}:{line}:{column}: {severity}: {message}' --suppress='*:*.h' --suppress='*:*.hh' 2>&1"
+  # hook global BufWritePost .* lint
 }
 
 hook global WinSetOption filetype=python %{
