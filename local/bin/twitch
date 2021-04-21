@@ -7,10 +7,10 @@ argv0=twitch
 
 dir=${XDG_DATA_HOME:-$HOME/share}/twitch
 info=${dir:-.}/info
+# shellcheck source=/home/kotto/local/share/twitch/info
+. "$info"
 user_list_file=${dir:-.}/users
-c_id=$(awk '/^client-id/{print $2}' "$info")
-bearer_token=$(awk '/^bearer-token/{print $2}' "$info")
-#secrete_id=$(awk '/^secret-id/{print $2}' "$info")
+
 base_url="https://www.twitch.tv"
 
 prog=dmenu
@@ -38,13 +38,14 @@ usage: $argv0 [!cmd [user/game]
  !game_name [cat] - Show the channels live from the <cat> category
  !update_user_list         - Update the "$user_list_file"
  !user_bookmark_add [user] - Add user to the "$user_list_file" bookmarks file
+ !update_token             - Update the ouath2 token.
 EOF
 }
 
 get() {
   query="$1"
   jq_query="$2"
-  curl -sH "Client-ID: $c_id" -H "Authorization: Bearer $bearer_token" -X GET "https://api.twitch.tv/helix/$query" | jq -r "$jq_query"
+  curl -sH "Client-ID: $client_id" -H "Authorization: Bearer $bearer_token" -X GET "https://api.twitch.tv/helix/$query" | jq -r "$jq_query"
 }
 
 get_game_name() {
@@ -55,14 +56,40 @@ get_game_id() {
   get "games?name=$1" '.data[]  | .id'
 }
 
+update_token() {
+  url=$1
+  if [ "$url" = "update" ]; then url=$(xsel -ob); fi
+  if [ -n "$url" ]; then
+    token=$(printf '%s\n' "$url" | awk -F '&' '/access_token/{split($1, token); FS="#"; split(token[1], token); FS="="; split(token[2], token); print token[2]}')
+    if [ -n "$token" ]; then
+      tmp=$(sed -e "s/^\(bearer_token=\).*/\1'$token'/" "$info")
+      if [ -n "$tmp" ]; then
+        notify-send -a twitch-info "Update" "The access_token has been update!"
+        printf '%s\n' "$tmp" > "$info"
+      else
+        qutebrowser "$ouath2_url$client_id&$ouath2_permissions"
+      fi
+    fi
+  fi
+}
+
 get_list() {
   query="$1"
   jq_query="$2"
   cursor=""
-  r=$(curl -sH "Client-ID: $c_id" -H "Authorization: Bearer $bearer_token" -X GET "https://api.twitch.tv/helix/$query&first=100&after=$cursor")
+  r=$(curl -sH "Client-ID: $client_id" -H "Authorization: Bearer $bearer_token" -X GET "https://api.twitch.tv/helix/$query&first=100&after=$cursor")
 
   while test -n "$r"; do
-    printf "%s\n" "$r" | jq -r "$jq_query" || return
+    if ! printf "%s\n" "$r" | jq -r "$jq_query"; then
+      msg=$(printf '%s\n' "$r" | jq -r '.message')
+      notify-send -a twitch-fail "Error" "$msg"
+      if [ "$msg" = "Invalid OAuth token" ]; then
+        notify-send -a twitch-fail "Error" "Trying to update the token. Please, invode '!update_token <url_returned_from_twitch_ouath2>'"
+        update_token update
+      fi
+      exit 1
+    fi
+
     cursor=$(printf "%s\n" "$r" | jq -r '.pagination[]')
 
     # NOTE(elias): Twitch changes the end of the pagination depending what
@@ -76,7 +103,7 @@ get_list() {
       *IA) return ;;
     esac
 
-    r="$(curl -sH "Client-ID: $c_id" -H "Authorization: Bearer $bearer_token" -X GET "https://api.twitch.tv/helix/$query&first=100&after=$cursor")"
+    r="$(curl -sH "Client-ID: $client_id" -H "Authorization: Bearer $bearer_token" -X GET "https://api.twitch.tv/helix/$query&first=100&after=$cursor")"
   done
 }
 
@@ -97,20 +124,18 @@ get_game_status() {
       gname="$tgname"
     fi
     gname=$(printf "%s\n" "$gname" | sed -e 's/ /_/g')
-    printf "%-6s %-20s  %-20s [%s] %s\n" "$views" "$uname" "$gname" "$lang" "$title"
+    printf "%-6s %-25s  %-20s [%s] %s\n" "$views" "$uname" "$gname" "$lang" "$title"
   done
 }
 
 get_users_status() {
   read -r list
-  set  -x
   get_list "streams?${list%&}" '.data[]  | [.user_name, .game_id, .type, .language, .title] | @tsv' |
   while read -r user game _ lang title; do
     game=$(get_game_name "$game")
     game=$(printf "%s" "$game" | sed -e 's/ /_/g')
     printf '%-18ls %-20ls %ls %ls\n' "$user" "$game" "$lang" "\"$title\""
-done
-set +x
+  done
 }
 
 get_user_id() {
@@ -199,12 +224,9 @@ get_format(){
 
 play() {
   o="$o --keep-open --pause --force-window=yes"
-  set -x
   read -r user game url lang title
   if [ "$user" ]; then
-    set -x
     format=$(get_format "$url" "$user [$game] $title")
-    set +x
     if [ "$format" ]; then
       o="$o --ytdl-format=$format"
       game=$(printf "%s" "$game" | sed -e 's/_/ /')
@@ -212,13 +234,12 @@ play() {
       # set -f disable shell glob expansion
       # shellcheck disable=2086
       $player $o --title="$user [$lang|$game] - $title" -- "$url"
-      set +f
     fi
   fi
-  set +x
 }
 
 run(){
+      set -x
   opt="$1"
   shift
   case "$@" in **) shift $# ;; esac
@@ -322,6 +343,10 @@ run(){
     ;;
     help|--help|-h|-help)
       usage
+    ;;
+    !update_token)
+      # NOTE(elias) for now this will need to be done manually.
+      update_token update
     ;;
     *)
       run "!menu"
