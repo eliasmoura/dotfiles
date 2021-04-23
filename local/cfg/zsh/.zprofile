@@ -69,9 +69,9 @@ export XKB_DEFAULT_OPTIONS=compose:caps
 #export XAUTHORITY=$XDG_RUNTIME_DIR/x11/xauthority
 
 export ALTERNATE_EDITOR=""
-export EDITOR="kak"
+export EDITOR="nvim"
 export VISUAL="less"
-export SUDO_EDITOR="kak"
+export SUDO_EDITOR="nvim"
 
 export LESS=-RX
 

@@ -74,8 +74,8 @@ force_display_urgency_hint 600 ms
 #
 #
 workspace 1 output DP1
-workspace 3 output eDP1
 workspace 2 output DP1
+workspace 3 output eDP1
 workspace 4 output DP1
 workspace 5 output DP1
 workspace 8 output eDP1
@@ -254,7 +254,7 @@ bar {
   position top
   mode hide
   status_command LC_CTYPE=en_US.utf8 i3status -c ~/local/cfg/i3status/i3status.conf
-  tray_output eDP1
+  tray_output eDP-1
     colors {
       statusline #ffffff
       background #323232
