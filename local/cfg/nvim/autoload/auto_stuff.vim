@@ -1,5 +1,5 @@
 au BufEnter *.log,*.txt setlocal ft=txt
-augroup GOTO_LAST_LINE_WHENCLOSED
+augroup go_last_pos
   autocmd!
   autocmd BufReadPost *
       \ if line("'\"") >= 1 && line("'\"") <= line("$") |
