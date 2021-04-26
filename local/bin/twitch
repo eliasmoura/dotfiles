@@ -7,13 +7,14 @@ argv0=twitch
 
 dir=${XDG_DATA_HOME:-$HOME/share}/twitch
 info=${dir:-.}/info
-# shellcheck source=/home/kotto/local/share/twitch/info
+#shellcheck source=/home/kotto/local/share/twitch/info
+#shellcheck disable=SC1091
 . "$info"
 user_list_file=${dir:-.}/users
 
 base_url="https://www.twitch.tv"
 
-prog=dmenu
+prog=bemenu
 menuopt="-i -l 20"
 player=mpv
 if [ -n "$ARCAN_CONNPATH" ]; then
@@ -25,26 +26,27 @@ fi
 
 
 usage() {
-  # This usage helper is used as a menu of some sort. And Those  "\r" are used
-  # to check if the command passed has the description on it. So, it is not
-  # possible to pass a "\r" to a command as it will get the first string before a \r
+  # This usage helper is used as a menu of some sort. A '\t' (tab) is used to
+  # separate the menu options from the description. So, it is not possible to
+  # pass a "\r" to a command as it will get the first string before a \r
   cat <<EOF
 usage: $argv0 [!cmd [user/game]
- !bookmarks       - Show channels live from the "$user_list_file bookmark file
- !game_list       - Show the list of all Streams Categories
- !programming     - Show the channels live from the Science & Technology category
- !chess           - Show the channels live in the Chess category
- !user [user]     - Show the user archived videos and the [live] if it is streaming now
- !game_name [cat] - Show the channels live from the <cat> category
- !update_user_list         - Update the "$user_list_file"
- !user_bookmark_add [user] - Add user to the "$user_list_file" bookmarks file
- !update_token             - Update the ouath2 token.
+ !bookmarks       	- Show channels live from the "$user_list_file bookmark file
+ !game_list       	- Show the list of all Streams Categories
+ !programming     	- Show the channels live from the Science & Technology category
+ !chess           	- Show the channels live in the Chess category
+ !user [user]     	- Show the user archived videos and the [live] if it is streaming now
+ !game_name [cat] 	- Show the channels live from the <cat> category
+ !update_user_list        	- Update the "$user_list_file"
+ !user_bookmark_add [user]	- Add user to the "$user_list_file" bookmarks file
+ !update_token            	- Update the ouath2 token.
 EOF
 }
 
 get() {
   query="$1"
   jq_query="$2"
+# shellcheck disable=SC2154
   curl -sH "Client-ID: $client_id" -H "Authorization: Bearer $bearer_token" -X GET "https://api.twitch.tv/helix/$query" | jq -r "$jq_query"
 }
 
@@ -67,6 +69,7 @@ update_token() {
         notify-send -a twitch-info "Update" "The access_token has been update!"
         printf '%s\n' "$tmp" > "$info"
       else
+# shellcheck disable=SC2154
         qutebrowser "$ouath2_url$client_id&$ouath2_permissions"
       fi
     fi
@@ -223,7 +226,7 @@ get_format(){
 }
 
 play() {
-  o="$o --keep-open --pause --force-window=yes"
+  o="$o --keep-open --pause --force-window=yes --really-quiet"
   read -r user game url lang title
   if [ "$user" ]; then
     format=$(get_format "$url" "$user [$game] $title")
@@ -239,7 +242,6 @@ play() {
 }
 
 run(){
-      set -x
   opt="$1"
   shift
   case "$@" in **) shift $# ;; esac
@@ -284,8 +286,8 @@ run(){
       done
     ;;
     !menu)
-      opt=$(usage | awk '!/usage/' | menu "Cmd: ")
-      case "$opt" in **) opt=$(printf '%s\n' "$opt" | awk '{print $1}') ;; esac
+      opt=$(usage | awk '!/^usage/' | menu "Twitch commands: ")
+      opt=$(printf '%s\n' "$opt" | awk -F '\t' '/^.*/{print $1}')
       if [ "$opt" ]; then
         run "$opt"
       fi
@@ -302,7 +304,7 @@ run(){
           id=$(get_user_id "$user")
         fi
 
-        get_video "$user" "$id" | menu "Video:" |
+        get_video "$user" "$id" | menu "$user videos:" |
         while read -r id pub url lang title; do
           game="???"
           if [ "$id" = "[live]" ]; then
