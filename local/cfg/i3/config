@@ -1,9 +1,7 @@
 #~/local/cfg/i3/config
 
+font pango:Noto Sans 14
 
-font pango:Inconsolata 14
-#
-# Logo key. Use Mod1 for mod1.
 set $mod Mod4
 # Home row direction keys, like vim
 set $left h
@@ -18,7 +16,6 @@ set $menu /home/kotto/local/bin/bemenu
 focus_follows_mouse no
 
 ### Key bindings
-#
 # start a terminal
 bindsym $mod+Return exec $term
 
@@ -194,13 +191,11 @@ mode "mouse" {
     bindsym space   exec --no-startup-id xdotool click       1; 
     bindsym c       exec --no-startup-id xdotool click       2; 
     bindsym x       exec --no-startup-id xdotool click       3; 
-     
 
     bindsym Return mode default
     bindsym Escape mode default
 }
 bindsym $mod+m mode mouse
-
 
 # volume controls (special keys on keyboard)
 bindsym XF86AudioMute exec ponymix toggle
@@ -261,5 +256,3 @@ bar {
       inactive_workspace #32323200 #32323200 #5c5c5c
     }
 }
-
-# include /etc/sway/config.d/*
