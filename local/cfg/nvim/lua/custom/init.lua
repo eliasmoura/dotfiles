@@ -33,7 +33,6 @@ require('custom.lsp')
 vim.keymap.nnoremap{'<silent> <leader>'     , ':<c-u>WhichKey <\\Space><CR>'}
 vim.keymap.nnoremap{'<silent> <localleader>',  ':<c-u>WhichKey  ,<CR>'}
 
-
 -- Trying to decide whether to use nvim-compe or completion-nvim
 -- Use completion-nvim in every buffer
 vim.cmd [[autocmd BufEnter * lua require('completion').on_attach()]]

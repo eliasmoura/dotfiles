@@ -40,24 +40,29 @@ inoremap{'<c-f>', '<c-x><c-f>'}
 inoremap{'<c-d>', '<c-x><c-d>'}
 inoremap{'<c-l>', '<c-x><c-l>'}
 
--- LSP)
-nnoremap{'<leader>dh', vim.lsp.buf.hover}
-nnoremap{'<leader>ds', vim.lsp.buf.hover}
-nnoremap{'<leader>tr', vim.lsp.buf.rename}
-nnoremap{'<leader>da', vim.lsp.diagnostic.goto_prev}
-nnoremap{'<M-n>', vim.lsp.diagnostic.goto_next}
-nnoremap{'<M-p>', vim.lsp.diagnostic.goto_prev}
-nnoremap{'<M-o>', vim.lsp.diagnostic.show_line_diagnostics}
-nnoremap{'<M-Q>', vim.lsp.util.set_qflist}
-nnoremap{'<M-q>', vim.lsp.util.set_loclist}
--- nnoremap{'<c-]>', vim.lsp.buf.definition}
---
-nnoremap{'<M-c>', vim.fn['lclose']}
-nnoremap{'<C-n>', vim.fn['lnext']}
-nnoremap{'<C-p>', vim.fn['lprev']}
-nnoremap{'<C-S-c>', vim.fn['cclose']}
-nnoremap{'<C-S-n>', vim.fn['cnext']}
-nnoremap{'<C-S-p>', vim.fn['cprev']}
+-- LSP
+function lsp_on_attach()
+  nnoremap{'<leader>lf', vim.lsp.buf.formatting}
+  nnoremap{'<leader>ls', vim.lsp.buf.document_symbol}
+  nnoremap{'<s-k>', vim.lsp.buf.hover}
+  nnoremap{'<leader>lr', vim.lsp.buf.references}
+  nnoremap{'<leader>lR', vim.lsp.buf.rename}
+  nnoremap{'<leader>dg', vim.lsp.diagnostic.get_all}
+  nnoremap{'<leader>da', vim.lsp.diagnostic.goto_prev}
+  nnoremap{'<M-n>', vim.lsp.diagnostic.goto_next}
+  nnoremap{'<M-p>', vim.lsp.diagnostic.goto_prev}
+  nnoremap{'<M-o>', vim.lsp.diagnostic.show_line_diagnostics}
+  nnoremap{'<M-Q>', vim.lsp.util.set_qflist}
+  nnoremap{'<M-q>', vim.lsp.util.set_loclist}
+  nnoremap{'<c-]>', vim.lsp.buf.definition}
+end
+
+nnoremap{'<M-c>',   ':lclose<cr>'}
+nnoremap{'<C-n>',   ':lnext<cr>'}
+nnoremap{'<c-p>',   ':lprev<cr>'}
+nnoremap{'<m-s-c>', ':cclose<cr>'}
+nnoremap{'<m-s-n>', ':cnext<cr>'}
+nnoremap{'<m-s-p>', ':cprev<cr>'}
 
 --Telescope
 local tl = require("custom.telescope")
@@ -79,7 +84,7 @@ nnoremap{'<leader>rr',      tl.reloader}
 -- Vimspector
 nnoremap{'<F9>', vim.fn['vimspector#ToggleBreakpoint']}
 nnoremap{'<F5>', vim.fn['vimspector#Continue']}--	When debugging, continue. Otherwise start debugging.
-nnoremap{'<leader><F5>', vim.fn['vimspector#Launch']}--	When debugging, continue. Otherwise start debugging.
+nnoremap{'<leader>vl', vim.fn['vimspector#Launch']}--	When debugging, continue. Otherwise start debugging.
 nnoremap{'<F3>', vim.fn['vimspector#Stop']}--	Stop debugging.
 nnoremap{'<F4>', vim.fn['vimspector#Restart']}--	Restart debugging with the same configuration.
 nnoremap{'<F6>', vim.fn['vimspector#Pause']}--	Pause debuggee.
@@ -90,7 +95,7 @@ nnoremap{'<leader><F8>', vim.fn['vimspector#RunToCursor']}--	Run to Cursor
 nnoremap{'<F10>', vim.fn['vimspector#StepOver']}--	Step Over
 nnoremap{'<F11>', vim.fn['vimspector#StepInto']}--	Step Into
 nnoremap{'<F12>', vim.fn['vimspector#StepOut']}--	Step out of current function scope
-nnoremap{'<F1>', vim.fn['vimspector#REset']}--	Step out of current function scope
+nnoremap{'<F1>', vim.fn['vimspector#Reset']}--	Step out of current function scope
 
 nnoremap{'<leader>tb', '<cmd>lua toggleBackground()<CR>'}
 nnoremap{'cu', ':UndotreeToggle<CR>'}

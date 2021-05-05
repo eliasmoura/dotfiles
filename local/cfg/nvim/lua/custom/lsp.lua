@@ -1,7 +1,8 @@
 local lspconfig = require('lspconfig')
-local on_attach = require('completion').on_attach
-lspconfig.clangd.setup{
-  on_attach = on_attach,
+require('custom.mappings')
+
+lspconfig.clangd.setup({
+  on_attach = lsp_on_attach,
   cmd = {
     'clangd',
     '--background-index',
@@ -13,10 +14,10 @@ lspconfig.clangd.setup{
     clangdFileStatus = true
   },
   handlers = require'lsp-status'.extensions.clangd.setup(),
-}
-vim.lsp.set_log_level("debug")
+})
+vim.lsp.set_log_level("error")
 lspconfig.sumneko_lua.setup({
-  on_attach = on_attach,
+  on_attach = lsp_on_attach,
   cmd = {'/usr/bin/lua-language-server', '-E', '/usr/share/lua-language-server/main.lua'},
   -- cmd = {'/home/kotto/local/cfg/pacman/makepkg/recipes/sumneko-git/wrapper.sh'},
   -- An example of settings for an LSP server.
@@ -46,14 +47,14 @@ lspconfig.sumneko_lua.setup({
   },
 })
 
-require'lspconfig'.pyls.setup{ on_attach=on_attach }
-require'lspconfig'.gopls.setup{ on_attach=on_attach }
+require('lspconfig').pyls.setup{ on_attach=lsp_on_attach }
+require('lspconfig').gopls.setup{ on_attach=lsp_on_attach }
 local lsp_status = require('lsp-status')
 lsp_status.register_progress()
 
 vim.api.nvim_buf_set_option(0, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-require'nvim-treesitter.configs'.setup {
+require('nvim-treesitter.configs').setup {
   ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
   ignore_install = {  }, -- List of parsers to ignore installing
   highlight = {
@@ -61,9 +62,7 @@ require'nvim-treesitter.configs'.setup {
   },
 }
 
-require('custom.mappings')
-
-vim.api.nvim_command 'autocmd CursorHold   <buffer> ++nested lua vim.lsp.buf.document_highlight()'
-vim.api.nvim_command 'autocmd CursorHoldI <buffer> ++nested lua vim.lsp.buf.document_highlight()'
-vim.api.nvim_command 'autocmd CursorMoved  <buffer> ++nested lua vim.lsp.buf.clear_references()'
--- vim.api.nvim_command 'autocmd CursorHold  <buffer> ++nested lua vim.lsp.buf.hover()'
+vim.cmd([[autocmd CursorHold  <buffer> ++nested lua vim.lsp.buf.document_highlight()]])
+vim.cmd([[autocmd CursorHoldI <buffer> ++nested lua vim.lsp.buf.document_highlight()]])
+vim.cmd([[autocmd CursorMoved <buffer> ++nested lua vim.lsp.buf.clear_references()]])
+vim.cmd([[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]])

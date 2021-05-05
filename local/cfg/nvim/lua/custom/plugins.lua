@@ -20,9 +20,9 @@ require'packer'.startup({function()
   use{'https://github.com/tpope/vim-surround'}
   use{'https://github.com/tpope/vim-repeat.git'}
   use{'https://github.com/tpope/vim-fugitive.git'}--    "Git integration
-  use{'https://github.com/junegunn/gv.vim', opt = true}
-  use{'https://github.com/tpope/vim-commentary.git', opt = true}
-  use{'https://github.com/tommcdo/vim-exchange.git', opt = true}
+  use{'https://github.com/junegunn/gv.vim', cmd = {'GV'}}
+  use{'https://github.com/tpope/vim-commentary.git'}
+  use{'https://github.com/tommcdo/vim-exchange.git'}
   use{'https://github.com/vim-utils/vim-man', cmd = {'Man'}}
   use{'https://github.com/hoob3rt/lualine.nvim'}
   use{'https://github.com/mbbill/undotree', cmd = {'UndotreeToggle'}}
@@ -43,10 +43,10 @@ require'packer'.startup({function()
   use{'https://github.com/folke/tokyonight.nvim'}
   use{'https://github.com/morhetz/gruvbox', opt = true}
   use{'https://github.com/nvim-treesitter/nvim-treesitter', run = 'vim.cmd("TSUpdate")'}
-  use{'https://github.com/lewis6991/gitsigns.nvim', config = function() require'gitsigns'.setup() end }
+  use{'https://github.com/lewis6991/gitsigns.nvim'}
+  use{'https://github.com/kyazdani42/nvim-web-devicons'}
   -- TODO(kotto): figure out if I really want these
-  use{'https://github.com/puremourning/vimspector', cmd = { 'VimspectorLaunch' },
-  	config = function() vim.g.vimspector_enable_mappings = 'HUMAN' end}
+  use{'https://github.com/puremourning/vimspector', ft = {'c','c++'}}--, cmd = { 'call vimspector#Launch()' } }
   use{'https://github.com/AckslD/nvim-whichkey-setup.lua',
   requires = {'https://github.com/liuchengxu/vim-which-key'}, }
   use{'https://github.com/steelsojka/pears.nvim'}
