@@ -13,10 +13,9 @@ local actions = require'telescope.actions'
 -- local sorters = require'telescope.sorters'
 local themes  = require'telescope.themes'
 
-require'telescope'
 require('telescope').setup{ defaults = {
   prompt_prefix = '>',
-  scroll_strategy = 'limit',
+  scroll_strategy = 'cycle',
   mappings = {
     i = {['<c-q>'] = actions.send_to_qflist + actions.open_qflist},
     n = {['<c-q>'] = actions.send_to_qflist + actions.open_qflist}

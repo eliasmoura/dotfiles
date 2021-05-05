@@ -131,7 +131,6 @@ alias ptpb="curl -F 'c=@-' https://ptpb.pw"
 # XXX force XDG_CONFIG_HOME where possible.
 alias weechat='weechat - $XDG_CONFIG_HOME/weechat'
 alias tmux="tmux -f ${XDG_CONFIG_HOME:-$HOME/local/cfg}/tmux/tmux.conf"
-alias mutt="mutt -F ${XDG_CONFIG_HOME:-$HOME/local/cfg}/mutt/muttrc"
 
 alias aria2c="aria2c --dht-file-path $XDG_CACHE_HOME/aria2/dht.dat"
 alias gdb="gdb -nh -x $XDG_CONFIG_HOME/gdb/init"
@@ -153,7 +152,7 @@ function gl {
 
 # Directory hashes.
 if [[ -d $HOME/dev ]]; then
-    for d in $HOME/dev/*(/); do
+    for d in $HOME/code/*(/); do
         hash -d ${d##*/}=$d
     done
 fi

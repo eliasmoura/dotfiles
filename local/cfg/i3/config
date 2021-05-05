@@ -209,7 +209,6 @@ bindsym $mod+XF86AudioNext exec mpc next
 bindsym $mod+XF86AudioPlay exec mpc toggle
 bindsym $mod+XF86AudioPrev exec mpc prev
 
-bindsym $mod+Shift+XF86AudioNext exec stewdio dmenu-queue
 # Specific window management.
 for_window [class="Blender" title="Blender Preferences"] floating enable
 
