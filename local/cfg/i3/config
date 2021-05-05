@@ -13,7 +13,7 @@ set $right l
 # Your preferred terminal emulator
 set $term alacritty
 # Your preferred application launcher
-set $menu dmenu-run
+set $menu /home/kotto/local/bin/bemenu
 
 focus_follows_mouse no
 
@@ -26,7 +26,7 @@ bindsym $mod+Return exec $term
 bindsym $mod+Shift+q kill
 
 # start your launcher
-bindsym $mod+d exec $menu
+bindsym $mod+d exec $menu "run"
 
 # Drag floating windows by holding down $mod and left mouse button.
 # Resize them with right mouse button + $mod.
@@ -170,9 +170,9 @@ bindsym $mod+r mode "resize"
 
 mode "menu" {
     bindsym v       exec --no-startup-id mpv-run "720"; mode default
-    bindsym Ctrl+v   exec --no-startup-id mpv-run "1080"; mode default
+    bindsym Ctrl+v  exec --no-startup-id mpv-run "1080"; mode default
     bindsym Shift+v exec --no-startup-id mpv-run; mode default
-    bindsym o       exec --no-startup-id dmenu-run; mode default
+    bindsym o       exec $menu "run"; mode default
     bindsym p       exec --no-startup-id passmenu --type -p "Passmenu" -l 10;  mode default
     bindsym shift+p exec --no-startup-id passmenu -p "Passmenu" -l 10; mode default
 

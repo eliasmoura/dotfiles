@@ -4,8 +4,11 @@
 
 argv0=$(basename "$0")
 switches="--really-quiet --keep-open --pause --ytdl-raw-options=yes-playlist= --force-window=yes" #show the window even if it's just audio
-prog=dmenu
-menuopt="-i -l 20"
+prog=bemenu
+#shellcheck source=/home/kotto/local/cfg/bemenu/config
+#shellcheck disable=SC1091
+. "${XDG_CONFIG_HOME:-$HOME/local/cfg}"/bemenu/config
+menuopt="$case $c $nl"
 dur_title_f=$(mktemp "${TMPDIR:-/tmp}"/dur_title.XXX)
 exec 3>"$dur_title_f"
 exec 4<"$dur_title_f"

@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+run() {
+  while pgrep bemenu; do
+    sleep 1
+  done
+  # shellcheck disable=2086
+  $prog $opts "$@"
+}
+#shellcheck source=/home/kotto/local/cfg/bemenu/config
+#shellcheck disable=SC1091
+. "${XDG_CONFIG_HOME:-$HOME/local/cfg}"/bemenu/config
+
+if [ "$1" = "run" ]; then
+  prog=/usr/bin/bemenu-run
+  pt="--prompt Run: "
+  opts="$case $c $nl $pt"
+  shift 1
+else
+  prog=/usr/bin/bemenu
+fi
+run "$@"

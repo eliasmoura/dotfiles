@@ -15,12 +15,14 @@ user_list_file=${dir:-.}/users
 base_url="https://www.twitch.tv"
 
 prog=bemenu
-menuopt="-i -l 20"
+#shellcheck source=/home/kotto/local/cfg/bemenu/config
+#shellcheck disable=SC1091
+. "${XDG_CONFIG_HOME:-$HOME/local/cfg}"/bemenu/config
+menuopt="$case $c $nl"
 player=mpv
 if [ -n "$ARCAN_CONNPATH" ]; then
   export BEMENU_BACKEND=curses
-  prog=bemenu
-  menuopt="-i -w -P ->"
+  menuopt="$menuopt -w"
   player="arcan-wayland -exec mpv"
 fi
 
@@ -211,9 +213,6 @@ add_user() {
 menu() {
   title=$(printf "%.60s\n" "$1")
 
-  while pgrep "$prog"; do
-    sleep 2
-  done
   # set -f disable shell glob expansion
   # shellcheck disable=2086
   $prog $menuopt -p "$title"
@@ -287,7 +286,7 @@ run(){
     ;;
     !menu)
       opt=$(usage | awk '!/^usage/' | menu "Twitch commands: ")
-      opt=$(printf '%s\n' "$opt" | awk -F '\t' '/^.*/{print $1}')
+      opt=$(printf '%s\n' "$opt" | awk '/^ [!].*/{print $1}')
       if [ "$opt" ]; then
         run "$opt"
       fi
