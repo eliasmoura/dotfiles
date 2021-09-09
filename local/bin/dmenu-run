@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-bprompt=(-p 'Run: ')
-num_lines=(-l 25)
-colors=(-sb '#007fce' -nf '#d2691e')
-opts=(${prefix[*]} ${bprompt[*]} ${num_lines[*]} ${colors[*]} -i)
-/usr/bin/dmenu_run "${opts[@]}"
