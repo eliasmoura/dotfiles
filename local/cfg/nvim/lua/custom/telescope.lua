@@ -43,7 +43,7 @@ local no_preview = themes.get_dropdown{
   winblend = 20,
   prompt_title = ' ',
   result_title = '',
-  width = 80,
+  layout_config = {width = 80},
   previewer = false,
 }
 
@@ -51,9 +51,8 @@ local M = {}
 
 function M.edit_cfg()
   local opt = vim.deepcopy(no_preview)
-  opt.cwd = {vim.env['XDG_CONFIG_HOME']}
+  opt.cwd = vim.env['XDG_CONFIG_HOME']
   opt.prompt_title = 'CFG Files>'
-  opt.width = 0.9
   require('telescope.builtin').find_files(opt)
 end
 function M.edit_zsh()
