@@ -84,6 +84,18 @@ bindkey $terminfo[kcbt] reverse-menu-complete
 
 bindkey -M isearch '^M' accept-search
 
+function dt {
+  git_dir_path="$HOME/.dotfiles"
+  if [ "$GIT_DIR" = "$git_dir_path" ]; then
+    printf 'Reverting GIT_DIR to [%s]\n' "$OLD_GIT_DIR"
+    export GIT_DIR="$OLD_GIT_DIR"
+  else
+    export OLD_GIT_DIR="$GIT_DIR"
+    printf 'Changing GIT_DIR to [%s]\n' "$git_dir_path"
+    export GIT_DIR="$git_dir_path"
+  fi
+}
+
 # Quick and easy note taking (I should make this into a seperate script).
 function n {
     $EDITOR "${@[@]/#/"$HOME/writings/notes/"}"
