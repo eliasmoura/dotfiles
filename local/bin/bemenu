@@ -4,7 +4,9 @@ run() {
     sleep 1
   done
   # shellcheck disable=2086
+  set -x
   $prog $opts "$@"
+  set +x
 }
 #shellcheck source=/home/kotto/local/cfg/bemenu/config
 #shellcheck disable=SC1091
@@ -13,9 +15,10 @@ run() {
 if [ "$1" = "run" ]; then
   prog=/usr/bin/bemenu-run
   pt="--prompt Run: "
-  opts="$case $c $nl $pt"
   shift 1
 else
   prog=/usr/bin/bemenu
 fi
+
+opts="$case $c $nl $pt"
 run "$@"

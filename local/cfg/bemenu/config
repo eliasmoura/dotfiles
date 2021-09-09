@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
 nl="-l 25"
-c="--hb #25262E --hf #bb9af7 --fb #151620 --ff #007fce --tb #151620 --tf #bb9af7 --nb #151620 --nf #a9b1d6"
+c=" --hb #25262E --hf #bb9af7 --fb #151620 --ff #007fce --tb #151620 --tf #bb9af7 --nb #151620 --nf #a9b1d6"
 case="--ignorecase"
+export BEMENU_OPTS="--fn 'Inconsolatazi4 20'"

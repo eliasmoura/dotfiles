@@ -18,7 +18,7 @@ prog=bemenu
 #shellcheck source=/home/kotto/local/cfg/bemenu/config
 #shellcheck disable=SC1091
 . "${XDG_CONFIG_HOME:-$HOME/local/cfg}"/bemenu/config
-menuopt="$case $c $nl"
+menuopt=""
 player=mpv
 if [ -n "$ARCAN_CONNPATH" ]; then
   export BEMENU_BACKEND=curses
