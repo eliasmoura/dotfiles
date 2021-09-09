@@ -268,7 +268,8 @@ run(){
     ;;
     !programming)
       #Science & Technology  509670
-      get_game_status "game_id=509670" | menu "Programming"  |
+      #Software and Game Development 1469308723
+      get_game_status "game_id=1469308723" | menu "Programming"  |
       while read -r _ user game lang title; do
         lang=$(printf "%s\n" "$lang" | sed -e 's/[\]\[]//g')
         printf "%s %s %s %s %s\n" "$user" "$game" "$base_url/$user" "$lang" "$title" |  play
