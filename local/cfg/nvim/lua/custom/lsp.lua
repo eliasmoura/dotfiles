@@ -1,8 +1,7 @@
 local lspconfig = require('lspconfig')
-require('custom.mappings')
 
 lspconfig.clangd.setup({
-  on_attach = lsp_on_attach,
+  on_attach = vim.custom.mappings.lsp_on_attach,
   cmd = {
     'clangd',
     '--background-index',
@@ -16,8 +15,9 @@ lspconfig.clangd.setup({
   handlers = require'lsp-status'.extensions.clangd.setup(),
 })
 vim.lsp.set_log_level("error")
+
 lspconfig.sumneko_lua.setup({
-  on_attach = lsp_on_attach,
+  on_attach = vim.custom.lsp_on_attach,
   cmd = {'/usr/bin/lua-language-server', '-E', '/usr/share/lua-language-server/main.lua'},
   -- cmd = {'/home/kotto/local/cfg/pacman/makepkg/recipes/sumneko-git/wrapper.sh'},
   -- An example of settings for an LSP server.
@@ -47,22 +47,14 @@ lspconfig.sumneko_lua.setup({
   },
 })
 
-require('lspconfig').pyls.setup{ on_attach=lsp_on_attach }
-require('lspconfig').gopls.setup{ on_attach=lsp_on_attach }
+-- require('lspconfig').pyls.setup{ on_attach=lsp_on_attach }
+require('lspconfig').gopls.setup{ on_attach=vim.custom.lsp_on_attach }
 local lsp_status = require('lsp-status')
 lsp_status.register_progress()
 
-vim.api.nvim_buf_set_option(0, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-require('nvim-treesitter.configs').setup {
-  ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
-  ignore_install = {  }, -- List of parsers to ignore installing
-  highlight = {
-    enable = true,              -- false will disable the whole extension
-  },
-}
-
-vim.cmd([[autocmd CursorHold  <buffer> ++nested lua vim.lsp.buf.document_highlight()]])
+-- vim.cmd([[autocmd CursorHold  <buffer> ++nested lua vim.lsp.buf.document_highlight()]])
 vim.cmd([[autocmd CursorHoldI <buffer> ++nested lua vim.lsp.buf.document_highlight()]])
 vim.cmd([[autocmd CursorMoved <buffer> ++nested lua vim.lsp.buf.clear_references()]])
 vim.cmd([[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]])
+
+return lspconfig
