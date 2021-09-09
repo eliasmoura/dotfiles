@@ -4,6 +4,8 @@ local wopt = vim.wo
 local bopt = vim.bo
 
 vim.g.mapleader = ' '
+vim.o.timeout = false
+vim.o.timeoutlen = 10
 vim.g.maplocalleader = '\\'
 opt.updatetime=50
 wopt.foldmethod = 'syntax'
