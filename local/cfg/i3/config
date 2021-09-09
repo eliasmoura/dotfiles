@@ -15,6 +15,9 @@ set $menu /home/kotto/local/bin/bemenu
 
 focus_follows_mouse no
 
+default_border pixel 1px
+default_floating_border pixel 1px
+
 ### Key bindings
 # start a terminal
 bindsym $mod+Return exec $term
