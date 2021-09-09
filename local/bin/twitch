@@ -62,7 +62,11 @@ get_game_id() {
 
 update_token() {
   url=$1
-  if [ "$url" = "update" ]; then url=$(xsel -ob); fi
+  if [ "$url" = "update" ]; then
+    url=$(xsel -ob);
+  else
+        qutebrowser "$ouath2_url$client_id&$ouath2_permissions"
+  fi
   if [ -n "$url" ]; then
     token=$(printf '%s\n' "$url" | awk -F '&' '/access_token/{split($1, token); FS="#"; split(token[1], token); FS="="; split(token[2], token); print token[2]}')
     if [ -n "$token" ]; then
@@ -71,7 +75,7 @@ update_token() {
         notify-send -a twitch-info "Update" "The access_token has been update!"
         printf '%s\n' "$tmp" > "$info"
       else
-# shellcheck disable=SC2154
+        # shellcheck disable=SC2154
         qutebrowser "$ouath2_url$client_id&$ouath2_permissions"
       fi
     fi
@@ -347,7 +351,7 @@ run(){
     ;;
     !update_token)
       # NOTE(elias) for now this will need to be done manually.
-      update_token update
+      update_token "$@"
     ;;
     *)
       run "!menu"
