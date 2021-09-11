@@ -13,14 +13,16 @@ vim.g.data = data
 vim.g.cache = cache
 
 -- Bootstrap packer
+local ok = true
 local install_path = string.format('%s/site/pack/packer/start/packer.nvim', data)
 if fn.empty(fn.glob(install_path)) > 0 then
-  fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
+  local err = ""
+  ok, err = pcall(fn.system, {'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
+  print(err)
   vim.cmd 'packadd packer.nvim'
 end
 
 require('custom.sets')
-require('custom.plugins')
 
 vim.custom.toggleBackground = function()
   if vim.o.background == "light" then
@@ -30,19 +32,23 @@ vim.custom.toggleBackground = function()
   end
 end
 
--- NOTE(kotto): Kinda defer the loading of the mappings so it doens't take 400s to load
-vim.schedule(function ()
-  require('custom.mappings')
-  vim.keymap.nnoremap{'<silent> <leader>'     , ':<c-u>WhichKey <\\Space><CR>'}
-  vim.keymap.nnoremap{'<silent> <localleader>',  ':<c-u>WhichKey  ,<CR>'}
-end)
+if ok then
+print(ok)
+  require('custom.plugins')
 
-vim.cmd[[autocmd BufEnter * :LspStart]]
+  -- NOTE(kotto): Kinda defer the loading of the mappings so it doens't take 400s to load
+  vim.schedule(function ()
+    require('custom.mappings')
+    vim.keymap.nnoremap{'<silent> <leader>'     , ':<c-u>WhichKey <\\Space><CR>'}
+    vim.keymap.nnoremap{'<silent> <localleader>',  ':<c-u>WhichKey  ,<CR>'}
+  end)
+
+  vim.cmd[[autocmd BufEnter * :LspStart]]
+  vim.g.tokyonight_style = 'night'
+  vim.cmd [[colorscheme tokyonight]]
+end
+
 vim.cmd [[runtime autoload/auto_stuff.vim]]
-vim.g.tokyonight_style = 'night'
-vim.cmd [[colorscheme tokyonight]]
-
-vim.g.vimspector_enable_mappings = 'HUMAN'
 
 vim.g.tar_cmd = 'bsdtar'
 vim.g.tar_secure = 1
