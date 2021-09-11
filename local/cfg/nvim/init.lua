@@ -2,6 +2,7 @@ local cfg = vim.fn.stdpath('config')
 local data = vim.fn.stdpath('data')
 local cache = vim.fn.stdpath('cache')
 local backup = data .. '/backup/'
+local fn = vim.fn
 vim.custom = {}
 if not vim.fn.isdirectory(backup) then
 	  vim.fn.mkdir(backup, 'p')
@@ -9,6 +10,12 @@ if not vim.fn.isdirectory(backup) then
 vim.g.cfg = cfg
 vim.g.data = data
 vim.g.cache = cache
+-- Bootstrap packer
+local install_path = data..'/site/pack/packer/start/packer.nvim'
+if fn.empty(fn.glob(install_path)) > 0 then
+  fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
+  vim.cmd 'packadd packer.nvim'
+end
 
 require('custom.sets')
 require('custom.plugins')

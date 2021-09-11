@@ -96,6 +96,10 @@ function dt {
   fi
 }
 
+function bootstrap_nvim_cfg {
+  nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
+}
+
 # Quick and easy note taking (I should make this into a seperate script).
 function n {
     $EDITOR "${@[@]/#/"$HOME/writings/notes/"}"
