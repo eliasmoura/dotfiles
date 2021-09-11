@@ -10,8 +10,9 @@ if not vim.fn.isdirectory(backup) then
 vim.g.cfg = cfg
 vim.g.data = data
 vim.g.cache = cache
+
 -- Bootstrap packer
-local install_path = data..'/site/pack/packer/start/packer.nvim'
+local install_path = string.format('%s/site/pack/packer/start/packer.nvim', data)
 if fn.empty(fn.glob(install_path)) > 0 then
   fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
   vim.cmd 'packadd packer.nvim'
@@ -30,10 +31,9 @@ end
 
 -- NOTE(kotto): Kinda defer the loading of the mappings so it doens't take 400s to load
 vim.schedule(function ()
-  vim.custom.mappings = require('custom.mappings')
+  require('custom.mappings')
   vim.keymap.nnoremap{'<silent> <leader>'     , ':<c-u>WhichKey <\\Space><CR>'}
   vim.keymap.nnoremap{'<silent> <localleader>',  ':<c-u>WhichKey  ,<CR>'}
-  require('custom.lsp')
 end)
 
 vim.cmd[[autocmd BufEnter * :LspStart]]

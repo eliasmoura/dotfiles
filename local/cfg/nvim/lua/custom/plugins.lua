@@ -40,7 +40,8 @@ require'packer'.startup({function()
   use{'https://github.com/nvim-telescope/telescope.nvim',
       requires = {'https://github.com/nvim-telescope/telescope-fzf-native.nvim'}}
 
-  use{'https://github.com/neovim/nvim-lspconfig', }
+  use{'https://github.com/neovim/nvim-lspconfig',
+      config = function()require('custom.lsp')end }
   use{'https://github.com/nvim-lua/lsp-status.nvim'}
   use{'https://github.com/bfredl/nvim-luadev', opt = true}
   use{'https://github.com/nvim-lua/completion-nvim', disable = true}

@@ -40,24 +40,6 @@ inoremap{'<c-f>', '<c-x><c-f>'}
 inoremap{'<c-d>', '<c-x><c-d>'}
 inoremap{'<c-l>', '<c-x><c-l>'}
 
--- LSP
-M.lsp_on_attach = function()
-  nnoremap{'<leader>la', vim.lsp.buf.code_action}
-  nnoremap{'<leader>lf', vim.lsp.buf.formatting}
-  nnoremap{'<leader>ls', vim.lsp.buf.document_symbol}
-  nnoremap{'<leader>lh', vim.lsp.buf.hover}
-  nnoremap{'<leader>lr', vim.lsp.buf.references}
-  nnoremap{'<leader>lR', vim.lsp.buf.rename}
-  nnoremap{'<leader>ldg', vim.lsp.diagnostic.get_all}
-  nnoremap{'<leader>lda', vim.lsp.diagnostic.goto_prev}
-  nnoremap{'<M-n>', vim.lsp.diagnostic.goto_next}
-  nnoremap{'<M-p>', vim.lsp.diagnostic.goto_prev}
-  nnoremap{'<M-o>', vim.lsp.diagnostic.show_line_diagnostics}
-  nnoremap{'<M-Q>', vim.lsp.util.set_qflist}
-  nnoremap{'<M-q>', vim.lsp.util.set_loclist}
-  nnoremap{'<c-]>', vim.lsp.buf.definition}
-end
-
 nnoremap{'<M-c>',   ':lclose<cr>'}
 nnoremap{'<C-n>',   ':lnext<cr>'}
 nnoremap{'<c-p>',   ':lprev<cr>'}
