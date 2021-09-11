@@ -1,5 +1,6 @@
 
 require'packer'.startup({function()
+  use{'https://github.com/lewis6991/impatient.nvim'}
   use{'https://github.com/wbthomason/packer.nvim'}
   use{ 'https://github.com/lambdalisue/suda.vim', config = 'vim.g.suda_smart_edit = 1' }
   use{'https://github.com/tweekmonster/startuptime.vim'}

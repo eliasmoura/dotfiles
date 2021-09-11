@@ -1,3 +1,4 @@
+pcall(require, 'impatient')
 local cfg = vim.fn.stdpath('config')
 local data = vim.fn.stdpath('data')
 local cache = vim.fn.stdpath('cache')
