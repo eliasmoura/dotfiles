@@ -107,5 +107,12 @@ require'packer'.startup({function()
   use{'https://github.com/danymat/neogen',
       config = function()require('neogen').setup{enabled = true}end,
       requires = 'https://github.com/nvim-treesitter/nvim-treesitter' }
+
+    -- use{'https://github.com/aquach/vim-http-client',
+    --     cmd = 'HTTPClientDoRequest',
+    --     setup = [[set g:http_client_bind_hotkey = 0]]}
+  use{'https://github.com/pwntester/octo.nvim', config = function()require('octo').setup()end}
+
+  use{'https://github.com/ledger/vim-ledger'}
 end,
 config = { profile = {enable = true}}})
