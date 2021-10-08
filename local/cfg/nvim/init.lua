@@ -33,6 +33,8 @@ if fn.empty(fn.glob(install_path)) > 0 then
 end
 
 require("custom.sets")
+require("custom.snippets")
+require("custom")
 vim.custom.toggleBackground = function()
   if vim.o.background == "light" then
     vim.o.background = "dark"
@@ -40,6 +42,7 @@ vim.custom.toggleBackground = function()
     vim.o.background = "light"
   end
 end
+vim.cmd([[runtime autoload/auto_stuff.vim]])
 
 if ok then
   require("custom.plugins")
@@ -63,6 +66,8 @@ if ok then
     vim.keymap.nnoremap({ "<silent> <localleader>", ":<c-u>WhichKey  ,<CR>" })
   end)
 
+  require("custom.luasnip")
+end
 
 if vim.bo.filetype ~= "lua" then
   vim.cmd([[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]])
