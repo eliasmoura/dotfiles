@@ -1,28 +1,28 @@
-local norg = require('neorg')
-print('NORG!')
+local norg = require("neorg")
+print("NORG!")
 
-local parser_configs = require('nvim-treesitter.parsers').get_parser_configs()
+local parser_configs = require("nvim-treesitter.parsers").get_parser_configs()
 
 parser_configs.norg = {
-    install_info = {
-        url = "https://github.com/vhyrro/tree-sitter-norg",
-        files = { "src/parser.c", "src/scanner.cc" },
-        branch = "main"
-    },
+  install_info = {
+    url = "https://github.com/vhyrro/tree-sitter-norg",
+    files = { "src/parser.c", "src/scanner.cc" },
+    branch = "main",
+  },
 }
 
-norg.setup{
+norg.setup({
   load = {
     ["core.defaults"] = {}, -- Load all the default modules
     ["core.norg.concealer"] = {}, -- Allows for use of icons
     ["core.integrations.treesitter"] = {},
     ["core.integrations.telescope"] = {},
     ["core.norg.dirman"] = { -- Manage your directories with Neorg
-        config = {
-            workspaces = {
-                main = "~/writings/notes/"
-            }
-        }
-    }
+      config = {
+        workspaces = {
+          main = "~/writings/notes/",
+        },
+      },
+    },
   },
-}
+})
