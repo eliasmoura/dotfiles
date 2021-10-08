@@ -11,8 +11,7 @@ set $right l
 # Your preferred terminal emulator
 set $term alacritty
 # Your preferred application launcher
-set $menu /home/kotto/local/bin/bemenu
-
+set $menu alacritty --class mymenu -e dmenu
 focus_follows_mouse no
 
 default_border pixel 1px

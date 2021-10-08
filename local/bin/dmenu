@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+#shellcheck source=/home/kotto/local/cfg/bemenu/config
+#shellcheck disable=SC1091
+. "${XDG_CONFIG_HOME:-$HOME/local/cfg}"/dmenu/config
+
+#shellcheck disable=SC2154
+opts="$pt $c $multi"
+if [ "$1" = "run" ]; then
+  pt=$(printf "%s \n" "Run:")
+  multi=""
+  shift 1
+  while pgrep bemenu; do
+    sleep 1
+  done
+  # shellcheck disable=2086
+  prog=$(printf '%s' "$PATH " | awk -F : '{for (i = 1; i <= NF; ++i) printf "%s " , $i}' | xargs find {} 2>/dev/null | fzf "$@" $opts --prompt="$pt")
+  if [ -n "$prog" ]; then
+    $prog
+  fi
+else
+  while pgrep bemenu; do
+    sleep 1
+  done
+  # shellcheck disable=2086
+  /usr/bin/fzf $opts "$@"
+fi
+

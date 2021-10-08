@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+c="--color=fg:#A9B1D6,bg:-1,fg+:#BB9AF7,bg+:#25262E,prompt:#BB9AF7,query:#007FCE,hl+:#007FCE,hl:#007FCE,gutter:-1"
+
+multi="--multi --bind ctrl-s:select --bind alt-s:select-all+accept --bind ctrl-q:deselect --bind alt-q:deselect-all"

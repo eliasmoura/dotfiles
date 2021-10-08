@@ -14,15 +14,12 @@ user_list_file=${dir:-.}/users
 
 base_url="https://www.twitch.tv"
 
-prog=bemenu
+prog=$HOME/local/bin/dmenu
 #shellcheck source=/home/kotto/local/cfg/bemenu/config
 #shellcheck disable=SC1091
-. "${XDG_CONFIG_HOME:-$HOME/local/cfg}"/bemenu/config
-menuopt=""
+. "${XDG_CONFIG_HOME:-$HOME/local/cfg}"/dmenu/config
 player=mpv
 if [ -n "$ARCAN_CONNPATH" ]; then
-  export BEMENU_BACKEND=curses
-  menuopt="$menuopt -w"
   player="arcan-wayland -exec mpv"
 fi
 
