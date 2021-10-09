@@ -290,7 +290,6 @@ assign [class="Wine"] 6
 assign [class="discord"] 7
 assign [class="explorer.exe"] 6
 
-for_window [class="Steam" title="Steam Login"] floating enable
 
 #
 # Status Bar:
