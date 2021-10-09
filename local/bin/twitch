@@ -249,7 +249,7 @@ play() {
       title="$user [$lang|$game] - $title"
       # set -f disable shell glob expansion
       # shellcheck disable=2086
-      nohup $player --keep-open --pause --force-window=yes --really-quiet --ytdl-format="$format" --title="$title" --force-media-title="$title" -- "$url" > "$logfile" &
+      nohup $player --keep-open --pause --force-window=yes --really-quiet --ytdl-format="$format" --title="$title" --force-media-title="$title" -- "$url" >> "$logfile" &
     fi
   fi
 }
@@ -291,12 +291,10 @@ run(){
       done
     ;;
     !bookmarks)
-      set -x
       awk '{printf "user_login=%s&", $2}' "$user_list_file"| get_users_status | menu 'List of users' '!bookmarks' |
       while read -r user game lang title; do
         [ -n "$user" ] && printf '%s\t%s\t%s\t%s\t%s\n' "$user" "$game" "$base_url/$user" "$lang" "$title" | play
       done
-      set +x
     ;;
     !menu)
       local opt
