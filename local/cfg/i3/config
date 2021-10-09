@@ -168,9 +168,6 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 mode "menu" {
-    bindsym v       exec --no-startup-id mpv-run "720"; mode default
-    bindsym Ctrl+v  exec --no-startup-id mpv-run "1080"; mode default
-    bindsym Shift+v exec --no-startup-id mpv-run; mode default
     bindsym o       exec $menu "run"; mode default
     bindsym p       exec --no-startup-id passmenu --type -p "Passmenu" -l 10;  mode default
     bindsym shift+p exec --no-startup-id passmenu -p "Passmenu" -l 10; mode default
@@ -181,6 +178,7 @@ mode "menu" {
     bindsym Ctrl+shift+s exec screenshot; mode default
 
     bindsym t mode twitch
+    bindsym m mode media
 
     bindsym Return mode default
     bindsym Escape mode default
@@ -192,6 +190,12 @@ mode "twitch" {
   bindsym g exec alacritty --class mymenu -e twitch !game_list; mode default
   bindsym p exec alacritty --class mymenu -e twitch !programming; mode default
   bindsym c exec alacritty --class mymenu -e twitch !chess; mode default
+}
+mode "media" {
+  bindsym y exec sh mpv-run 1080; mode default
+  bindsym s exec sh mpv-run 720; mode default
+  bindsym f exec --no-startup-id alacritty --class mymenu -e sh -i mpv-run; mode default
+  bindsym t exec alacritty --class mymenu -e local/bin/test; mode default
 }
 bindsym $mod+space mode menu
 
