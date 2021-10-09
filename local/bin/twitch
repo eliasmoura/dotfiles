@@ -169,7 +169,7 @@ get_video() {
 
   get_list "videos?user_id=$id" '.data[] | [.url, .published_at, .language, .title] | @tsv' |
   while read -r url pub lang title; do
-    printf "%s %s %s %s %s\n" "$id" "$pub" "$url" "$lang" "$title"
+    printf '%s\t%s\t%s\t%s\n' "$pub" "$lang" "$title" "$url"
   done
 }
 
@@ -319,14 +319,15 @@ run(){
         fi
 
         get_video "$user" "$id" | menu "$user videos:" '!user' |
-        while read -r id pub url lang title; do
+        while read -r pub lang title url; do
           local game="???"
-          if [ "$id" = "[live]" ]; then
-            user=$pub
-            game=$url
+          if [ "$pub" = "[live]" ]; then
+            game=$lang
+            lang=$title
+            title=$url
             url="$base_url/$user"
           fi
-          [ -n "$url" ] && printf "%s\t%s\t%s\t%s\t%s\n" "$user" "$game" "$url" "$lang" "$title" | play
+          [ -n "$url" ] && printf '%s\t%s\t%s\t%s\t%s\n' "$user" "$game" "$url" "$lang" "$title" | play
         done
       else
         menu 'Bookmarks' '!user' < "$user_list_file" |
