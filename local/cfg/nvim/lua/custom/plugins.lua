@@ -119,6 +119,7 @@ require("packer").startup({
         require("lspconfig").bashls.setup({})
       end,
     })
+    use({"https://github.com/folke/trouble.nvim", config = function()require("trouble").setup()end})
     use({ "https://github.com/bfredl/nvim-luadev", opt = true })
     use({ "https://github.com/nvim-lua/completion-nvim", disable = true })
     use({
