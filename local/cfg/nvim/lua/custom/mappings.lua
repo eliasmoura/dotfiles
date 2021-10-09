@@ -22,6 +22,9 @@ nnoremap({ "<leader>gc", "<cmd>Git commit<cr>" })
 nnoremap({ "<leader>gm", "<cmd>Git merge<cr>" })
 nnoremap({ "<leader>gl", "<cmd>Git log<cr>" })
 
+-- Lsp
+-- For the Lsp mappings see lua/custom/lsp.lua
+
 nnoremap({ "<m-m>", ":make clean all<CR>" })
 nnoremap({ "<m-s-m>", ":make " })
 tnoremap({ "<Esc>", "<C-\\><C-n>" })
@@ -29,10 +32,6 @@ nnoremap({ "<Esc>", "<C-\\><C-n>" })
 nnoremap({ "<C-S-a>", "<C-^>" })
 
 -- "Completision
-inoremap({ "<c-]>", "<c-x><c-]>" })
-inoremap({ "<c-f>", "<c-x><c-f>" })
-inoremap({ "<c-d>", "<c-x><c-d>" })
-inoremap({ "<c-l>", "<c-x><c-l>" })
 
 nnoremap({ "<M-c>", ":lclose<cr>" })
 nnoremap({ "<C-n>", ":lnext<cr>" })
