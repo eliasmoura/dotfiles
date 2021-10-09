@@ -214,9 +214,10 @@ menu() {
   local title=$1
   shift 1
   local p
-  p=$(printf '%.20s: \n' "$1")
+  p=$(printf '%.20s: ' "$1")
+  shift
 
-  "$prog" --header="$title" --prompt="$p"
+  "$prog" --header="$title" --prompt="$p" "$@"
 }
 
 get_format(){
@@ -298,7 +299,7 @@ run(){
     ;;
     !menu)
       local opt
-      opt=$(usage | awk '!/^usage/' | menu "Twitch commands: " '!menu')
+      opt=$(usage | awk '!/^usage/' | menu 'Twitch commands: ' '!menu')
       opt=$(printf '%s\n' "$opt" | awk '/^ [!].*/{print $1}')
       if [ -n "$opt" ]; then
         run "$opt"
@@ -328,7 +329,7 @@ run(){
           [ -n "$url" ] && printf '%s\t%s\t%s\t%s\t%s\n' "$user" "$game" "$url" "$lang" "$title" | play
         done
       else
-        menu 'Bookmarks' '!user' < "$user_list_file" |
+        menu 'Bookmarks' '!user' --print-query < "$user_list_file" |
         while IFS=' ' read -r id user _; do
           [ -n "$id" ] && run '!user' "$id" "$user"
         done
@@ -342,7 +343,7 @@ run(){
         # if no username is passed, then try to find from any `mpv` command
         # that has 'www.twitch.tv/username.
         pgrep --list-full --exact mpv | awk 'BEGIN { FS = "/" } /www\.twitch\.tv/ && $(NF-1) !~ /videos/{print $(NF)}' |
-        menu 'Add user to bookmarks' '!user_bookmark_add' | while read -r user; do
+        menu 'Add user to bookmarks' '!user_bookmark_add' --print-query | while read -r user; do
         [ -n "$user" ] && run '!user_bookmark_add' "$user"
       done
       fi
