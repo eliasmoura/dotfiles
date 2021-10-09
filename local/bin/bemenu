@@ -4,9 +4,7 @@ run() {
     sleep 1
   done
   # shellcheck disable=2086
-  set -x
   $prog $opts "$@"
-  set +x
 }
 #shellcheck source=/home/kotto/local/cfg/bemenu/config
 #shellcheck disable=SC1091

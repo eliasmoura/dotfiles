@@ -6,7 +6,9 @@ export XDG_CONFIG_HOME=$LOCAL/cfg
 export XDG_DATA_HOME=$LOCAL/share
 export X11FSDIR=${XDG_RUNTIME_DIR:-/tmp}/x11/fs
 
-export PATH=$HOME/local/bin:$PATH
+# NOTE(k0tto): It seems like $HOME/local/bin is been add to PATH from somewhere
+# else
+# export PATH=$HOME/local/bin:$PATH
 export PATH=$PATH:/usr/lib/jvm/java-8-openjdk/jre/bin/
 export PATH=$PATH:$HOME/local/share/android/tools:$HOME/local/share/android/tools/bin
 export MANPATH=$MANPATH:$XDG_DATA_HOME/man
@@ -46,13 +48,13 @@ export TMUX_TMPDIR="$XDG_RUNTIME_DIR"
 
 
 export LESSHISTFILE=$XDG_CACHE_HOME/less/history
-export LESS_TERMCAP_mb=$'\E[01;31m'
-export LESS_TERMCAP_md=$'\E[01;31m'
-export LESS_TERMCAP_me=$'\E[0m'
-export LESS_TERMCAP_se=$'\E[0m'
-export LESS_TERMCAP_so=$'\E[01;44;33m'
-export LESS_TERMCAP_ue=$'\E[0m'
-export LESS_TERMCAP_us=$'\E[01;32m'
+# export LESS_TERMCAP_mb=$'\E[01;31m'
+# export LESS_TERMCAP_md=$'\E[01;31m'
+# export LESS_TERMCAP_me=$'\E[0m'
+# export LESS_TERMCAP_se=$'\E[0m'
+# export LESS_TERMCAP_so=$'\E[01;44;33m'
+# export LESS_TERMCAP_ue=$'\E[0m'
+# export LESS_TERMCAP_us=$'\E[01;32m'
 
 # Perl libraries.
 export PERL5LIB=$LOCAL/lib/perl5
@@ -67,6 +69,7 @@ export GTK_IM_MODULE=xim
 export XKB_DEFAULT_LAYOUT=en_US
 export XKB_DEFAULT_OPTIONS=compose:caps
 #export XAUTHORITY=$XDG_RUNTIME_DIR/x11/xauthority
+export QT_IM_MODULE=xim
 
 export ALTERNATE_EDITOR=""
 export EDITOR="nvim"
