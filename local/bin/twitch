@@ -13,7 +13,7 @@ info=${dir:-.}/info
 . "$info"
 user_list_file=${dir:-.}/users
 
-base_url="https://www.twitch.tv"
+base_url=https://www.twitch.tv
 
 prog=$HOME/local/bin/dmenu
 #shellcheck source=/home/kotto/local/cfg/bemenu/config
@@ -21,9 +21,9 @@ prog=$HOME/local/bin/dmenu
 . "${XDG_CONFIG_HOME:-$HOME/local/cfg}"/dmenu/config
 player=mpv
 if [ -n "$ARCAN_CONNPATH" ]; then
-  player="arcan-wayland -exec mpv"
+  player='arcan-wayland -exec mpv'
 fi
-export IFS="	"
+export IFS='	'
 
 
 usage() {
@@ -45,8 +45,8 @@ EOF
 }
 
 get() {
-  query="$1"
-  jq_query="$2"
+  local query="$1"
+  local jq_query="$2"
 # shellcheck disable=SC2154
   curl -sH "Client-ID: $client_id" -H "Authorization: Bearer $bearer_token" -X GET "https://api.twitch.tv/helix/$query" | jq -r "$jq_query"
 }
@@ -61,7 +61,7 @@ get_game_id() {
 
 update_token() {
   url=$1
-  if [ "$url" = "update" ]; then
+  if [ "$url" = 'update' ]; then
     url=$(xsel -ob);
   else
 # shellcheck disable=SC2154
@@ -72,7 +72,7 @@ update_token() {
     if [ -n "$token" ]; then
       tmp=$(sed -e "s/^\(bearer_token=\).*/\1'$token'/" "$info")
       if [ -n "$tmp" ]; then
-        notify-send -a twitch-info "Update" "The access_token has been update!"
+        notify-send -a twitch-info 'Update' 'The access_token has been update!'
         printf '%s\n' "$tmp" > "$info"
       else
         # shellcheck disable=SC2154
@@ -83,27 +83,29 @@ update_token() {
 }
 
 get_list() {
-  query="$1"
-  jq_query="$2"
-  cursor=""
-  r=$(curl -sH "Client-ID: $client_id" -H "Authorization: Bearer $bearer_token" -X GET "https://api.twitch.tv/helix/$query&first=100&after=$cursor")
+  local query="$1"
+  local jq_query="$2"
+  local cursor
+  r=$(curl -sH "Client-ID: $client_id" -H "Authorization: Bearer $bearer_token" -X GET "https://api.twitch.tv/helix/$query&first=100")
 
-  while test -n "$r"; do
-    if ! printf "%s\n" "$r" | jq -r "$jq_query"; then
+  while [ -n "$r" ]; do
+    if ! printf '%s\n' "$r" | jq -r "$jq_query"; then
       msg=$(printf '%s\n' "$r" | jq -r '.message')
-      notify-send -a twitch-fail "Error:93 get_list" "$msg"
-      if [ "$msg" = "Invalid OAuth token" ]; then
-        notify-send -a twitch-fail "Error:95 'Invalid OAuth toekn'" "Trying to update the token. Please, invode '!update_token <url_returned_from_twitch_ouath2>'"
-        update_token update
+      if [ "$msg" != 'null' ]; then
+        notify-send -a twitch-fail 'Error:93 get_list' "$msg"
+        if [ "$msg" = 'Invalid OAuth token' ]; then
+          notify-send -a twitch-fail 'Error:95 "Invalid OAuth toekn"' 'Trying to update the token. Please, invoke "!update_token <url_returned_from_twitch_ouath2>"'
+          update_token update
+        fi
+        exit 1
       fi
-      exit 1
     fi
 
-    cursor=$(printf "%s\n" "$r" | jq -r '.pagination[]')
+    cursor=$(printf '%s\n' "$r" | jq -r '.pagination[]')
 
     # NOTE(elias): Twitch changes the end of the pagination depending what
     # you are quering
-    if test "$cursor" = "IA" || test -z "$cursor"; then
+    if test "$cursor" = 'IA' || test -z "$cursor"; then
       return
     fi
     # NOTE(elias): POSIX does not have regex checks like =~ in bash.
@@ -117,7 +119,7 @@ get_list() {
 }
 
 get_games_list() {
-  get_list "games/top?" '.data[] | .name'
+  get_list 'games/top?' '.data[] | .name'
 }
 
 get_game_status() {
@@ -125,9 +127,8 @@ get_game_status() {
 
   get_list "streams?$list" '.data[] | [.viewer_count, .user_name, .game_id, .type, .language, .title] | @tsv' |
   while read -r views uname gid _ lang title; do
-    gname=$(get_game_name "$gid")
-    # gname=$(printf "%s\n" "$gname" | sed -e 's/ /_/g')
-    printf "%-6s\t%-25s\t%-20s\t[%s]\t%s\n" "$views" "$uname" "$gname" "$lang" "$title"
+    game=$(get_game_name "$gid")
+    printf '%-6s\t%-25s\t%-20s\t[%s]\t%s\n' "$views" "$uname" "$game" "$lang" "$title"
   done
 }
 
@@ -136,7 +137,6 @@ get_users_status() {
   get_list "streams?${list%&}" '.data[]  | [.user_name, .game_id, .type, .language, .title] | @tsv' |
   while read -r user game _ lang title; do
     game=$(get_game_name "$game")
-    # game=$(printf "%s" "$game" | sed -e 's/ /_/g')
     printf '%-18ls\t%-20ls\t%ls\t%ls\n' "$user" "$game" "$lang" "\"$title\""
   done
 }
@@ -164,7 +164,7 @@ get_video() {
   local user=$1
   printf 'user_login=%s\n' "$user" | get_users_status |
   while read -r user game lang title; do
-    printf '[live] %s %s %s %s\n' "$user" "$game" "$lang" "$title"
+    printf '[live]\t%s\t%s\t%s\t%s\n' "$user" "$game" "$lang" "$title"
   done
 
   get_list "videos?user_id=$id" '.data[] | [.url, .published_at, .language, .title] | @tsv' |
@@ -174,21 +174,21 @@ get_video() {
 }
 
 update_user_list() {
-  local ulist=""
+  local ulist
   while read -r id name category stuff; do
     if [ -z "$name" ]; then name=$id; fi
     #check if the user still exist
     id=$(get_user_id "$name")
     if [ -n "$id" ]; then
-      printf "%-15s%-20s%-30s%s\n" "$id" "$name" "$category" "$stuff"
+      printf '%-15s%-20s%-30s%s\n' "$id" "$name" "$category" "$stuff"
     else
-     onegone=$(printf "%-15s %-20s %-30s %s\n" "$id" "$name" "$category" "$stuff")
+     onegone=$(printf '%-15s %-20s %-30s %s\n' "$id" "$name" "$category" "$stuff")
      ulist="$list$onegone"
     fi
   done
   if [ -n "$ulist" ]; then
-    printf "#The following users aren't avalible anymore.\n"
-    printf "%s\n" "$ulist"
+    printf '%s\n' "#The following users aren't avalible anymore."
+    printf '%s\n' "$ulist"
   fi
 }
 
@@ -206,7 +206,7 @@ add_user() {
   id=$(get_user_id "$user")
   [ -z "$id" ] && return 1
 
-  user=$(printf "%-15s%-20s\n" "$id" "$user")
+  user=$(printf '%-15s%-20s\n' "$id" "$user")
   printf '%s\n' "$user_list" "$user" | tee "$user_list_file"
 }
 
@@ -214,41 +214,42 @@ menu() {
   local title=$1
   shift 1
   local p
-  p=$(printf "%.20s: \n" "$1")
+  p=$(printf '%.20s: \n' "$1")
 
-  # set -f disable shell glob expansion
   "$prog" --header="$title" --prompt="$p"
 }
 
 get_format(){
   local url="$1"
   local title="$2"
-  youtube-dl --no-playlist --list-formats "$url" | awk '!/^\[|^format code/' | menu "$title" "Video formats" | awk '{print $1}'
+  youtube-dl --no-playlist --list-formats "$url" | awk '!/^\[|^format code/' | menu "$title" 'Video formats' | awk '{print $1}'
+}
+
+trim(){
+  printf '%s' "$1" | sed 's/ *$//' | sed 's/ *//'
 }
 
 play() {
-  local o="$o --keep-open --pause --force-window=yes --really-quiet"
   read -r user game url lang title
   if [ "$user" ]; then
-    user=$(printf '%s' "$user" | sed 's/ *$//')
-    game=$(printf '%s' "$game" | sed 's/ *$//')
-    url=$(printf '%s' "$url" | sed 's/ *$//')
-    lang=$(printf '%s' "$lang" | sed 's/ *$//')
+    user=$(trim "$user")
+    game=$(trim "$game")
+    url=$(trim "$url")
+    lang=$(trim "$lang")
     lang=$(printf '%s' "$lang" | sed -e 's/[\]\[]//g')
-    title=$(printf '%s' "$title" | sed 's/ *$//')
+    title=$(trim "$title")
     local format
     format=$(get_format "$url" "$user [$game] $title")
     if [ "$format" ]; then
-      o="$o --ytdl-format=$format"
-      game=$(printf "%s" "$game" | sed -e 's/_/ /')
+      game=$(printf '%s' "$game" | sed -e 's/_/ /')
       local logdir=${XDG_RUNTIME_DIR:-/tmp}/twitch
       mkdir -p "$logdir"
-      local logfile
-      logfile=$(mktemp "$logdir/$user.XXXX")
+      local logfile="$logdir/$user.log"
       printf '%s\t%s\t%s\n' "$user" "$game" "$title" >> "$logfile"
+      title="$user [$lang|$game] - $title"
       # set -f disable shell glob expansion
       # shellcheck disable=2086
-      nohup $player $o --title="$user [$lang|$game] - $title" -- "$url" > "$logfile" &
+      nohup $player --keep-open --pause --force-window=yes --really-quiet --ytdl-format="$format" --title="$title" --force-media-title="$title" -- "$url" > "$logfile" &
     fi
   fi
 }
@@ -261,39 +262,41 @@ run(){
       local name="$*"
       if [ -n "$name" ]; then
         local title="$name"
-        name=$(printf "%s\n" "$name" | sed -e 's/ /%20/g')
-        name=$(printf "%s\n" "$name" | sed -e 's/&/%26/g')
+        name=$(printf '%s\n' "$name" | sed -e 's/ /%20/g')
+        name=$(printf '%s\n' "$name" | sed -e 's/&/%26/g')
         gid=$(get_game_id "$name")
 
-        get_game_status "game_id=$gid" | menu "$title" "!game_list" |
+        get_game_status "game_id=$gid" | menu "$title" '!game_list' |
         while read -r _ user game lang title; do
-          printf "%s\t%s\t%s\t%s\t%s\n" "$user" "$game" "$base_url/$user" "$lang" "$title" |  play
+          printf '%s\t%s\t%s\t%s\t%s\n' "$user" "$game" "$base_url/$user" "$lang" "$title" |  play
         done
       else
         local game
-        game=$(get_games_list | menu "Available games" "!game_list") && run "!game_list" "$game"
+        game=$(get_games_list | menu 'Available games' '!game_list') && run '!game_list' "$game"
       fi
     ;;
     !programming)
       #Science & Technology  509670
       #Software and Game Development 1469308723
-      get_game_status "game_id=1469308723" | menu "Programming" "!programming" |
+      get_game_status 'game_id=1469308723' | menu 'Programming' '!programming' |
       while read -r _ user game lang title; do
-        printf "%s %s %s %s %s\n" "$user" "$game" "$base_url/$user" "$lang" "$title" |  play
+        printf '%s\t%s\t%s\t%s\t%s\n' "$user" "$game" "$base_url/$user" "$lang" "$title" |  play
       done
     ;;
     !chess)
       #Chess 743
-      get_game_status "game_id=743" | menu "Chess" "!chess" |
+      get_game_status 'game_id=743' | menu 'Chess' '!chess' |
       while read -r _ user game lang title; do
-        printf "%s %s %s %s %s\n" "$user" "$game" "$base_url/$user" "$lang" "$title" |  play
+        printf '%s\t%s\t%s\t%s\t%s\n' "$user" "$game" "$base_url/$user" "$lang" "$title" |  play
       done
     ;;
     !bookmarks)
+      set -x
       awk '{printf "user_login=%s&", $2}' "$user_list_file"| get_users_status | menu 'List of users' '!bookmarks' |
       while read -r user game lang title; do
-        [ -n "$user" ] && printf "%s\t%s\t%s\t%s\t%s\n" "$user" "$game" "$base_url/$user" "$lang" "$title" | play
+        [ -n "$user" ] && printf '%s\t%s\t%s\t%s\t%s\n' "$user" "$game" "$base_url/$user" "$lang" "$title" | play
       done
+      set +x
     ;;
     !menu)
       local opt
@@ -328,7 +331,7 @@ run(){
       else
         menu 'Bookmarks' '!user' < "$user_list_file" |
         while IFS=' ' read -r id user _; do
-          [ -n "$id" ] && run "!user" "$id" "$user"
+          [ -n "$id" ] && run '!user' "$id" "$user"
         done
       fi
     ;;
@@ -341,7 +344,7 @@ run(){
         # that has 'www.twitch.tv/username.
         pgrep --list-full --exact mpv | awk 'BEGIN { FS = "/" } /www\.twitch\.tv/ && $(NF-1) !~ /videos/{print $(NF)}' |
         menu 'Add user to bookmarks' '!user_bookmark_add' | while read -r user; do
-        [ -n "$user" ] && run "!user_bookmark_add" "$user"
+        [ -n "$user" ] && run '!user_bookmark_add' "$user"
       done
       fi
     ;;
@@ -355,7 +358,7 @@ run(){
     ;;
     !update_user_list)
       local updated
-      updated=$(update_user_list < "$user_list_file") && printf "%s\n" "$updated" | tee "$user_list_file"
+      updated=$(update_user_list < "$user_list_file") && printf '%s\n' "$updated" | tee "$user_list_file"
     ;;
     help|--help|-h|-help)
       usage
