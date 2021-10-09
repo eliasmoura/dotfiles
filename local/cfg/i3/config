@@ -14,7 +14,7 @@ set $term alacritty
 set $menu alacritty --class mymenu -e dmenu
 focus_follows_mouse no
 
-default_border pixel 1px
+default_border pixel 3px
 default_floating_border pixel 1px
 
 ### Key bindings
@@ -176,12 +176,22 @@ mode "menu" {
     bindsym shift+p exec --no-startup-id passmenu -p "Passmenu" -l 10; mode default
 
 #Screenshots
-      bindsym s exec exec screenshot; mode default
-      bindsym Ctrl+s exec screenshot "fullscreen"; mode default
-      bindsym Ctrl+shift+s exec screenshot; mode default
+    bindsym s exec exec screenshot; mode default
+    bindsym Ctrl+s exec screenshot "fullscreen"; mode default
+    bindsym Ctrl+shift+s exec screenshot; mode default
+
+    bindsym t mode twitch
 
     bindsym Return mode default
     bindsym Escape mode default
+}
+mode "twitch" {
+  bindsym t exec alacritty --class mymenu -e twitch; mode default
+  bindsym b exec alacritty --class mymenu -e twitch !bookmarks; mode default
+  bindsym u exec alacritty --class mymenu -e twitch !user; mode default
+  bindsym g exec alacritty --class mymenu -e twitch !game_list; mode default
+  bindsym p exec alacritty --class mymenu -e twitch !programming; mode default
+  bindsym c exec alacritty --class mymenu -e twitch !chess; mode default
 }
 bindsym $mod+space mode menu
 
@@ -212,6 +222,8 @@ bindsym $mod+XF86AudioPlay exec mpc toggle
 bindsym $mod+XF86AudioPrev exec mpc prev
 
 # Specific window management.
+# xprop
+# WM_CLASS(STRING) =  "instance", "class"
 for_window [class="Blender" title="Blender Preferences"] floating enable
 
 for_window [title="OpenGL, Yay"] floating enable
@@ -229,6 +241,14 @@ for_window [class="Basic_db" title="Form1"] floating enable
 no_focus [class="Lazarus" title="Messages"]
 
 for_window [instance="calibre-edit-book" title="Edit book"] floating enable
+
+for_window [class="qute_editor"] floating enable
+for_window [class="qute_editor"] floating_minimum_size 700px x -1
+for_window [instance="mymenu"] floating enable
+for_window [instance="mymenu"] resize set 1200 700 px
+for_window [instance="mymenu"] move position center
+
+for_window [class="Steam" title="Steam Login"] floating enable
 
 no_focus [class="mpv"]
 
