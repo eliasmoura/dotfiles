@@ -20,56 +20,75 @@ EOF
 }
 
 get_formats (){
-  jq -r '.formats[] | [ .format_id, .ext, .fps, .tbr, .format ] | @tsv'
+    jq -r '.formats[] | [ .format_id, .ext, .fps, .tbr, .format ] | @tsv' |
+    while read -r format_id ext fps br resolution; do
+      if [ -z "$resolution" ]; then #audio only
+        fps=""
+        br=""
+        resolution="audio_only"
+      else
+        br=$(printf '%s' "$br" | sed 's/\..*/K/')
+        br="$br"B
+      fi
+      printf '%-16s\t%-10s\t%-3s\t%10s\t%10s\n' "$format_id" "$ext" "$fps" "$br" "${resolution#* -}"
+    done
 }
 
-play () {
+play() {
   local url=$1
   local format=$2
   local duration=$3
+  local res=$4
+  local title=$5
 
   if [ -z "$format" ] || [ "$format" = "no" ]; then
     return
   fi
 
   if [ "$format" != "yes" ]; then
-    [ -z "$nformat" ] && nformat=$format
+    [ -z "$res" ] && res=$format
     format="--ytdl-format=$format"
   else
     format=""
   fi
 
-  notify-send -a mpv "PLAYING" "$title\nDuration: $duration\t Format:$nformat\nURL: $url"
-  mpv_ --really-quiet --keep-open --pause --ytdl-raw-options=yes-playlist= --force-window=yes "$format" -- "$url" 2>&1 ||
+  notify-send -a mpv "PLAYING" "$title\nDuration: $duration\t Res:$res\nURL: $url"
+  mpv --really-quiet --keep-open --pause --ytdl-raw-options=yes-playlist= --force-window=yes "$format" -- "$url" 2>&1 ||
     notify-send -a mpv-fail "STOPED" "mpv cound't open: $url"
 }
 
 get_info(){
-  jq -r '[.extractor, .channel, .duration, .id, .title ] | @tsv'
+  jq -r '[.extractor, .uploader, .uploader_id, .is_live, .duration, .title, .description ] | @tsv'
 }
 
 menu() {
   local prompt=
   prompt=$(printf '%s: ' "$1")
+  shift
 
   local title
-  title=$(printf 'Video formats for: %s' "$2")
+  title=$(printf 'Video formats for: %s' "$1")
+  shift
   # set -f disable shell glob expansion
   # shellcheck disable=2086
-  "$prog" --header="$title" --prompt="$prompt"
+  "$prog" --header="$title" --prompt="$p" --tabstop=2 "$@"
 }
 
 best_chosen() {
-  best_id=""
-  best_br=0
-  while read -r id br; do
-    br="${br%.*}${br#*.}"
+  local best_id=""
+  local best_br=0
+  local res
+  while read -r id br r; do
+    br=${br%B}
+    br=${br%K}
+    br=$((br))
     if [ -n "$br" ] && [ $br -gt $best_br ];then
       best_id=$id
       best_br=$br
+      res=$r
     fi
   done
-  printf '%s' "$best_id"
+  [ -n "$best_id" ] && printf '%s\t%s' "$best_id" "$res"
 }
 
 choose_format() {
@@ -78,23 +97,23 @@ choose_format() {
   c_format=$(printf '%s\n' "$lformat" | menu 'Format' "$head")
 
   local lc_audio
-  lc_audio=$(printf '%s\n' "$c_format" | awk '/audio only/{printf("%s\t%s\n", $1, $4)}')
+  lc_audio=$(printf '%s\n' "$c_format" | awk '/audio only/{printf("%s\t%s\t%s\n", $1, $4, $5)}')
   local b_audio
   b_audio=$(printf '%s\n' "$lc_audio" | best_chosen)
 
   local lc_video
-  lc_video=$(printf '%s\n' "$c_format" | awk '!/audio only/{printf("%s\t%s\n", $1, $4)}')
+  lc_video=$(printf '%s\n' "$c_format" | awk '!/audio only/{printf("%s\t%s\t%s\n", $1, $4, $5)}')
   local b_video
   b_video=$(printf '%s\n' "$lc_video" | best_chosen)
 
   if [ -n "$b_audio" ] && [ -n "$b_video" ]; then
-    printf '%s+%s' "$b_video" "$b_audio"
+    printf '%s+%s\t%s %s' "${b_video%	*}" "${b_audio%	*}" "${b_video#*	}" "${b_audio#*	}"
   else
     if [ -n "$b_audio" ]; then
-      printf '%s' "$b_audio"
+      printf '%s\t%s' "${b_audio%	*}" "${b_audio#*	}"
     fi
     if [ -n "$b_video" ]; then
-      printf '%s' "$b_video"
+      printf '%s\t%s' "${b_video%	*}" "${b_video#*	}"
     fi
   fi
 }
@@ -104,18 +123,22 @@ if ! [ -f "$1" ]; then
     case "$1" in
       1080)
         format="303+251/299+140/248+140/248+251/247+140/247+251/137+140/136+140/22/43/18/1080p/720p/420p/0/best"
-        nformat=1080p
+        res=1080p
         ;;
       720)
         format="136+140/137+140/247+140/247+251/22/43/18/720p/420p/0/best"
-        nformat=720p
+        res=720p
         ;;
       360)
         format="43/18"
-        nformat=360p
+        res=360p
         ;;
       *.*)
         url="$1"
+        ;;
+      -f)
+        shit
+        format=$1
         ;;
       --)
         shift
@@ -140,12 +163,11 @@ if ! [ -f "$1" ]; then
 
   notify-send -a mpv-run 'Info' "Getting info for $url"
   json=$(youtube-dl --dump-json -- "$url")
-  printf '%s' "$json" | get_info | while read -r extractor channel duration id title; do
-    [ -z "$title" ] && title="$url"
+  printf '%s' "$json" | get_info |
+    while read -r extractor channel_name channel_id is_live duration title description; do
+    title=${title:-$description}
 
-    if [ -z "$duration" ]; then
-      duration="[live?]"
-    else
+    if [ -z "$is_live" ] && [ -n "$duration" ]; then
       sec=":$((duration % 60))"
       min=$((duration / 60))
       if [ -n "$min" ] && [ $min -gt 60 ]; then
@@ -157,6 +179,8 @@ if ! [ -f "$1" ]; then
         hour=":$((hour % 24))"
       fi
       duration=$(printf '%s%s%s%s' "$day" "$hour" "$min" "$sec")
+    else
+      duration="live?"
     fi
 
     if [ -z "$format" ]; then
@@ -166,15 +190,18 @@ if ! [ -f "$1" ]; then
         formats=$(printf '%s\n' "yes" "no")
       else
         title=$(printf '%.60s\n' "$title")
-        head=$(printf '[%s] %s%s' "$duration" "$channel: " "$title")
+        head=$(printf '[%s] %s%s' "$duration" "${channel_name:-$channel_id}: " "$title")
       fi
       format=$(choose_format "$formats" "$head")
+      res=${format#*	}
+      format=${format%	*}
     fi
 
     logdir="${XDG_RUNTIME_DIR:-/tmp}/mpv/$extractor"
     mkdir -p "$logdir"
-    logfile="$logdir/${channel:-$id}.log"
-    play "$url" "$format" "$duration" "$title" "$extractor" "$channel" "$id" >> "$logfile" &
+    logfile="$logdir/$channel_id".log
+    play "$url" "$format" "$duration" "$res" "$title" "$extractor" >> "$logfile" 2>&1 &
+  # shellcheck disable=SC3044
     disown
   done
 else
@@ -190,7 +217,8 @@ else
   logdir="${XDG_RUNTIME_DIR:-/tmp}/mpv/$extractor"
   mkdir -p "$logdir"
   logfile="$logdir/$channel.log"
-  play "$url" "$format" "$duration" "$title" "$extractor" "$channel" "$USER" >> "$logfile"
+  play "$url" "$format" "$duration" "$format" "$title" "$extractor" >> "$logfile" 2>&1 &
+  # shellcheck disable=SC3044
   disown
 fi
 
