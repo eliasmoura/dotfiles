@@ -237,7 +237,9 @@ run() {
 
         get_game_status "game_id=$gid" | menu 'game_list' "$title" |
         while read -r _ user game lang title; do
-          mpv-run "$base_url/$user"
+          mpv-run "$base_url/$user" &
+          disown
+          exit 0
         done
       else
         get_games_list | menu 'game_list' 'Available games' | while read -r game; do
@@ -275,7 +277,7 @@ run() {
       opt=$(usage | awk '!/^usage/' | menu 'menu' 'Twitch commands: ')
       opt=$(printf '%s\n' "$opt" | awk '/^ [-].*/{print $1}')
       if [ -n "$opt" ]; then
-        twitch "$opt"
+        run "$opt" 
       fi
     ;;
     -user_id)
@@ -304,7 +306,7 @@ run() {
       else
         menu 'user' 'Bookmarks' --print-query < "$user_list_file" |
         while IFS=' ' read -r id user _; do
-          [ -n "$id" ] && twitch '-user' "$id" "$user"
+          [ -n "$id" ] && run  '-user' "$id" "$user"
         done
       fi
     ;;
@@ -317,7 +319,7 @@ run() {
         # that has 'www.twitch.tv/username.
         pgrep --list-full --exact mpv | awk 'BEGIN { FS = "/" } /www\.twitch\.tv/ && $(NF-1) !~ /videos/{print $(NF)}' |
         menu 'user_bookmark_add' 'Add user to bookmarks' --print-query | while read -r user; do
-        [ -n "$user" ] && twitch '-user_bookmark_add' "$user"
+        [ -n "$user" ] && run  '-user_bookmark_add' "$user"
       done
       fi
     ;;
@@ -339,7 +341,7 @@ run() {
       update_token "$@"
     ;;
     *)
-      twitch -menu
+      run  -menu
     ;;
   esac
 }
