@@ -68,7 +68,7 @@ update_token() {
     if [ -n "$token" ]; then
       tmp=$(sed -e "s/^\(bearer_token=\).*/\1'$token'/" "$info")
       if [ -n "$tmp" ]; then
-        notify-send -a twitch-info 'Update' 'The access_token has been update!'
+        notify-send -a twitch-info -u normal 'Update' 'The access_token has been update!'
         printf '%s\n' "$tmp" > "$info"
       else
         # shellcheck disable=SC2154
@@ -88,9 +88,9 @@ get_list() {
     if ! printf '%s\n' "$r" | jq -r "$jq_query"; then
       msg=$(printf '%s\n' "$r" | jq -r '.message')
       if [ "$msg" != 'null' ]; then
-        notify-send -a twitch-fail 'Error:93 get_list' "$msg"
+        notify-send -a twitch-fail -u critical 'Error:93 get_list' "$msg"
         if [ "$msg" = 'Invalid OAuth token' ]; then
-          notify-send -a twitch-fail 'Error:95 "Invalid OAuth toekn"' 'Trying to update the token. Please, invoke "-update_token <url_returned_from_twitch_ouath2>"'
+          notify-send -a twitch-fail -u normal 'Error:95 "Invalid OAuth toekn"' 'Trying to update the token. Please, invoke "-update_token <url_returned_from_twitch_ouath2>"'
           update_token update
         fi
         exit 1
@@ -273,7 +273,6 @@ run() {
       done
     ;;
     -menu)
-      notify-send -a twitch-info 'Update' "menu= opt $opt $*"
       opt=$(usage | awk '!/^usage/' | menu 'menu' 'Twitch commands: ')
       opt=$(printf '%s\n' "$opt" | awk '/^ [-].*/{print $1}')
       if [ -n "$opt" ]; then

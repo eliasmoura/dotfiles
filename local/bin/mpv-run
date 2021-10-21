@@ -52,9 +52,9 @@ play() {
     format=""
   fi
 
-  notify-send -a mpv "PLAYING" "$title\nDuration: $duration\t Res:$res\nURL: $url"
+  notify-send -u low -a mpv "PLAYING" "$title\nDuration: $duration\t Res:$res\nURL: $url"
   mpv --really-quiet --keep-open --pause --ytdl-raw-options=yes-playlist= --force-window=yes "$format" -- "$url" 2>&1 ||
-    notify-send -a mpv-fail "STOPED" "mpv cound't open: $url"
+    notify-send -u critical -a mpv-fail "STOPED" "mpv cound't open: $url"
 }
 
 get_info(){
@@ -157,11 +157,11 @@ if ! [ -f "$1" ]; then
     url=$(xsel --clipboard)
   fi
   if ! [ "$url" ]; then
-    notify-send -a mpv-fail 'URL' 'No "url" provided make sure you have copied it to the clipboard'
+    notify-send -u normal -a mpv-fail 'URL' 'No "url" provided make sure you have copied it to the clipboard'
     return 1
   fi
 
-  notify-send -a mpv-run 'Info' "Getting info for $url"
+  notify-send -u low -a mpv-run 'Info' "Getting info for $url"
   json=$(youtube-dl --dump-json -- "$url")
   printf '%s' "$json" | get_info |
     while read -r extractor channel_name channel_id is_live duration title description; do

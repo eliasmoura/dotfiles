@@ -11,7 +11,7 @@ set $right l
 # Your preferred terminal emulator
 set $term alacritty
 # Your preferred application launcher
-set $menu alacritty --class mymenu -e dmenu
+set $menu alacritty --class mymenu -e sh -i dmenu
 focus_follows_mouse no
 
 default_border pixel 3px
@@ -212,7 +212,6 @@ mode "media" {
   bindsym y exec sh mpv-run 1080; mode default
   bindsym s exec sh mpv-run 720; mode default
   bindsym f exec --no-startup-id alacritty --class mymenu -e sh -i mpv-run; mode default
-  bindsym t exec alacritty --class mymenu -e local/bin/test; mode default
   bindsym m mode mpc
 
   bindsym Shift+m exec ponymix toggle; mode default
@@ -226,7 +225,7 @@ bindsym $mod+space mode menu
 
 mode "mouse" {
     bindsym h       exec --no-startup-id xdotool mousemove_relative --sync -- -10   0; 
-    bindsym j 		exec --no-startup-id xdotool mousemove_relative --sync --   0  10; 
+    bindsym j       exec --no-startup-id xdotool mousemove_relative --sync --   0  10; 
     bindsym k       exec --no-startup-id xdotool mousemove_relative --sync --   0 -10; 
     bindsym l       exec --no-startup-id xdotool mousemove_relative --sync --  10   0; 
     bindsym space   exec --no-startup-id xdotool click       1; 
@@ -276,6 +275,7 @@ for_window [class="qute_editor"] floating_minimum_size 700px x -1
 for_window [instance="mymenu"] floating enable
 for_window [instance="mymenu"] resize set 1200 700 px
 for_window [instance="mymenu"] move position center
+for_window [instance="mymenu"] focus
 
 for_window [class="Steam" title="Steam Login"] floating enable
 
