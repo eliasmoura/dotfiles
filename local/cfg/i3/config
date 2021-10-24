@@ -169,8 +169,8 @@ bindsym $mod+r mode "resize"
 
 mode "menu" {
     bindsym o       exec $menu "run"; mode default
-    bindsym p       exec --no-startup-id passmenu --type -p "Passmenu" -l 10;  mode default
-    bindsym shift+p exec --no-startup-id passmenu -p "Passmenu" -l 10; mode default
+    bindsym p       exec alacritty --class mymenu -e sh -i passmenu --type --prompt "Passmenu";  mode default
+    bindsym shift+p exec alacritty --class mymenu -e sh -i passmenu --prompt "Passmenu"; mode default
 
 #Screenshots
     bindsym s exec exec screenshot; mode default
