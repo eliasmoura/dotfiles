@@ -184,12 +184,12 @@ mode "menu" {
     bindsym Escape mode default
 }
 mode "twitch" {
-  bindsym t exec alacritty --class mymenu -e twitch; mode default
-  bindsym b exec alacritty --class mymenu -e twitch !bookmarks; mode default
-  bindsym u exec alacritty --class mymenu -e twitch !user; mode default
-  bindsym g exec alacritty --class mymenu -e twitch !game_list; mode default
-  bindsym p exec alacritty --class mymenu -e twitch !programming; mode default
-  bindsym c exec alacritty --class mymenu -e twitch !chess; mode default
+  bindsym t exec alacritty --class mymenu -e sh -i twitch; mode default
+  bindsym b exec alacritty --class mymenu -e sh -i twitch -bookmarks; mode default
+  bindsym u exec alacritty --class mymenu -e sh -i twitch -user; mode default
+  bindsym g exec alacritty --class mymenu -e sh -i twitch -game_list; mode default
+  bindsym p exec alacritty --class mymenu -e sh -i twitch -programming; mode default
+  bindsym c exec alacritty --class mymenu -e sh -i twitch -chess; mode default
 
     bindsym Return mode default
     bindsym Escape mode default
