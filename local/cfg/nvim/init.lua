@@ -33,15 +33,7 @@ if fn.empty(fn.glob(install_path)) > 0 then
 end
 
 require("custom.sets")
-require("custom.snippets")
 require("custom")
-vim.custom.toggleBackground = function()
-  if vim.o.background == "light" then
-    vim.o.background = "dark"
-  else
-    vim.o.background = "light"
-  end
-end
 vim.cmd([[runtime autoload/auto_stuff.vim]])
 
 if ok then
@@ -56,17 +48,15 @@ if ok then
   -- loading it normaly will take around 100s. Using `vim.schelude` it takes
   -- 50s
 
-  -- vim.cmd [[runtime plugin/astronauta.vim]]
+  vim.cmd([[runtime plugin/astronauta.vim]])
+  require("custom.mappings")
   vim.schedule(function()
-    require("custom.mappings")
     vim.keymap.nnoremap({
       "<silent> <leader>",
       ":<c-u>WhichKey <\\Space><CR>",
     })
     vim.keymap.nnoremap({ "<silent> <localleader>", ":<c-u>WhichKey  ,<CR>" })
   end)
-
-  require("custom.luasnip")
 end
 
 if vim.bo.filetype ~= "lua" then
