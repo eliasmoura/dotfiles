@@ -30,7 +30,7 @@ require("packer").startup({
     -- ' Plug 'https://github.com/tpope/vim-rhubarb' 'consider this ft github things
     use({ "https://github.com/tpope/vim-surround" })
     use({ "https://github.com/tpope/vim-repeat.git" })
-    use({ "https://github.com/tpope/vim-fugitive.git" }) --    'Git integration
+    use({ "https://github.com/tpope/vim-fugitive.git", disable = true }) --    'Git integration
     use({
       "tpope/vim-scriptease",
       cmd = {
@@ -59,37 +59,14 @@ require("packer").startup({
       "https://github.com/hoob3rt/lualine.nvim",
       requires = { "https://github.com/kyazdani42/nvim-web-devicons" },
       config = function()
-        require("lualine").setup({
-          options = {
-            icons_enabled = true,
-            theme = "tokyonight",
-            component_separators = { "", "" },
-            section_separators = { "", "" },
-            disabled_filetypes = {},
-          },
-          sections = {
-            lualine_a = { "mode" },
-            lualine_b = { "branch" },
-            lualine_c = { "filename" },
-            lualine_x = { "encoding", "fileformat", "filetype" },
-            lualine_y = { "progress" },
-            lualine_z = { "location" },
-          },
-          inactive_sections = {
-            lualine_a = {},
-            lualine_b = {},
-            lualine_c = { "filename" },
-            lualine_x = { "location" },
-            lualine_y = {},
-            lualine_z = {},
-          },
-          tabline = {},
-          extensions = {},
-        })
+        require("custom.lualine")
       end,
     })
     use({ "https://github.com/mbbill/undotree", cmd = { "UndotreeToggle" } })
-    use({ "https://github.com/junegunn/vim-easy-align", cmd = { "EasyAlign" } })
+    use({
+      "https://github.com/junegunn/vim-easy-align",
+      cmd = { "EasyAlign" },
+    })
     -- ' Plug 'https://github.com/groenewege/vim-less'
     -- 'Plug 'https://github.com/hsanson/vim-android'
 
@@ -114,12 +91,21 @@ require("packer").startup({
     })
     use({ "https://github.com/nvim-lua/lsp-status.nvim" })
     use({
+      "https://github.com/tami5/lspsaga.nvim",
+    })
+    use({
       "https://github.com/bash-lsp/bash-language-server",
+      ft = "sh",
       config = function()
         require("lspconfig").bashls.setup({})
       end,
     })
-    use({"https://github.com/folke/trouble.nvim", config = function()require("trouble").setup()end})
+    use({
+      "https://github.com/folke/trouble.nvim",
+      config = function()
+        require("trouble").setup()
+      end,
+    })
     use({ "https://github.com/bfredl/nvim-luadev", opt = true })
     use({ "https://github.com/nvim-lua/completion-nvim", disable = true })
     use({
@@ -133,7 +119,12 @@ require("packer").startup({
     use({ "https://github.com/hrsh7th/cmp-nvim-lua" })
     use({ "https://github.com/hrsh7th/cmp-nvim-lsp" })
     use({ "https://github.com/saadparwaiz1/cmp_luasnip" })
-    use({ "https://github.com/L3MON4D3/LuaSnip" })
+    use({
+      "https://github.com/L3MON4D3/LuaSnip",
+      config = function()
+        require("custom.snippets")
+      end,
+    })
     -- use{'https://github.com/hrsh7th/nvim-compe', opt = true}
     -- use{ 'hrsh7th/nvim-cmp', requires = { 'hrsh7th/vim-vsnip', 'hrsh7th/cmp-buffer', }}
 
@@ -191,6 +182,12 @@ require("packer").startup({
       end,
     })
     use({ "https://github.com/nvim-telescope/telescope-dap.nvim" })
+    use({ "https://github.com/vim-test/vim-test" })
+    use({
+      "https://github.com/rcarriga/vim-ultest",
+      require = "https://github.com/vim-test/vim-test",
+      run = ":UpdateRemotePlugins",
+    })
     use({
       "https://github.com/AckslD/nvim-whichkey-setup.lua",
       requires = { "https://github.com/liuchengxu/vim-which-key" },
@@ -213,9 +210,19 @@ require("packer").startup({
     use({
       "https://github.com/TimUntersberger/neogit",
       cmd = "Neogit",
-      requires = "https://github.com/nvim-lua/plenary.nvim",
+      requires = {
+        "https://github.com/nvim-lua/plenary.nvim",
+        "https://github.com/sindrets/diffview.nvim",
+      },
       config = function()
-        require("neogit").setup()
+        require("neogit").setup({ integrations = { diffview = true } })
+      end,
+    })
+    use({
+      "https://github.com/sindrets/diffview.nvim",
+      cmd = "DiffviewOpen",
+      config = function()
+        require("diffview").setup({ file_panel = { listing_style = "list" } })
       end,
     })
 
@@ -238,6 +245,14 @@ require("packer").startup({
     })
 
     use({ "https://github.com/ledger/vim-ledger" })
+    use({ "https://github.com/felipec/notmuch-vim", disable = true })
+    use({
+      "https://github.com/rcarriga/nvim-notify",
+      config = function()
+        vim.notify = require("notify")
+        vim.notify.setup({ stages = "fade_in_slide_out", timeout = 5000 })
+      end,
+    })
   end,
   config = { profile = { enable = true } },
 })

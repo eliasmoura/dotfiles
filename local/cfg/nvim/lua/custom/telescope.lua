@@ -15,7 +15,7 @@ local themes = require("telescope.themes")
 
 require("telescope").setup({
   defaults = {
-    prompt_prefix = ">",
+    prompt_prefix = "> ",
     scroll_strategy = "cycle",
     mappings = {
       i = { ["<c-q>"] = actions.send_to_qflist + actions.open_qflist },
@@ -23,7 +23,7 @@ require("telescope").setup({
     },
     extensions = {
       fzf = {
-        override_generic_sorter = false, -- override the generic sorter
+        override_generic_sorter = true, -- override the generic sorter
         override_file_sorter = true, -- override the file sorter
         case_mode = "smart_case", -- or "ignore_case" or "respect_case"
         -- the default case_mode is "smart_case"
@@ -32,13 +32,7 @@ require("telescope").setup({
   },
 })
 require("telescope").load_extension("fzf")
-
-local with_preview = themes.get_dropdown({
-  results_height = 20,
-  prompt_title = " ",
-  result_title = "",
-  winblend = 20,
-})
+require("telescope").load_extension("notify")
 
 local no_preview = themes.get_dropdown({
   winblend = 20,

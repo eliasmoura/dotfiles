@@ -1,4 +1,7 @@
-local norg = require("neorg")
+local ok, norg = pcall(require, "neorg")
+if not ok then
+  return
+end
 print("NORG!")
 
 local parser_configs = require("nvim-treesitter.parsers").get_parser_configs()

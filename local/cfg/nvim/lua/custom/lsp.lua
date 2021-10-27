@@ -8,21 +8,45 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require("cmp_nvim_lsp").update_capabilities(capabilities)
 
 local on_attach = function(client)
+  require("lspsaga").init_lsp_saga()
   local filetype = vim.api.nvim_buf_get_option(0, "filetype")
   require("lsp-status").on_attach(client)
-
-  inoremap({ "<c-s>", vim.lsp.buf.signature_help })
-  nnoremap({ "<leader>la", vim.lsp.buf.code_action })
+  local opts = {}
+  opts.buffer = true
+  inoremap({ "<c-s>", vim.lsp.buf.signature_help, opts })
+  nnoremap({
+    "<leader>la",
+    require("lspsaga.codeaction").code_action or vim.lsp.buf.code_action,
+    opts,
+  })
   nnoremap({ "<leader>lf", vim.lsp.buf.formatting })
   nnoremap({ "<leader>ls", vim.lsp.buf.document_symbol })
   nnoremap({ "<leader>lh", vim.lsp.buf.hover })
   nnoremap({ "<leader>lr", vim.lsp.buf.references })
-  nnoremap({ "<leader>lR", vim.lsp.buf.rename })
+  nnoremap({
+    "<leader>lR",
+    require("lspsaga.rename").rename or vim.lsp.buf.rename,
+  })
   nnoremap({ "<leader>ldg", vim.lsp.diagnostic.get_all })
   nnoremap({ "<leader>lda", vim.lsp.diagnostic.goto_prev })
+  nnoremap({
+    "<c-n>",
+    require("lspsaga.diagnostic").lsp_jump_diagnostic_next
+      or vim.diagnostic.goto_next,
+  })
+  nnoremap({
+    "<c-p>",
+    require("lspsaga.diagnostic").lsp_jump_diagnostic_prev
+      or vim.diagnostic.goto_prev,
+  })
+  nnoremap({
+    "<c-s>",
+    require("lspsaga.diagnostic").show_line_diagnostics
+      or vim.diagnostic.show_line_diagnostics,
+  })
   nnoremap({ "<M-Q>", vim.lsp.util.set_qflist })
   nnoremap({ "<M-q>", vim.lsp.util.set_loclist })
-  nnoremap({ "<c-]>", vim.lsp.buf.definition })
+  nnoremap({ "<c-]>", vim.lsp.buf.definition, opts })
 
   if filetype ~= "lua" then
     nnoremap({ "K", vim.lsp.buf.hover })
@@ -86,6 +110,10 @@ lspconfig.sumneko_lua.setup({
         version = "LuaJIT",
         -- Setup your lua path
         path = vim.split(package.path, ";"),
+      },
+      completion = {
+        keywordSnippet = "Disable",
+        showWord = "Disable",
       },
       diagnostics = {
         -- Get the language server to recognize the `vim` global

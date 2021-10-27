@@ -9,36 +9,66 @@ local M = {}
 vim.g.mapleader = " "
 vim.g.maplocalleader = ","
 
+nnoremap({ "<space>", "<nop>" })
+nnoremap({ "<cr>", "<nop>" })
 map({ "Q", "gq" })
-nnoremap({ "<leader>rt", [[:%s/\s\+$//g<cr>:let @/=''<cr>]] })
-nnoremap({ "<leader>/", ":silent :nohlsearch<CR>:<CR>" })
-nnoremap({ "<leader><Tab>", ":silent :retab!<CR>" })
+nnoremap({ "<leader>rt", [[<cmd>%s/\s\+$//g<cr>let @/=''<cr>]] })
+nnoremap({ "<cr>", vim.custom.nohl })
+nnoremap({ "<leader>/", "<cmd>nohlsearch<CR><cmd>echo<cr>" }) -- teh second cmd is to remove the search from the echo area
+nnoremap({ "<leader><Tab>", "<cmd>retab!<CR>" })
 
 -- Git
-nnoremap({ "<leader>gg", ":Git " })
-nnoremap({ "<leader>gG", ":Git! " })
-nnoremap({ "<leader>gs", "<cmd>Git<cr>" })
-nnoremap({ "<leader>gc", "<cmd>Git commit<cr>" })
-nnoremap({ "<leader>gm", "<cmd>Git merge<cr>" })
-nnoremap({ "<leader>gl", "<cmd>Git log<cr>" })
+local neogit = {}
+function neogit.commit()
+  require("neogit").open({ "commit" })
+end
+function neogit.merge()
+  require("neogit").open({ "merge" })
+end
+function neogit.log()
+  require("neogit").open({ "log" })
+end
+function neogit.status()
+  require("neogit").open({ kind = "split" })
+end
+nnoremap({ "<leader>gg", "<cmd>Neogit<cr>" })
+-- nnoremap({ "<leader>gg", neogit.status })
+-- nnoremap({ "<leader>gG", ":Git! " })
+-- nnoremap({ "<leader>gs", require("neogit").cr>" })
+nnoremap({ "<leader>gc", neogit.commit })
+nnoremap({ "<leader>gm", neogit.merge })
+nnoremap({ "<leader>gl", neogit.log })
 
 -- Lsp
 -- For the Lsp mappings see lua/custom/lsp.lua
+nnoremap({ "<c-n>", vim.diagnostic.goto_next })
+nnoremap({ "<c-p>", vim.diagnostic.goto_prev })
 
-nnoremap({ "<m-m>", ":make clean all<CR>" })
+-- NOTE(elias): It seems like diagnostic.show_line_diagnostics is buggy now
+-- vim.diagnostic.show_line_diagnostics = function()
+--   local namespaces = vim.api.nvim_get_namespaces()
+--   -- P(namespaces)
+--   local l_num = vim.api.nvim_win_get_cursor(vim.api.nvim_get_current_win())[1]
+--   local diagnostics = vim.diagnostic.get(0, { lnum = l_num })
+
+--   vim.diagnostic.show(namespaces["vim.lsp.client-1"], 0, diagnostics, nil)
+-- end
+-- nnoremap({ "<c-s>", vim.diagnostic.show_line_diagnostics })
+
+nnoremap({ "<m-m>", "<cmd>make clean all<CR>" })
 nnoremap({ "<m-s-m>", ":make " })
 tnoremap({ "<Esc>", "<C-\\><C-n>" })
 nnoremap({ "<Esc>", "<C-\\><C-n>" })
 nnoremap({ "<C-S-a>", "<C-^>" })
 
--- "Completision
-
-nnoremap({ "<M-c>", ":lclose<cr>" })
-nnoremap({ "<C-n>", ":lnext<cr>" })
-nnoremap({ "<c-p>", ":lprev<cr>" })
-nnoremap({ "<m-s-c>", ":cclose<cr>" })
-nnoremap({ "<m-s-n>", ":cnext<cr>" })
-nnoremap({ "<m-s-p>", ":cprev<cr>" })
+nnoremap({ "<M-c>", "<cmd>lclose<cr>" })
+nnoremap({ "<M-o>", "<cmd>lopen<cr>" })
+nnoremap({ "<m-n>", "<cmd>lnext<cr>" })
+nnoremap({ "<m-p>", "<cmd>lprev<cr>" })
+nnoremap({ "<m-s-c>", "<cmd>cclose<cr>" })
+nnoremap({ "<m-s-o>", "<cmd>copen<cr>" })
+nnoremap({ "<m-s-n>", "<cmd>cnext<cr>" })
+nnoremap({ "<m-s-p>", "<cmd>cprev<cr>" })
 
 --Telescope
 local tl = require("custom.telescope")
@@ -57,10 +87,7 @@ nnoremap({ "<leader>th", tl.help_tags })
 nnoremap({ "<leader><space>", tl.find_files })
 nnoremap({ "<leader>rr", tl.reloader })
 
-nnoremap({ "<M-n>", vim.diagnostic.goto_next })
-nnoremap({ "<M-p>", vim.diagnostic.goto_prev })
-nnoremap({ "<M-o>", vim.diagnostic.show_line_diagnostics })
-
+nnoremap({ "<leader>db", require("dap").toggle_breakpoint })
 nnoremap({ "<leader>db", require("dap").toggle_breakpoint })
 nnoremap({ "<leader>dC", require("dap").continue }) --	when debugging, continue. otherwise start debugging.
 nnoremap({ "<leader>dc", require("dap").run_to_cursor }) --	when debugging, continue. otherwise start debugging.
@@ -75,6 +102,8 @@ nnoremap({ "<F5>", require("dap").step_into }) --	step into
 nnoremap({ "<leader>do", require("dap").step_out }) --	step out of current function scope
 nnoremap({ "<leader>du", require("dap").up }) --	step out of current function scope
 nnoremap({ "<leader>dd", require("dap").down }) --	step out of current function scope
+nnoremap({ "<leader>td", require("dap-go").debug_test })
+nnoremap({ "<leader>dj", "<cmd>call v:lua.dap_prompt_expr()<cr>" })
 
 nnoremap({ "<leader>tB", vim.custom.toggleBackground })
 nnoremap({ "cu", ":UndotreeToggle<CR>" })

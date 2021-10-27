@@ -38,10 +38,12 @@ end
 
 ls.snippets = {
   go = {
-    s({ trig = "eif" }, {
+    s({ trig = "err" }, {
       i(1, "val"),
       t({ ", err := " }),
-      i(2, "f()"),
+      i(2, "f"),t({"("}),i(0),t({")"}),
+    }),
+    s({ trig = "eif" }, {
       t({ "", "if err != nil {", "" }),
       i(0),
       t({ "", "}", "" }),
