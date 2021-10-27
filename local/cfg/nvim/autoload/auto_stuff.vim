@@ -1,4 +1,4 @@
-au BufEnter *.log,*.txt setlocal ft=txt
+au BufEnter *.log setlocal ft=txt
 augroup go_last_pos
   autocmd!
   autocmd BufReadPost *
