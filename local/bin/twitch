@@ -177,20 +177,21 @@ get_video() {
 
 update_user_list() {
   local ulist
-  while read -r id name category stuff; do
+  while IFS=' ' read -r id name category stuff; do
+    printf '%s' "$id" | grep -v '^\s*#' >/dev/null || continue
     if [ -z "$name" ]; then name=$id; fi
     #check if the user still exist
     id=$(get_user_id "$name")
     if [ -n "$id" ]; then
-      printf '%-15s%-20s%-30s%s\n' "$id" "$name" "$category" "$stuff"
+      printf '%-15s%-20s%-30s%s\n' "$id" "$name" "$category" "$stuff" | sed 's/\s*$//'
     else
-     onegone=$(printf '%-15s %-20s %-30s %s\n' "$id" "$name" "$category" "$stuff")
+     onegone=$(printf '%-15s %-20s %s %s\n' "$id" "$name" "$category" "$stuff")
      ulist="$list$onegone"
     fi
   done
   if [ -n "$ulist" ]; then
-    printf '%s\n' "#The following users aren't avalible anymore."
-    printf '%s\n' "$ulist"
+    printf '#The following channels are not avalible anymore.\n'
+    printf '#%s\n' "$ulist"
   fi
 }
 
