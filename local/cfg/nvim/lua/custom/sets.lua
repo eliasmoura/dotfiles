@@ -9,6 +9,8 @@ vim.o.timeoutlen = 600
 vim.g.maplocalleader = "\\"
 opt.updatetime = 50
 wopt.foldmethod = "syntax"
+vim.g.markdown_folding = 1
+vim.g.vim_markdown_folding_disabled = 1
 opt.completeopt = "menuone,noselect" -- ,preview"
 opt.shortmess = opt.shortmess .. "cI"
 opt.cmdheight = 1
@@ -57,7 +59,7 @@ vim.g.loaded_vimballPlugin = 1
 vim.g.loaded_2html_plugin = 1
 
 -- vim.g.loaded_matchit = 1
-vim.g.loaded_matchparen = 1
+-- vim.g.loaded_matchparen = 1
 vim.g.loaded_logiPat = 1
 vim.g.loaded_rrhelper = 1
 
@@ -68,7 +70,7 @@ vim.g.loaded_netrwSettings = 1
 vim.g.tar_cmd = "bsdtar"
 vim.g.tar_secure = 1
 vim.g.loaded_gzip = 1
-vim.g.loaded_zipPlugin =1
+vim.g.loaded_zipPlugin = 1
 vim.g.loaded_tohtml = 1
 
 -- Tell vim about the additional file extensions we can now use.
