@@ -11,7 +11,7 @@
 # configured here named ".notmuch".
 #
 [database]
-path=/home/kotto/email
+path=/home/kotto/email/mbsync/gmail
 
 # User configuration
 #
