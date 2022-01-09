@@ -86,13 +86,18 @@ bindkey -M isearch '^M' accept-search
 
 function dt {
   git_dir_path="$HOME/.dotfiles"
+  git_work_tree_path="$HOME"
   if [ "$GIT_DIR" = "$git_dir_path" ]; then
     printf 'Reverting GIT_DIR to [%s]\n' "$OLD_GIT_DIR"
     export GIT_DIR="$OLD_GIT_DIR"
+    export GIT_WORK_TREE="$OLD_GIT_WORK_TREE"
   else
     export OLD_GIT_DIR="$GIT_DIR"
+    export OLD_GIT_WORK_TREE="$GIT_WORK_TREE"
     printf 'Changing GIT_DIR to [%s]\n' "$git_dir_path"
+    printf 'Changing GIT_WORK_TREE to [%s]\n' "$git_work_tree_path"
     export GIT_DIR="$git_dir_path"
+    export GIT_WORK_TREE="$git_work_tree_path"
   fi
 }
 

@@ -8,10 +8,12 @@ export X11FSDIR=${XDG_RUNTIME_DIR:-/tmp}/x11/fs
 
 # NOTE(k0tto): It seems like $HOME/local/bin is been add to PATH from somewhere
 # else
-# export PATH=$HOME/local/bin:$PATH
+export PATH=$HOME/local/bin:$PATH
 export PATH=$PATH:/usr/lib/jvm/java-8-openjdk/jre/bin/
 export PATH=$PATH:$HOME/local/share/android/tools:$HOME/local/share/android/tools/bin
 export MANPATH=$MANPATH:$XDG_DATA_HOME/man
+
+export CHROOT=${XDG_DATA_HOME:-$HOME/local/share}/makepkg/chroot
 
 export ABDUCO_SOCKET_DIR=$XDG_RUNTIME_DIR/abduco
 export TMPDIR=$XDG_RUNTIME_DIR
@@ -73,7 +75,7 @@ export QT_IM_MODULE=xim
 
 export ALTERNATE_EDITOR=""
 export EDITOR="nvim"
-export VISUAL="less"
+export VISUAL="nvim"
 export SUDO_EDITOR="nvim"
 
 export LESS=-RX
