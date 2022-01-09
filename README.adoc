@@ -3,11 +3,64 @@
 I am trying to remove as much of the config — and micelous files — from the "hiden" .dotfile as I can.
 
 
-== Requirements
+== Packages Required
 dmenu
 imv
+base-devel
+neovim-git
+zig-git
+zls-git
+repose-git
+stylua-git
+dunst-git
+lua-language-server-git
+tmux
+weechat
+mpd
+mpc
+ncmpcpp
+youtube-dl
+curl
+pavucontrol
+pipewire
+pipewire-pulse
+bluez-utils
+chromium
+firefox
+qutebrowser
+zsh
+aria2c
+clang
+gcc
+lldb
+gdb
+go?
+bcc-git
+fzf
+alacritty
+i3
+mpv
+ponymix
+xdotool
+pass
+pinentry
+git
+steam
+discord
+noto-fonts
+jq
+gawk
+procps-ng(pgrep)
+coreutils
+shellcheck
+libnotify
+notmuch
+isync(mbsync)
+connman
+sx
+maim
+qemu
+qemu-arch-extra
 
 sx::
 xsetroot
-dunst
-x11fs

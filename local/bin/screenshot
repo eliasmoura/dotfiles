@@ -1,4 +1,5 @@
 #!/bin/sh --
+# requires libnotify maim date(coreutils)
 
 screenshot(){
   if maim -s "$1"; then
