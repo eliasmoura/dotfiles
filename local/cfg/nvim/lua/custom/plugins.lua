@@ -128,7 +128,15 @@ require("packer").startup({
     -- use{'https://github.com/hrsh7th/nvim-compe', opt = true}
     -- use{ 'hrsh7th/nvim-cmp', requires = { 'hrsh7th/vim-vsnip', 'hrsh7th/cmp-buffer', }}
 
-    use({ "https://github.com/folke/tokyonight.nvim" })
+    use({
+      "https://github.com/folke/tokyonight.nvim",
+      setup = function()
+        vim.g.tokyonight_style = "night"
+      end,
+      config = function()
+        vim.cmd([[colorscheme tokyonight]])
+      end,
+    })
     use({ "https://github.com/morhetz/gruvbox", opt = true })
 
     use({
@@ -190,6 +198,7 @@ require("packer").startup({
     })
     use({
       "https://github.com/AckslD/nvim-whichkey-setup.lua",
+      disable = true,
       requires = { "https://github.com/liuchengxu/vim-which-key" },
       config = function()
         require("whichkey_setup").config()
