@@ -7,6 +7,13 @@ local inoremap = vim.keymap.inoremap
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require("cmp_nvim_lsp").update_capabilities(capabilities)
 
+if vim.bo.filetype ~= "lua" then
+  vim.cmd([[augroup LSP_FORMATING
+  ]])
+  vim.cmd([[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]])
+end
+vim.cmd([[autocmd BufEnter * :LspStart]])
+
 local on_attach = function(client)
   require("lspsaga").init_lsp_saga()
   local filetype = vim.api.nvim_buf_get_option(0, "filetype")
