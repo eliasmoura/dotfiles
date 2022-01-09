@@ -1,4 +1,4 @@
-local ok, dap = pcall(require,"dap")
+local ok, dap = pcall(require, "dap")
 if not ok then
   return
 end
@@ -31,6 +31,7 @@ dap.configurations.cpp = {
 
 dap.configurations.c = dap.configurations.cpp
 dap.configurations.rust = dap.configurations.cpp
+dap.configurations.zig = dap.configurations.cpp
 
 require("dapui").setup({
   icons = { expanded = "-", collapsed = "+" },

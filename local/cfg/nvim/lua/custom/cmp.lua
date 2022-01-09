@@ -1,4 +1,3 @@
-
 local ok1, luasnip = pcall(require, "luasnip")
 local ok2, cmp = pcall(require, "cmp")
 
@@ -21,7 +20,10 @@ cmp.setup({
     ["<C-f>"] = cmp.mapping.scroll_docs(4),
     ["<C-Space>"] = cmp.mapping.complete(),
     ["<C-e>"] = cmp.mapping.close(),
-    ["<c-i>"] = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Insert, select = true }) ,
+    ["<c-i>"] = cmp.mapping.confirm({
+      behavior = cmp.ConfirmBehavior.Insert,
+      select = true,
+    }),
     ["<c-n>"] = cmp.mapping(function()
       if cmp and cmp.visible() then
         cmp.select_next_item()
@@ -53,9 +55,10 @@ cmp.setup({
     { name = "luasnip", priority = 3 },
     { name = "buffer", priority = 4 },
     { name = "path", priority = 2 },
+    { name = "neorg" },
   },
   experimental = {
     native_menu = false,
     ghost_text = true,
-    }
+  },
 })
