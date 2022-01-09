@@ -9,7 +9,7 @@ require("packer").startup({
       "https://github.com/tweekmonster/startuptime.vim",
       cmd = "StartupTime",
     })
-    use({ "https://github.com/tjdevries/astronauta.nvim" }) -- for vim.keymap.nnoremap…
+    -- use({ "https://github.com/tjdevries/astronauta.nvim" }) -- for vim.keymap.nnoremap…
     use({ "https://github.com/nvim-lua/plenary.nvim" }) -- ' lua functions used by others plugins
 
     use({ "https://github.com/vim-pandoc/vim-pandoc", ft = "markdown" })
