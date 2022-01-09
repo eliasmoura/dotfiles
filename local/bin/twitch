@@ -2,7 +2,7 @@
 # shellcheck disable=SC3043
 # twitch - gather info and play videos from twitch.tv chanels/games/etc
 
-# requires curl jq awk pgrep(procps-ng) youtube-dl mpv
+# requires curl jq awk pgrep(procps-ng) youtube-dl mpv sed(base-devel)
 
 argv0=$(basename "$0")
 prog=dmenu
