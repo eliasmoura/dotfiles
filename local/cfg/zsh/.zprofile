@@ -10,14 +10,14 @@ export X11FSDIR=${XDG_RUNTIME_DIR:-/tmp}/x11/fs
 # else
 export PATH=$HOME/local/bin:$PATH
 export PATH=$PATH:/usr/lib/jvm/java-8-openjdk/jre/bin/
-export PATH=$PATH:$HOME/local/share/android/tools:$HOME/local/share/android/tools/bin
+export PATH=$PATH:$XDG_DATA_HOME/android/tools:$XDG_DATA_HOME/android/tools/bin
 export MANPATH=$MANPATH:$XDG_DATA_HOME/man
 
-export CHROOT=${XDG_DATA_HOME:-$HOME/local/share}/makepkg/chroot
+export CHROOT=$XDG_DATA_HOME/makepkg/chroot
 
 export ABDUCO_SOCKET_DIR=$XDG_RUNTIME_DIR/abduco
 export TMPDIR=$XDG_RUNTIME_DIR
-export PASSWORD_STORE_DIR=$HOME/local/share/pass
+export PASSWORD_STORE_DIR=$XDG_DATA_HOME/pass
 export SLRNHOME=$XDG_CONFIG_HOME/slrn
 
 export STARDICT_DATA_DIR=$XDG_DATA_HOME/stardict/dic
@@ -62,8 +62,8 @@ export LESSHISTFILE=$XDG_CACHE_HOME/less/history
 export PERL5LIB=$LOCAL/lib/perl5
 export PERL_MM_OPT=INSTALL_BASE=$LOCAL
 export PERL_MB_OPT="--install_base $LOCAL"
-export PERLBREW_ROOT=$LOCAL/share/perlbrew
-export GOPATH=$LOCAL/share/go
+export PERLBREW_ROOT=$XDG_DATA_HOME/perlbrew
+export GOPATH=$XDG_DATA_HOME/go
 export PATH=$PATH:$GOPATH/bin
 
 # Xorg and XKB.
@@ -95,8 +95,8 @@ export WINEDEBUG=-all
 # For AMD GPUs
 #export GALLIUM_HUD="cpu0+cpu1+cpu2+cpu3;fps"
 
-export PULSE_COOKIE=${LOCAL:-$HOME/local}/tmp/pulse/cookie
-export PULSE_CLIENTCONFIG=${XDG_CONFIG_HOME:-HOME/local/cfg/}/pulse/client.conf
+export PULSE_COOKIE=$LOCAL/tmp/pulse/cookie
+export PULSE_CLIENTCONFIG=$XDG_CONFIG_HOME/pulse/client.conf
 export SDL_AUDIODRIVER=pulse
 
 
@@ -104,4 +104,4 @@ export SDL_AUDIODRIVER=pulse
 export _JAVA_AWT_WM_NONREPARENTING=1
 export _JAVA_OPTIONS="-Dawt.useSystemAAFontSettings=lcd -XX:-UsePerfData"
 export JAVA_HOME=/usr/lib/jvm//java-8-openjdk/
-export NPM_CONFIG_USERCONFIG=${XDG_CONFIG_HOME:-$HOME/local/cfg}/npm/npmrc
+export NPM_CONFIG_USERCONFIG=$XDG_CONFIG_HOME/npm/npmrc
