@@ -206,14 +206,15 @@ require("packer").startup({
     })
     -- use{'https://github.com/steelsojka/pears.nvim'}
     use({
-      "https://github.com/vhyrro/neorg",
+      "https://github.com/nvim-neorg/neorg",
       ft = "norg",
       config = function()
         require("custom.neorg")
       end,
+      after = "nvim-treesitter",
       requires = {
-        "https://github.com/vhyrro/neorg-telescope",
-        "https://github.com/vhyrro/tree-sitter-norg",
+        "https://github.com/nvim-neorg/neorg-telescope",
+        "https://github.com/nvim-neorg/tree-sitter-norg",
       },
     })
     use({

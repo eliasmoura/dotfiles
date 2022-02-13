@@ -1,3 +1,32 @@
+-- NOTE(kotto): This need to run before setup acording to the project READ
+-- it will be like this until it is available in the treesitter repos.
+local parser_configs = require("nvim-treesitter.parsers").get_parser_configs()
+
+parser_configs.norg = {
+  install_info = {
+    url = "https://github.com/nvim-neorg/tree-sitter-norg",
+    files = { "src/parser.c", "src/scanner.cc" },
+    branch = "main",
+  },
+}
+
+parser_configs.norg_meta = {
+  install_info = {
+    url = "https://github.com/nvim-neorg/tree-sitter-norg-meta",
+    files = { "src/parser.c" },
+    branch = "main",
+  },
+}
+parser_configs.norg_table = {
+  install_info = {
+    url = "https://github.com/nvim-neorg/tree-sitter-norg-table",
+    files = { "src/parser.c" },
+    branch = "main",
+  },
+}
+
+
+
 -- NOTE: taken from https://github.com/mjlbach/defaults.nvim/blob/master/init.lua#L150-L199
 require("nvim-treesitter.configs").setup({
   highlight = {
@@ -12,7 +41,10 @@ require("nvim-treesitter.configs").setup({
     "javascript",
     "typescript",
     "bash",
+    "zig",
     "norg",
+    "norg_meta",
+    "norg_table",
   },
   incremental_selection = {
     enable = true,
