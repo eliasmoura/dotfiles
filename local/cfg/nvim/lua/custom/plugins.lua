@@ -204,6 +204,12 @@ require("packer").startup({
         require("whichkey_setup").config()
       end,
     })
+    use({
+      "https://github.com/j-hui/fidget.nvim",
+      config = function()
+        require("fidget").setup()
+      end,
+  })
     -- use{'https://github.com/steelsojka/pears.nvim'}
     use({
       "https://github.com/nvim-neorg/neorg",
