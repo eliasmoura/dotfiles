@@ -54,9 +54,14 @@ function zle-line-init zle-keymap-select {
 # Functions.
 # All I want is the git branch for now, vcs_info is way overkill to do this.
 function get_git_branch {
-    if [[ -d .git ]]; then
-        read -r branch < .git/HEAD
-        branch="${branch##*/}"
+    if [[ -d .git ]] || [[ -n "$GIT_DIR" ]]; then
+        git_dir=${GIT_DIR:-.git}
+        read -r branch < "$git_dir"/HEAD
+          dir="${GIT_DIR##*/}:"
+        if [[ "$GIT_DIR" == ".dotfiles" ]]; then
+          dir="dt:"
+        fi
+        branch="$dir${branch##*/}"
     else
         branch=""
     fi
