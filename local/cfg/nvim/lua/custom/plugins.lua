@@ -215,7 +215,13 @@ require("packer").startup({
       config = function()
         require("fidget").setup()
       end,
-  })
+    })
+    use({
+      "https://github.com/mvllow/modes.nvim",
+      config = function()
+        require("modes").setup()
+      end,
+    })
     -- use{'https://github.com/steelsojka/pears.nvim'}
     use({
       "https://github.com/nvim-neorg/neorg",
