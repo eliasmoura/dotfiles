@@ -41,18 +41,24 @@ require("packer").startup({
     })
     use({ "https://github.com/junegunn/gv.vim", cmd = { "GV" } })
     use({
-      "https://github.com/tpope/vim-commentary.git",
-      requires = {
-        {
-          "https://github.com/JoosepAlviste/nvim-ts-context-commentstring",
-          config = function()
-            require("nvim-treesitter.configs").setup({
-              context_commentstring = { enable = true },
-            })
-          end,
-        },
-      },
+      "https://github.com/numToStr/Comment.nvim",
+      config = function()
+        require("Comment").setup()
+      end,
     })
+    -- use({
+    --   "https://github.com/tpope/vim-commentary.git",
+    --   requires = {
+    --     {
+    --       "https://github.com/JoosepAlviste/nvim-ts-context-commentstring",
+    --       config = function()
+    --         require("nvim-treesitter.configs").setup({
+    --           context_commentstring = { enable = true },
+    --         })
+    --       end,
+    --     },
+    --   },
+    -- })
     use({ "https://github.com/tommcdo/vim-exchange.git" })
     use({ "https://github.com/vim-utils/vim-man", cmd = { "Man" } })
     use({
