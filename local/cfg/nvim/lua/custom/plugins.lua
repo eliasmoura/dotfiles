@@ -4,12 +4,10 @@ require("packer").startup({
     use({ "https://github.com/wbthomason/packer.nvim" })
 
     use({ "https://github.com/lambdalisue/suda.vim" })
-    -- config = 'vim.g.suda_smart_edit = 1' }
     use({
       "https://github.com/tweekmonster/startuptime.vim",
       cmd = "StartupTime",
     })
-    -- use({ "https://github.com/tjdevries/astronauta.nvim" }) -- for vim.keymap.nnoremap…
     use({ "https://github.com/nvim-lua/plenary.nvim" }) -- ' lua functions used by others plugins
 
     use({ "https://github.com/vim-pandoc/vim-pandoc", ft = "markdown" })
@@ -46,19 +44,6 @@ require("packer").startup({
         require("Comment").setup()
       end,
     })
-    -- use({
-    --   "https://github.com/tpope/vim-commentary.git",
-    --   requires = {
-    --     {
-    --       "https://github.com/JoosepAlviste/nvim-ts-context-commentstring",
-    --       config = function()
-    --         require("nvim-treesitter.configs").setup({
-    --           context_commentstring = { enable = true },
-    --         })
-    --       end,
-    --     },
-    --   },
-    -- })
     use({ "https://github.com/tommcdo/vim-exchange.git" })
     use({ "https://github.com/vim-utils/vim-man", cmd = { "Man" } })
     use({
@@ -113,7 +98,6 @@ require("packer").startup({
       end,
     })
     use({ "https://github.com/bfredl/nvim-luadev", opt = true })
-    use({ "https://github.com/nvim-lua/completion-nvim", disable = true })
     use({
       "https://github.com/hrsh7th/nvim-cmp",
       config = function()
@@ -131,8 +115,6 @@ require("packer").startup({
         require("custom.snippets")
       end,
     })
-    -- use{'https://github.com/hrsh7th/nvim-compe', opt = true}
-    -- use{ 'hrsh7th/nvim-cmp', requires = { 'hrsh7th/vim-vsnip', 'hrsh7th/cmp-buffer', }}
 
     use({
       "https://github.com/folke/tokyonight.nvim",
@@ -169,12 +151,6 @@ require("packer").startup({
         require("gitsigns").setup()
       end,
     })
-    -- TODO(kotto): figure out if I really want these
-    use({
-      "https://github.com/puremourning/vimspector",
-      ft = { "c", "c++" },
-      disable = true,
-    }) --, cmd = { 'call vimspector#Launch()' } }
     use({
       "https://github.com/mfussenegger/nvim-dap",
       config = function()
@@ -222,14 +198,12 @@ require("packer").startup({
         require("modes").setup()
       end,
     })
-    -- use{'https://github.com/steelsojka/pears.nvim'}
     use({
       "https://github.com/nvim-neorg/neorg",
-      ft = "norg",
       config = function()
         require("custom.neorg")
       end,
-      after = "nvim-treesitter",
+      after = { "nvim-treesitter", "telescope.nvim" },
       requires = {
         "https://github.com/nvim-neorg/neorg-telescope",
         "https://github.com/nvim-neorg/tree-sitter-norg",

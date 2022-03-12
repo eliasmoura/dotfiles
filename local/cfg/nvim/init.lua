@@ -9,14 +9,15 @@ end
 vim.g.data = data
 
 -- Bootstrap packer
-local ok = true
+local packer_ok = true
 local install_path = string.format(
   "%s/site/pack/packer/start/packer.nvim",
   data
 )
+
 if fn.empty(fn.glob(install_path)) > 0 then
   local err = ""
-  ok, err = pcall(fn.system, {
+  packer_ok, err = pcall(fn.system, {
     "git",
     "clone",
     "--depth",
