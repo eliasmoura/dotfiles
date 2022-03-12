@@ -28,7 +28,6 @@ password_files=( "${password_files[@]%.gpg}" )
 password=$(printf '%s\n' "${password_files[@]}" | $dmenu "$@")
 
 [[ -n $password ]] || exit
-pgrep pinentry-curses
 
 #NOTE: It seems like pinentry-curses only allow one instance of its process at a time.
 # wait until there is none running before proceeding.
@@ -44,8 +43,5 @@ if [[ $typeit -eq 0 ]]; then
   pass show -c "$password" 2>/dev/null
 else
   #NOTE: Make sure pass/pinentry-curses is executed before leaving the program.
-  while true; do
-    pass show "$password"
-    break
-  done | { IFS= read -r passwd; printf '%s' "$passwd"; } | $xdotool&
+    pass show "$password" |{ IFS= read -r passwd; printf '%s' "$passwd"; }| $xdotool&
 fi

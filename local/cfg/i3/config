@@ -19,13 +19,13 @@ default_floating_border pixel 1px
 
 ### Key bindings
 # start a terminal
-bindsym $mod+Return exec $term
+bindsym $mod+Return exec --no-startup-id $term
 
 # kill focused window
 bindsym $mod+Shift+q kill
 
 # start your launcher
-bindsym $mod+d exec $menu "run"
+bindsym $mod+d exec --no-startup-id $menu "run"
 
 # Drag floating windows by holding down $mod and left mouse button.
 # Resize them with right mouse button + $mod.
@@ -137,7 +137,7 @@ bindsym $mod+a focus parent
 # Move the currently focused window to the scratchpad
 bindsym $mod+Shift+minus move scratchpad
 
-bindsym XF86LaunchA exec screenshot area && notify-send "print screen"
+bindsym XF86LaunchA exec --no-startup-id screenshot area && notify-send "print screen"
 
 # Show the next scratchpad window or hide the focused scratchpad window.
 # If there are multiple scratchpad windows, this command cycles through them.
@@ -168,14 +168,14 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 mode "menu" {
-    bindsym o       exec $menu "run"; mode default
-    bindsym p       exec alacritty --class mymenu -e sh -i passmenu --type --prompt "Passmenu";  mode default
-    bindsym shift+p exec alacritty --class mymenu -e sh -i passmenu --prompt "Passmenu"; mode default
+    bindsym o       exec --no-startup-id $menu "run"; mode default
+    bindsym p       exec --no-startup-id alacritty --class mymenu -e sh -i passmenu --type --prompt "Passmenu";  mode default
+    bindsym shift+p exec --no-startup-id alacritty --class mymenu -e sh -i passmenu --prompt "Passmenu"; mode default
 
 #Screenshots
-    bindsym s exec exec screenshot; mode default
-    bindsym Ctrl+s exec screenshot "fullscreen"; mode default
-    bindsym Ctrl+shift+s exec screenshot; mode default
+    bindsym s exec --no-startup-id screenshot; mode default
+    bindsym Ctrl+s exec --no-startup-id screenshot "fullscreen"; mode default
+    bindsym Ctrl+shift+s exec --no-startup-id screenshot; mode default
 
     bindsym t mode twitch
     bindsym m mode media
@@ -184,39 +184,39 @@ mode "menu" {
     bindsym Escape mode default
 }
 mode "twitch" {
-  bindsym t exec alacritty --class mymenu -e sh -i twitch; mode default
-  bindsym b exec alacritty --class mymenu -e sh -i twitch -bookmarks; mode default
-  bindsym u exec alacritty --class mymenu -e sh -i twitch -user; mode default
-  bindsym g exec alacritty --class mymenu -e sh -i twitch -game_list; mode default
-  bindsym p exec alacritty --class mymenu -e sh -i twitch -programming; mode default
-  bindsym c exec alacritty --class mymenu -e sh -i twitch -chess; mode default
+  bindsym t exec --no-startup-id alacritty --class mymenu -e sh -i twitch; mode default
+  bindsym b exec --no-startup-id alacritty --class mymenu -e sh -i twitch -bookmarks; mode default
+  bindsym u exec --no-startup-id alacritty --clgss mymenu -e sh -i twitch -user; mode default
+  bindsym g exec --no-startup-id alacritty --class mymenu -e sh -i twitch -game_list; mode default
+  bindsym p exec --no-startup-id alacritty --class mymenu -e sh -i twitch -programming; mode default
+  bindsym c exec --no-startup-id alacritty --class mymenu -e sh -i twitch -chess; mode default
 
     bindsym Return mode default
     bindsym Escape mode default
 }
 mode "mpc" {
-  bindsym M exec mpc volume toggle; mode default
-  bindsym ) exec mpc volume -5
-  bindsym ( exec mpc volume +5
+  bindsym M exec --no-startup-id mpc volume toggle; mode default
+  bindsym ) exec --no-startup-id mpc volume -5
+  bindsym ( exec --no-startup-id mpc volume +5
 # music controls (special keys on keyboard)
-  bindsym > exec mpc next
-  bindsym space exec mpc toggle; mode default
-  bindsym p exec mpc toggle; mode default
-  bindsym < exec mpc prev
+  bindsym > exec --no-startup-id mpc next
+  bindsym space exec --no-startup-id  mpc toggle; mode default
+  bindsym p exec --no-startup-id mpc toggle; mode default
+  bindsym < exec --no-startup-id mpc prev
 
   bindsym Return mode default
   bindsym $mod mode default
   bindsym Escape mode default
 }
 mode "media" {
-  bindsym y exec sh mpv-run 1080; mode default
-  bindsym s exec sh mpv-run 720; mode default
+  bindsym y exec --no-startup-id sh mpv-run 1080; mode default
+  bindsym s exec --no-startup-id sh mpv-run 720; mode default
   bindsym f exec --no-startup-id alacritty --class mymenu -e sh -i mpv-run; mode default
   bindsym m mode mpc
 
-  bindsym Shift+m exec ponymix toggle; mode default
-  bindsym 0 exec ponymix decrease 5
-  bindsym 9 exec ponymix increase 5
+  bindsym Shift+m exec --no-startup-id ponymix toggle; mode default
+  bindsym 0 exec --no-startup-id ponymix decrease 5
+  bindsym 9 exec --no-startup-id ponymix increase 5
 
     bindsym Return mode default
     bindsym Escape mode default
@@ -238,16 +238,16 @@ mode "mouse" {
 bindsym $mod+m mode mouse
 
 # volume controls (special keys on keyboard)
-bindsym XF86AudioMute exec ponymix toggle
-bindsym XF86AudioLowerVolume exec ponymix decrease 5
-bindsym XF86AudioRaiseVolume exec ponymix increase 5
-bindsym $mod+XF86AudioMute exec mpc volume toggle
-bindsym $mod+XF86AudioLowerVolume exec mpc volume -5
-bindsym $mod+XF86AudioRaiseVolume exec mpc volume +5
+bindsym XF86AudioMute exec --no-startup-id ponymix toggle
+bindsym XF86AudioLowerVolume exec --no-startup-id ponymix decrease 5
+bindsym XF86AudioRaiseVolume exec --no-startup-id ponymix increase 5
+bindsym $mod+XF86AudioMute exec --no-startup-id mpc volume toggle
+bindsym $mod+XF86AudioLowerVolume exec --no-startup-id mpc volume -5
+bindsym $mod+XF86AudioRaiseVolume exec --no-startup-id mpc volume +5
 # music controls (special keys on keyboard)
-bindsym $mod+XF86AudioNext exec mpc next
-bindsym $mod+XF86AudioPlay exec mpc toggle
-bindsym $mod+XF86AudioPrev exec mpc prev
+bindsym $mod+XF86AudioNext exec --no-startup-id mpc next
+bindsym $mod+XF86AudioPlay exec --no-startup-id mpc toggle
+bindsym $mod+XF86AudioPrev exec --no-startup-id mpc prev
 
 # Specific window management.
 # xprop
