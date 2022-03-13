@@ -13,7 +13,8 @@ local actions = require("telescope.actions")
 -- local sorters = require'telescope.sorters'
 local themes = require("telescope.themes")
 
-require("telescope").setup({
+local t = require("telescope")
+t.setup({
   defaults = {
     prompt_prefix = "> ",
     scroll_strategy = "cycle",
@@ -28,11 +29,19 @@ require("telescope").setup({
         case_mode = "smart_case", -- or "ignore_case" or "respect_case"
         -- the default case_mode is "smart_case"
       },
+      file_browser = {
+        themes.get_ivy(),
+      },
+      ["ui-select"] = { themes.get_dropdown },
     },
   },
 })
-require("telescope").load_extension("fzf")
-require("telescope").load_extension("notify")
+
+t.load_extension("fzf")
+t.load_extension("notify")
+t.load_extension("packer")
+t.load_extension("ui-select")
+t.load_extension("file_browser")
 
 local no_preview = themes.get_dropdown({
   winblend = 20,
@@ -40,7 +49,7 @@ local no_preview = themes.get_dropdown({
   result_title = "",
   layout_config = { width = 80 },
   previewer = false,
-})
+}) or {}
 
 local M = {}
 
@@ -65,10 +74,10 @@ function M.edit_nvim()
 end
 
 function M.navigate()
-  local opt = vim.deepcopy(no_preview)
+  local opt = themes.get_ivy() or {} --vim.deepcopy(no_preview)
   opt.prompt_title = "Nanvigating"
   opt.hidden = true
-  require("telescope.builtin").file_browser(opt)
+  require("telescope.").extensions.file_browser.file_browser(opt)
 end
 
 function M.buffers()
