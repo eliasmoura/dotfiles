@@ -25,26 +25,26 @@ parser_configs.norg_table = {
   },
 }
 
-
-
 -- NOTE: taken from https://github.com/mjlbach/defaults.nvim/blob/master/init.lua#L150-L199
 require("nvim-treesitter.configs").setup({
   highlight = {
     enable = true, -- false will disable the whole extension
   },
   ensure_installed = {
-    "c",
-    "cpp",
-    "go",
-    "python",
-    "html",
-    "javascript",
-    "typescript",
-    "bash",
     "zig",
+    "lua",
     "norg",
     "norg_meta",
     "norg_table",
+    "c",
+    "bash",
+    "go",
+    "cpp",
+    "python",
+    "html",
+    "css",
+    "javascript",
+    "typescript",
   },
   incremental_selection = {
     enable = true,
@@ -56,7 +56,7 @@ require("nvim-treesitter.configs").setup({
     },
   },
   indent = {
-    enable = true,
+    enable = false,
   },
   textobjects = {
     select = {
