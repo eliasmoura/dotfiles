@@ -68,9 +68,9 @@ function get_git_branch {
 }
 
 function list_jobs {
-  job_list=$(jobs)
+  job_list=$(jobs -l)
   if [ -n "$job_list" ]; then
-    jobs_count="[$(jobs | wc -l)] "
+    jobs_count="[$(printf '%s\n' $job_list | wc -l)] "
   else
     jobs_count=""
   fi
@@ -150,9 +150,10 @@ alias lsblk='lsblk -oNAME,SIZE,FSAVAIL,OWNER,GROUP,MODE,FSTYPE,LABEL,MOUNTPOINT,
 
 alias dmesg=dmesg -exL
 
-alias ix="curl -F 'f:1=<-' ix.io"
-alias sprunge="curl -F 'sprunge=<-' sprunge.us"
-alias ptpb="curl -F 'c=@-' https://ptpb.pw"
+#alias ix="curl -F 'f:1=<-' ix.io"
+#alias sprunge="curl -F 'sprunge=<-' http://sprunge.us"
+#alias ptpb="curl -F 'c=@-' https://ptpb.pw"
+alias 0x0="curl -F 'file=@-' https://0x0.st"
 
 # XXX force XDG_CONFIG_HOME where possible.
 alias weechat='weechat - $XDG_CONFIG_HOME/weechat'
@@ -177,7 +178,7 @@ function gl {
 }
 
 # Directory hashes.
-if [[ -d $HOME/dev ]]; then
+if [[ -d $HOME/code ]]; then
     for d in $HOME/code/*(/); do
         hash -d ${d##*/}=$d
     done

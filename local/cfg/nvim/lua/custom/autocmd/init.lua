@@ -38,6 +38,7 @@ aucmd("FileType", {
   callback = function()
     vim.opt_local.breakindentopt = "list:-1"
     vim.opt_local.formatlistpat = [[^\s*[-~\*]\+\s\+]]
+    vim.opt_local.foldmethod = "syntax"
   end,
 })
 

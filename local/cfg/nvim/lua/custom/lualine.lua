@@ -46,15 +46,15 @@ lualine.setup({
       },
       {
         function()
-          tsl = require("nvim-treesitter")
+          local tsl = require("nvim-treesitter")
           return tsl.statusline({
             indicator_size = 50,
-            type_patterns = { "class", "function", "method" },
+            type_patterns = { "class", "function", "method", "heading" },
             transform_fn = function(line)
               return line:gsub("%s*[%[%(%{]*%s*$", "")
             end,
             separator = "",
-          })
+          }) or ""
         end,
       },
     },

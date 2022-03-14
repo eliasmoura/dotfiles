@@ -63,16 +63,19 @@ require("packer").startup({
 
     use({ "https://github.com/kyazdani42/nvim-web-devicons" })
     use({
-      "https://github.com/nvim-telescope/telescope-fzf-native.nvim",
-      run = "make",
-    })
-    use({ "nvim-telescope/telescope-symbols.nvim", opt = true })
-    use({
       "https://github.com/nvim-telescope/telescope.nvim",
       requires = {
         "https://github.com/nvim-telescope/telescope-fzf-native.nvim",
       },
     })
+    use({ "https://github.com/nvim-telescope/telescope-packer.nvim" })
+    use({ "https://github.com/nvim-telescope/telescope-ui-select.nvim" })
+    use({ "https://github.com/nvim-telescope/telescope-file-browser.nvim" })
+    use({
+      "https://github.com/nvim-telescope/telescope-fzf-native.nvim",
+      run = "make",
+    })
+    use({ "nvim-telescope/telescope-symbols.nvim", opt = true })
 
     use({
       "https://github.com/neovim/nvim-lspconfig",
@@ -231,7 +234,7 @@ require("packer").startup({
     use({
       "https://github.com/danymat/neogen",
       config = function()
-        require("neogen").setup({ enabled = true })
+        require("custom.neogen")
       end,
       requires = "https://github.com/nvim-treesitter/nvim-treesitter",
     })
