@@ -32,6 +32,9 @@ M.setup = function(opts)
   if opts.plugmgr then
     require("custom.plugins")
   end
+  vim.schedule(function()
+    require("custom.mappings")
+  end)
 end
 
 return M

@@ -104,7 +104,9 @@ require("packer").startup({
     use({
       "https://github.com/hrsh7th/nvim-cmp",
       config = function()
-        require("custom.cmp")
+        vim.schedule(function()
+          require("custom.cmp")
+        end)
       end,
     })
     use({ "https://github.com/hrsh7th/cmp-buffer" })
@@ -115,7 +117,9 @@ require("packer").startup({
     use({
       "https://github.com/L3MON4D3/LuaSnip",
       config = function()
-        require("custom.snippets")
+        vim.schedule(function()
+          require("custom.snippets")
+        end)
       end,
     })
 
@@ -151,19 +155,23 @@ require("packer").startup({
       "https://github.com/lewis6991/gitsigns.nvim",
       requires = { "https://github.com/nvim-lua/plenary.nvim" },
       config = function()
-        require("gitsigns").setup()
+        vim.schedule(function()
+          require("gitsigns").setup()
+        end)
       end,
     })
     use({
       "https://github.com/mfussenegger/nvim-dap",
       config = function()
-        require("custom.nvim-dap")
+        vim.schedule(function()
+          require("custom.nvim-dap")
+        end)
       end,
     })
     use({
       "https://github.com/rcarriga/nvim-dap-ui",
       config = function()
-        require("dapui").setup()
+        -- everything is done in "custom.nvim-dap"
       end,
     })
     -- use{'https://github.com/theHamsta/nvim-dap-virtual-text'}
@@ -203,10 +211,11 @@ require("packer").startup({
     })
     use({
       "https://github.com/nvim-neorg/neorg",
+      ft = "norg",
+      after = "nvim-treesitter",
       config = function()
         require("custom.neorg")
       end,
-      after = { "nvim-treesitter", "telescope.nvim" },
       requires = {
         "https://github.com/nvim-neorg/neorg-telescope",
         "https://github.com/nvim-neorg/tree-sitter-norg",
@@ -244,6 +253,7 @@ require("packer").startup({
     --     setup = [[set g:http_client_bind_hotkey = 0]]}
     use({
       "https://github.com/pwntester/octo.nvim",
+      cmd = "Octo",
       config = function()
         require("octo").setup()
       end,

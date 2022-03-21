@@ -1,5 +1,6 @@
 local M = {}
 -- local xnoremap = vim.keymap.xnoremap
+vim.custom = vim.custom or {}
 
 vim.g.mapleader = " "
 vim.g.maplocalleader = ","
