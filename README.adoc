@@ -2,6 +2,13 @@
 
 I am trying to remove as much of the config — and micelous files — from the "hiden" .dotfile as I can.
 
+== Usage
+
+[source, sh]
+----
+git clone --bar github.com/eliasmoura/dotfiles .dotfiles
+GIT_DIR=.dotfiles GIT_WORK_TREE=~ git checkout
+----
 
 == Packages Required
 - dmenu
@@ -65,7 +72,6 @@ I am trying to remove as much of the config — and micelous files — from the 
 - qemu
 - qemu-arch-extra
 - bash-language-serve
-- lua-language-serv-git
 
 sx::
 - xorg-server
