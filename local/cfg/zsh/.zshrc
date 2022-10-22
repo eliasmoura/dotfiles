@@ -90,20 +90,31 @@ bindkey $terminfo[kcbt] reverse-menu-complete
 bindkey -M isearch '^M' accept-search
 
 function dt {
-  git_dir_path="$HOME/.dotfiles"
-  git_work_tree_path="$HOME"
-  if [ "$GIT_DIR" = "$git_dir_path" ]; then
-    printf 'Reverting GIT_DIR to [%s]\n' "$OLD_GIT_DIR"
-    export GIT_DIR="$OLD_GIT_DIR"
-    export GIT_WORK_TREE="$OLD_GIT_WORK_TREE"
-  else
-    export OLD_GIT_DIR="$GIT_DIR"
-    export OLD_GIT_WORK_TREE="$GIT_WORK_TREE"
-    printf 'Changing GIT_DIR to [%s]\n' "$git_dir_path"
-    printf 'Changing GIT_WORK_TREE to [%s]\n' "$git_work_tree_path"
-    export GIT_DIR="$git_dir_path"
-    export GIT_WORK_TREE="$git_work_tree_path"
-  fi
+    git_dir_path=$HOME/.dotfiles
+    git_work_tree_path=$HOME
+    if [ "$GIT_DIR" = "$git_dir_path" ]; then
+        if [ -n "$OLD_GIT_DIR" ]; then
+            printf 'Reverting GIT_DIR to [%s]\n' "$OLD_GIT_DIR"
+            export GIT_DIR=$OLD_GIT_DIR
+        else
+        printf 'Unseting GIT_DIR\n'
+            unset GIT_DIR
+        fi
+        if [ -n "$OLD_GIT_WORK_TREE" ]; then
+            printf 'Reverting GIT_WORK_TREE to [%s]\n' "$OLD_GIT_WORK_TREE"
+            export GIT_WORK_TREE=$OLD_GIT_WORK_TREE
+        else
+        printf 'Unseting GIT_WORK_TREE\n'
+            unset GIT_WORK_TREE
+        fi
+    else
+        export OLD_GIT_DIR=$GIT_DIR
+        export OLD_GIT_WORK_TREE=$GIT_WORK_TREE
+        printf 'Changing GIT_DIR to [%s]\n' "$git_dir_path"
+        printf 'Changing GIT_WORK_TREE to [%s]\n' "$git_work_tree_path"
+        export GIT_DIR=$git_dir_path
+        export GIT_WORK_TREE=$git_work_tree_path
+    fi
 }
 
 function bootstrap_nvim_cfg {
