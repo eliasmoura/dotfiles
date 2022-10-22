@@ -1,4 +1,4 @@
--- NOTE(kotto): This need to run before setup acording to the project READ
+-- NOTE(kotto): This need to run before treesitter setup acording to the neorg READ
 -- it will be like this until it is available in the treesitter repos.
 local parser_configs = require("nvim-treesitter.parsers").get_parser_configs()
 

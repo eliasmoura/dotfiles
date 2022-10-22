@@ -1,72 +1,66 @@
 vim.g.mapleader = " "
-vim.o.timeout = true
-vim.o.timeoutlen = 600
+vim.opt.timeout = false
+vim.opt.timeoutlen = 600
 vim.g.maplocalleader = "\\"
-vim.o.updatetime = 50
-vim.wo.foldmethod = "syntax"
+vim.opt.updatetime = 50
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 vim.g.markdown_folding = 1
 vim.g.vim_markdown_folding_disabled = 1
-vim.o.completeopt = "menuone,noselect" -- ,preview"
-vim.o.shortmess = vim.o.shortmess .. "cI"
-vim.o.cmdheight = 1
--- vim.o.highlight Normal guibg=none
-vim.o.exrc = true
-vim.o.undofile = true -- keep an undo file (undo changes after closing)
-vim.wo.number = true
-vim.wo.rnu = true
-vim.o.showbreak = "…"
-vim.wo.cursorline = true
-vim.o.laststatus = 2
-vim.o.hidden = true
-vim.o.wildmode = "longest,full"
-vim.o.wildoptions = "pum"
-vim.o.wildignore = "*.pyc,*~,*.o,*.obj"
-vim.o.suffixesadd = ".py,.pl,.js,.html,.c,.h,.cpp,.hh"
-vim.o.termguicolors = true
-vim.o.scrolloff = 8
-vim.o.vb = true -- visual bell
-vim.bo.spelllang = "en_us"
-vim.o.spellsuggest = "best"
-vim.o.softtabstop = vim.o.tabstop
-vim.o.shiftwidth = vim.o.tabstop
-vim.o.expandtab = true
-vim.o.tabstop = 2
-vim.bo.tabstop = 2
-vim.bo.softtabstop = vim.bo.tabstop
-vim.bo.shiftwidth = vim.bo.tabstop
-vim.bo.expandtab = true
-vim.o.shada = [["10000,'10000,<500,:50,s100,f1,h]]
-vim.wo.colorcolumn = "80"
-vim.o.splitright = true
-vim.o.mouse = "n"
-vim.o.splitbelow = true
-vim.o.smartindent = true
-vim.wo.list = true
-vim.o.listchars = "tab:> ,trail:-,extends:>,precedes:<,nbsp:+,eol:$"
-vim.o.cpoptions = vim.o.cpoptions .. "$" -- put a $ in the end of the change mode
-vim.o.inccommand = "split"
-vim.o.lazyredraw = true
-
-vim.cmd([[
-augroup highlight_yank
-    autocmd!
-    autocmd TextYankPost * silent! lua vim.highlight.on_yank({timeout = 60})
-augroup END
-]])
+vim.opt.completeopt = "menuone,noselect" -- ,preview"
+-- vim.opt.shortmess = vim.opt.shortmess .. "cI"
+vim.opt.cmdheight = 0
+-- vim.opt.highlight Normal guibg=none
+vim.opt.exrc = true
+vim.opt.undofile = true -- keep an undo file (undo changes after closing)
+vim.opt.number = true
+vim.opt.rnu = true
+vim.opt.showbreak = "…"
+vim.opt.cursorline = true
+vim.opt.laststatus = 3
+vim.opt.winbar = "%f%m"
+vim.opt.hidden = true
+vim.opt.wildmode = "longest,full"
+vim.opt.wildoptions = "pum"
+vim.opt.wildignore = "*.pyc,*~,*.o,*.obj"
+vim.opt.suffixesadd = ".py,.pl,.js,.html,.c,.h,.cpp,.hh"
+vim.opt.termguicolors = true
+vim.opt.scrolloff = 8
+vim.opt.vb = true -- visual bell
+vim.opt.spelllang = "en_us"
+vim.opt.spellsuggest = "best"
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
+vim.opt.shada = [["10000,'10000,<500,:50,s100,f1,h]]
+vim.opt.colorcolumn = "80"
+vim.opt.splitright = true
+vim.opt.splitbelow = true
+vim.opt.smartindent = true
+vim.o.smartcase = true
+vim.opt.list = true
+vim.opt.listchars = "tab:> ,trail:-,extends:>,precedes:<,nbsp:+,eol:$"
+-- vim.opt.cpoptions = vim.opt.cpoptions .. "$" -- put a $ in the end of the change mode
+vim.opt.inccommand = "split"
+vim.opt.lazyredraw = false -- Noice complains that this should be off
+vim.opt.conceallevel = 1
 
 -- Change icons for Lsp Diagnostic
-local signs = { Error = "", Warn = "", Info = "כֿ", Hint = "" }
-for sign, icon in pairs(signs) do
-  vim.fn.sign_define(
-    "DiagnosticSign" .. sign,
-    { text = icon, texthl = "Diagnostic" .. sign, linehl = false, numhl = "Diagnostic" .. sign }
-  )
-end
+-- local signs = { ERROR = "", WARN = "", INFO = "כֿ", HINT = "" }
+-- for sign, icon in pairs(signs) do
+--   vim.fn.sign_define("DiagnosticSign" .. sign, {
+--     text = icon,
+--     texthl = "Diagnostic" .. sign,
+--     linehl = false,
+--     numhl = "Diagnostic" .. sign,
+--   })
+-- end
 
 -- Make hover borders rounded
-vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-  border = "rounded",
-})
+-- vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+--   border = "rounded",
+-- })
 
 -- Disable bultin plugins I don't use.
 vim.g.loaded_getscript = 1
@@ -80,9 +74,9 @@ vim.g.loaded_2html_plugin = 1
 vim.g.loaded_logiPat = 1
 vim.g.loaded_rrhelper = 1
 
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-vim.g.loaded_netrwSettings = 1
+-- vim.g.loaded_netrw = 1
+-- vim.g.loaded_netrwPlugin = 1
+-- vim.g.loaded_netrwSettings = 1
 
 vim.g.loaded_gzip = 1
 vim.g.loaded_zip = 1
@@ -91,7 +85,14 @@ vim.g.loaded_tar = 1
 vim.g.loaded_tarPlugin = 1
 vim.g.loaded_tohtml = 1
 
--- Tell vim about the additional file extensions we can now use.
-vim.cmd(
-  [[autocmd BufReadCmd *.iso,*.rar,*.7z call tar#Browse(expand("<tch>"))]]
-)
+-- TODO: check those win separate stuff
+vim.opt.fillchars = {
+  eob = " ",
+  vert = "║",
+  horiz = "═",
+  horizup = "╩",
+  horizdown = "╦",
+  vertleft = "╣",
+  vertright = "╠",
+  verthoriz = "╬",
+}

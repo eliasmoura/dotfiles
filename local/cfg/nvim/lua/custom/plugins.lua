@@ -48,6 +48,7 @@ require("packer").startup({
     use({ "https://github.com/vim-utils/vim-man", cmd = { "Man" } })
     use({
       "https://github.com/hoob3rt/lualine.nvim",
+      disable = false,
       requires = { "https://github.com/kyazdani42/nvim-web-devicons" },
       config = function()
         require("custom.lualine")
@@ -61,6 +62,14 @@ require("packer").startup({
     -- ' Plug 'https://github.com/groenewege/vim-less'
     -- 'Plug 'https://github.com/hsanson/vim-android'
 
+    use({
+      "https://github.com/nvim-orgmode/orgmode",
+      config = function()
+        org = require("orgmode")
+        org.setup_ts_grammar()
+        org.setup()
+      end,
+    })
     use({ "https://github.com/kyazdani42/nvim-web-devicons" })
     use({
       "https://github.com/nvim-telescope/telescope.nvim",
@@ -68,6 +77,7 @@ require("packer").startup({
         "https://github.com/nvim-telescope/telescope-fzf-native.nvim",
       },
     })
+    use({ "~/code/neovim/plugins/sdcv" })
     use({ "https://github.com/nvim-telescope/telescope-packer.nvim" })
     use({ "https://github.com/nvim-telescope/telescope-ui-select.nvim" })
     use({ "https://github.com/nvim-telescope/telescope-file-browser.nvim" })
@@ -124,12 +134,77 @@ require("packer").startup({
     })
 
     use({
+      "folke/noice.nvim",
+      event = "VimEnter",
+      config = function()
+        require("noice").setup({
+          cmdline = {
+            view = "cmdline_popup", -- view for rendering the cmdline. Change to `cmdline` to get a classic cmdline at the bottom
+            opts = { buf_options = { filetype = "vim" } }, -- enable syntax highlighting in the cmdline
+            icons = {
+              ["/"] = { icon = " ", hl_group = "DiagnosticWarn" },
+              ["?"] = { icon = " ", hl_group = "DiagnosticWarn" },
+              [":"] = {
+                icon = " ",
+                hl_group = "DiagnosticInfo",
+                firstc = false,
+              },
+            },
+          },
+          popupmenu = {
+            enabled = false, -- disable if you use something like cmp-cmdline
+            ---@type 'nui'|'cmp'
+            backend = "cmp", -- backend to use to show regular cmdline completions
+            -- You can specify options for nui under `config.views.popupmenu`
+          },
+          history = {
+            -- options for the message history that you get with `:Noice`
+            view = "split",
+            opts = { enter = true },
+            filter = {
+              event = "msg_show",
+              ["not"] = { kind = { "search_count", "echo" } },
+            },
+          },
+          notify = {
+            -- Noice can be used as `vim.notify` so you can route any notification like other messages
+            -- Notification messages have their level and other properties set.
+            -- event is always "notify" and kind can be any log level as a string
+            -- The default routes will forward notifications to nvim-notify
+            -- Benefit of using Noice for this is the routing and consistent history view
+            enabled = true,
+          },
+          throttle = 1000 / 30, -- how frequently does Noice need to check for ui updates? This has no effect when in blocking mode.
+          views = {}, -- @see the section on views below
+          routes = {}, -- @see the section on routes below
+          status = {}, --@see the section on statusline components below
+          format = {}, -- @see section on formatting
+        })
+      end,
+      requires = {
+        -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+        "MunifTanjim/nui.nvim",
+        "rcarriga/nvim-notify",
+      },
+    })
+    use({
+      "folke/todo-comments.nvim",
+      requires = "nvim-lua/plenary.nvim",
+      config = function()
+        require("todo-comments").setup({
+          -- your configuration comes here
+          -- or leave it empty to use the default settings
+          -- refer to the configuration section below
+        })
+      end,
+    })
+    use({
       "https://github.com/folke/tokyonight.nvim",
       setup = function()
-        vim.g.tokyonight_style = "night"
+        -- vim.o.tokyonight_style = "night"
       end,
       config = function()
-        vim.cmd([[colorscheme tokyonight]])
+        vim.cmd([[colorscheme tokyonight-night]])
       end,
     })
     use({ "https://github.com/morhetz/gruvbox", opt = true })
@@ -169,6 +244,16 @@ require("packer").startup({
       end,
     })
     use({
+      "https://github.com/theHamsta/nvim-dap-virtual-text",
+      requires = { "https://github.com/mfussenegger/nvim-dap" },
+      config = function()
+        require("nvim-dap-virtual-text").setup({
+          enable_commands = true,
+          highlight_changed_variables = true,
+        })
+      end,
+    })
+    use({
       "https://github.com/rcarriga/nvim-dap-ui",
       config = function()
         -- everything is done in "custom.nvim-dap"
@@ -183,9 +268,22 @@ require("packer").startup({
       end,
     })
     use({ "https://github.com/nvim-telescope/telescope-dap.nvim" })
-    use({ "https://github.com/vim-test/vim-test" })
+    use({
+      "https://github.com/vim-test/vim-test",
+    })
+    use({
+      "https://github.com/nvim-neotest/neotest",
+      requires = {
+        "https://github.com/nvim-neotest/neotest-go",
+        "https://github.com/nvim-neotest/neotest-vim-test",
+      },
+      config = function()
+        require("custom.neotest")
+      end,
+    })
     use({
       "https://github.com/rcarriga/vim-ultest",
+      disable = true,
       require = "https://github.com/vim-test/vim-test",
       run = ":UpdateRemotePlugins",
     })
@@ -211,8 +309,6 @@ require("packer").startup({
     })
     use({
       "https://github.com/nvim-neorg/neorg",
-      ft = "norg",
-      after = "nvim-treesitter",
       config = function()
         require("custom.neorg")
       end,

@@ -1,5 +1,6 @@
 local ok, lualine = pcall(require, "lualine")
 if not ok then
+  vim.notify("fail")
   return
 end
 lualine.setup({
@@ -9,6 +10,7 @@ lualine.setup({
     component_separators = { "", "" },
     section_separators = { "", "" },
     disabled_filetypes = {},
+    globalstatus = true,
   },
   sections = {
     lualine_a = { "mode" },
@@ -16,19 +18,7 @@ lualine.setup({
     lualine_c = { "filename" },
     lualine_x = {
       {
-        function()
-          s = require("lsp-status").status()
-          -- vim.notify(string.match(s, [[]]) .. "sa")
-          -- lualine.custom_tokyonight.normal.c.bg = "#112233"
-          if
-            not s
-            or string.match(s, [[]]) ~= nil
-            or string.match(s, [[Setting up workspace]]) ~= nil
-          then
-            return ""
-          end
-          return s
-        end,
+        function() end,
       },
       {
         function()
@@ -42,16 +32,27 @@ lualine.setup({
             return ""
           end
         end,
-        color = "ErrorMsg",
+        color = function()
+          local s = require("dap.progress").status()
+          if s == "Running" or s == "" then
+            return "Normal"
+          else
+            if s:match([[[Ss]topped]]) ~= nil then
+              return "ErrorMsg"
+            else
+              return "WarnMsg"
+            end
+          end
+        end,
       },
       {
         function()
           local tsl = require("nvim-treesitter")
           return tsl.statusline({
             indicator_size = 50,
-            type_patterns = { "class", "function", "method", "heading" },
+            type_patterns = { "class", "function", "method", "heading", "use" },
             transform_fn = function(line)
-              return line:gsub("%s*[%[%(%{]*%s*$", "")
+              return line:gsub("%s*[%[%(%{]*%s*$", " → "):gsub(" → $", "")
             end,
             separator = "",
           }) or ""

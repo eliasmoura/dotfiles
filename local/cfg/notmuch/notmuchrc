@@ -49,7 +49,7 @@ other_email=elias_alvesmoura@hotmail.com;
 #
 [new]
 tags=unread;inbox;
-ignore=neovim;deleted;spam
+ignore=deleted;spam
 
 # Search configuration
 #
@@ -99,5 +99,5 @@ gpg_path=gpg
 
 
 [addressbook]
-path=/home/kotto/email/.notmuch-abook.db
+path=/home/kotto/email/notmuch-abook.db
 backend=sqlite3

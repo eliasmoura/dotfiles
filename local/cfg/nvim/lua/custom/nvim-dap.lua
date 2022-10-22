@@ -2,6 +2,20 @@ local ok, dap = pcall(require, "dap")
 if not ok then
   return
 end
+vim.custom = vim.custom or {}
+vim.custom.dap = vim.custom.dap or {}
+dap.adapters.zig = {
+  type = "executable",
+  -- command = "/home/kotto/tmp/ms/old/extension/debugAdapters/OpenDebugAD7", -- version 1.4.1 seems to work
+  command = "/home/kotto/tmp/ms/vscode-cpptools/extension/debugAdapters/bin/OpenDebugAD7", -- version 1.9.7 does not seems to work
+  name = "vscode-cpptolls",
+}
+dap.adapters.cppdbg = {
+  type = "executable",
+  -- command = "/home/kotto/tmp/ms/old/extension/debugAdapters/OpenDebugAD7", -- version 1.4.1 seems to work
+  command = "/home/kotto/tmp/ms/vscode-cpptools/extension/debugAdapters/bin/OpenDebugAD7", -- version 1.9.7 does not seems to work
+  name = "cppdbg",
+}
 dap.adapters.lldb = {
   type = "executable",
   command = "/usr/bin/lldb-vscode", -- adjust as needed
@@ -9,10 +23,42 @@ dap.adapters.lldb = {
 }
 
 -- https://github.com/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation#ccrust-via-lldb-vscode
-dap.configurations.cpp = {
+dap.configurations.zig = {
   {
     name = "Launch",
-    type = "lldb",
+    type = "zcppdbg",
+    request = "launch",
+    program = function()
+      -- return vim.fn.input(
+      --   "Path to executable: ",
+      --   vim.fn.getcwd() .. "/",
+      --   "file"
+      -- )
+      local exe = nil
+      vim.ui.input({
+        prompt = "Path to executable: ",
+        completion = "file",
+        default = vim.fn.getcwd() .. "/",
+      }, function(input)
+        exe = input
+      end)
+      return exe
+    end,
+    cwd = "${workspaceFolder}",
+    stopOnEntry = false,
+    args = {},
+    runInTerminal = false,
+    MIMode = "gdb",
+    miDebuggerPath = "/usr/bin/gdb",
+  },
+}
+vim.custom.dap.arm_gdb = {}
+vim.custom.dap.arm_gdb.file = nil
+vim.custom.dap.arm_gdb.port = nil
+dap.configurations.zig = {
+  {
+    name = "Launch file (zcppdbg)",
+    type = "zig",
     request = "launch",
     program = function()
       return vim.fn.input(
@@ -22,16 +68,102 @@ dap.configurations.cpp = {
       )
     end,
     cwd = "${workspaceFolder}",
+    stopOnEntry = true,
+    MIMode = "gdb",
+    miDebuggerPath = "/usr/bin/gdb",
+    runinTerminal = true,
+  },
+  {
+    name = "Attach to arm-none-eabi-gdb server :3333",
+    type = "zig",
+    request = "launch",
+    miDebuggerServerAddress = "localhost:3333",
+    cwd = "${workspaceFolder}",
+    MIMode = "gdb",
+    miDebuggerPath = "/usr/bin/arm-none-eabi-gdb",
+    program = function()
+      local base_path = vim.fn.getcwd() .. "/zig-out/bin/"
+      local file = vim.fn.input(
+        "Path to executable: ",
+        (vim.custom.dap.arm_gdb.file or base_path),
+        "file"
+      )
+      if file ~= vim.custom.dap.arm_gdb.file then
+        vim.custom.dap.arm_gdb.file = file
+      end
+      return file
+    end,
+  },
+}
+
+dap.configurations.cpp = {
+  {
+    name = "Launch",
+    type = "lldb",
+    request = "launch",
+    program = function()
+      local exe = nil
+      vim.ui.input({
+        prompt = "Path to executable: ",
+        completion = "file",
+        default = vim.fn.getcwd() .. "/",
+      }, function(input)
+        exe = input
+      end)
+      return exe
+    end,
+    cwd = "${workspaceFolder}",
     stopOnEntry = false,
     args = {},
-
+    runInTerminal = false,
+  },
+  {
+    name = "Launch (terminal nvim)",
+    type = "lldb",
+    request = "launch",
+    program = function()
+      local exe = nil
+      vim.ui.input({
+        prompt = "Path to executable: ",
+        completion = "file",
+        default = vim.fn.getcwd() .. "/build/bin/nvim",
+      }, function(input)
+        exe = input
+      end)
+      return exe
+    end,
+    cwd = "${workspaceFolder}",
+    stopOnEntry = false,
+    args = { "-u", "NONE", "-c", "set inccommand=split" },
+    -- see [https://github.com/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation#ccrust-via-lldb-vscode]()
+    runInTerminal = true,
+    postRunCommands = { "process handle -p true -s false -n false SIGWINCH" },
+  },
+  {
+    name = "Launch (gdb)",
+    type = "cppdbg",
+    request = "launch",
+    program = function()
+      local exe = nil
+      vim.ui.input({
+        prompt = "Path to executable: ",
+        completion = "file",
+        default = vim.fn.getcwd() .. "/build/bin/nvim",
+      }, function(input)
+        exe = input
+      end)
+      return exe
+    end,
+    cwd = "${workspaceFolder}",
+    stopOnEntry = true,
+    args = {},
     runInTerminal = false,
   },
 }
 
 dap.configurations.c = dap.configurations.cpp
 dap.configurations.rust = dap.configurations.cpp
-dap.configurations.zig = dap.configurations.cpp
+-- dap.configurations.zig = dap.configurations.cpp
 
 require("dapui").setup({
   icons = { expanded = "-", collapsed = "+" },
@@ -43,8 +175,9 @@ require("dapui").setup({
     edit = "<c-i>",
     repl = "r",
   },
-  sidebar = {
+  layouts = {
     -- You can change the order of elements in the sidebar
+      {
     elements = {
       -- Provide as ID strings or tables with "id" and "size" keys
       {
@@ -58,11 +191,12 @@ require("dapui").setup({
     size = 50,
     position = "left", -- Can be "left", "right", "top", "bottom"
   },
-  tray = {
-    elements = { "repl" },
-    size = 10,
-    position = "bottom", -- Can be "left", "right", "top", "bottom"
-  },
+    {
+          elements = { "repl", "console" },
+              size = 10,
+                  position = "bottom", -- Can be "left", "right", "top", "bottom"
+                    },
+                  },
   floating = {
     max_height = nil, -- These can be integers or a float between 0 and 1.
     max_width = nil, -- Floats will be treated as percentage of your screen.
@@ -149,7 +283,6 @@ local my_continue = function()
   dap.continue()
 end
 dap.my_continue = my_continue
-vim.custom.dap = vim.custom.dap or {}
 local cdap = vim.custom.dap
 cdap.open = false
 vim.custom.dap.is_map = false

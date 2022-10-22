@@ -2,9 +2,15 @@ local lspconfig = require("lspconfig")
 
 -- Add additional capabilities supported by nvim-cmp
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require("cmp_nvim_lsp").update_capabilities(capabilities)
+capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
-vim.cmd([[autocmd BufEnter * :LspStart]])
+local autocmd = vim.api.nvim_create_autocmd
+
+-- NOTE: Not need because it is already set to autoload.
+-- autocmd("BufEnter", {
+--   pattern = "*",
+--   command = ":LspStart",
+-- })
 
 local on_attach = function(client)
   require("lsp-status").on_attach(client)
@@ -17,7 +23,6 @@ local on_attach = function(client)
     require("lspsaga.codeaction").code_action or vim.lsp.buf.code_action,
     opts
   )
-  vim.keymap.set("n", "<leader>lf", vim.lsp.buf.formatting)
   vim.keymap.set("n", "<leader>ls", vim.lsp.buf.document_symbol)
   vim.keymap.set("n", "<leader>lh", vim.lsp.buf.hover)
   vim.keymap.set("n", "<leader>lr", vim.lsp.buf.references)
@@ -28,32 +33,36 @@ local on_attach = function(client)
   )
   vim.keymap.set("n", "<leader>ldg", vim.diagnostic.get)
   vim.keymap.set("n", "<c-s>", vim.diagnostic.show)
-  vim.keymap.set("n", "<M-Q>", vim.lsp.util.set_qflist)
-  vim.keymap.set("n", "<M-q>", vim.lsp.util.set_loclist)
+  vim.keymap.set("n", "<M-Q>", vim.diagnostic.setqflist)
+  vim.keymap.set("n", "<M-q>", vim.diagnostic.setloclist)
   vim.keymap.set("n", "<c-]>", vim.lsp.buf.definition, opts)
 
-  if client.resolved_capabilities.document_formatting then
-    vim.cmd([[augroup LSP_FORMATING
-  ]])
-    vim.cmd([[autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()]])
+  if client.server_capabilities.document_formatting then
+    vim.keymap.set("n", "<leader>lf", vim.lsp.buf.formatting)
+    autocmd("BufWritePre", {
+      group = "lsp_formatting",
+      buffer = 0,
+      callback = vim.lsp.buf.formatting_sync,
+    })
   end
 
-  if client.resolved_capabilities.code_lens then
-    vim.cmd(
-      [[autocmd BufEnter,CursorHold,InsertLeave <buffer> lua vim.lsp.codelens.refresh()]]
-    )
+  if client.server_capabilities.code_lens then
+    vim.notify("LSP has codelens")
+    autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+      buffer = 0,
+      callback = vim.lsp.codelens.refresh,
+    })
   end
 
-  if client.resolved_capabilities.document_highlight then
-    vim.cmd(
-      [[autocmd CursorHold  <buffer> ++nested lua vim.lsp.buf.document_highlight()]]
-    )
-    vim.cmd(
-      [[autocmd CursorHoldI <buffer> ++nested lua vim.lsp.buf.document_highlight()]]
-    )
-    vim.cmd(
-      [[autocmd CursorMoved <buffer> ++nested lua vim.lsp.buf.clear_references()]]
-    )
+  if client.server_capabilities.document_highlight then
+    autocmd({ "CursorHold", "CursorHoldI" }, {
+      buffer = 0,
+      callback = vim.lsp.buf.document_highlight,
+    })
+    autocmd({ "CursorMoved" }, {
+      buffer = 0,
+      callback = vim.lsp.buf.clear_references,
+    })
   end
 end
 
@@ -131,6 +140,7 @@ require("lspconfig").gopls.setup({
 local lspstatus = require("lsp-status")
 lspstatus.register_progress()
 
+-- Zig Language Server (zig)
 lspconfig.zls.setup({
   on_attach = on_attach,
   cmd = { "zls" },

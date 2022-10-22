@@ -9,7 +9,7 @@ M.setup = function(opts)
 
   vim.custom.nohl = function()
     if vim.api.nvim_eval("v:hlsearch") == 1 then
-      vim.cmd([[:nohl]])
+      vim.cmd([[nohlsearch]])
     else
       vim.api.nvim_feedkeys(
         vim.api.nvim_replace_termcodes("<cr>", true, false, true),
@@ -32,9 +32,10 @@ M.setup = function(opts)
   if opts.plugmgr then
     require("custom.plugins")
   end
-  vim.schedule(function()
-    require("custom.mappings")
-  end)
+  require("custom.mappings")
+  -- vim.schedule(function()
+  --   require("custom.mappings")
+  -- end)
 end
 
 return M

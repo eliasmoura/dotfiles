@@ -12,8 +12,8 @@ readonly rundir=$XDG_RUNTIME_DIR/x11
 
 xinitrc=${XINITRC:-$confdir/xinitrc}
 # log=/dev/null
-log=$HOME/local/tmp/xorg.log
-log=$logdir/xsession.log
+log=$logdir/xorg.log
+log_xsession=$logdir/xsession.log
 
 # Fail early, most of these need to exist.
 if ! mkdir -p "$confdir" "$logdir" "$rundir"; then

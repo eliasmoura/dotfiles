@@ -12,10 +12,15 @@ norg.setup({
     ["core.integrations.nvim-cmp"] = {}, -- TODO: check how this works
     ["core.norg.journal"] = { config = { workspace = "journal" } },
     ["core.storage"] = {}, -- TODO: check how this works
-    ["core.keybinds"] = { config = { default_keynids = true } },
+    ["core.keybinds"] = { config = { default_keynids = true,
+  neorg_leader = "<leader>o"} },
     ["core.norg.qol.toc"] = {},
     ["core.norg.completion"] = {
       config = { engine = "nvim-cmp" },
+    },
+    ["core.export"] = {},
+    ["core.export.markdown"] = {
+      config = { extensions = "all" ,},
     },
     ["core.norg.dirman"] = { -- Manage your directories with Neorg
       config = {

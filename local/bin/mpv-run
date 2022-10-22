@@ -1,7 +1,7 @@
 #!/bin/sh --
 # shellcheck disable=SC3043
-# Open whatever video either local or remote using mpv and youtube-dl
-# requires awk pgrep(procps-ng) youtube-dl mpv cat(coreutils) ffmpeg
+# Open whatever video either local or remote using mpv and yt-dlp
+# requires awk pgrep(procps-ng) yt-dlp mpv cat(coreutils) ffmpeg
 
 argv0=$(basename "$0")
 prog=dmenu
@@ -35,11 +35,11 @@ get_formats (){
 }
 
 play() {
-  local url=$1
-  local format=$2
-  local duration=$3
-  local res=$4
-  local title=$5
+  local url="$1"
+  local format="$2"
+  local duration="$3"
+  local res="$4"
+  local title="$5"
 
   if [ -z "$format" ] || [ "$format" = "no" ]; then
     return
@@ -53,7 +53,7 @@ play() {
   fi
 
   notify-send -u low -a mpv "PLAYING" "$title\nDuration: $duration\t Res:$res\nURL: $url"
-  mpv --really-quiet --keep-open --pause --ytdl-raw-options=yes-playlist= --force-window=yes "$format" -- "$url" 2>&1 ||
+  mpv --msg-level=all=debug --keep-open --pause --ytdl-raw-options=yes-playlist= --force-window=yes "$format" -- "$url" 2>&1 ||
     notify-send -u critical -a mpv-fail "STOPED" "mpv cound't open: $url"
 }
 
@@ -158,12 +158,12 @@ if ! [ -f "$1" ]; then
   fi
   if ! [ "$url" ]; then
     notify-send -u normal -a mpv-fail 'URL' 'No "url" provided make sure you have copied it to the clipboard'
-    return 1
+    exit 1
   fi
 
   notify-send -u low -a mpv-run 'Info' "Getting info for $url"
-  json=$(youtube-dl --dump-json -- "$url")
-  printf '%s' "$json" | get_info |
+  json=$(yt-dlp --dump-json --no-playlist -- "$url")
+  printf '%s' "$json" | head -n 1 | get_info |
     while read -r extractor channel_name channel_id is_live duration title description; do
     title=${title:-$description}
 

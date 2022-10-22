@@ -1,16 +1,15 @@
 pcall(require, "impatient")
 vim.g.data = vim.fn.stdpath("data")
 local packer_ok = true
-local install_path = string.format(
-  "%s/site/pack/packer/start/packer.nvim",
-  vim.g.data
-)
+local install_path =
+  string.format("%s/site/pack/packer/start/packer.nvim", vim.g.data)
 vim.custom = {}
 
 --if vim.fn.empty(vim.fn.glob(install_path)) == 0 then
 local fd = io.open(install_path)
 if fd then
-  return require("custom").setup({ plugmgr = packer_ok })
+  require("custom").setup({ plugmgr = packer_ok })
+  return --require("custom").setup({ plugmgr = packer_ok })
 end
 
 -- Bootstrap packer
@@ -30,3 +29,4 @@ packer_ok, err = pcall(vim.fn.system, {
 })
 vim.notify(err)
 vim.cmd("packadd packer.nvim")
+require("custom").setup({ plugmgr = packer_ok })

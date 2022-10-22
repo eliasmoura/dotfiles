@@ -42,6 +42,9 @@ t.load_extension("notify")
 t.load_extension("packer")
 t.load_extension("ui-select")
 t.load_extension("file_browser")
+t.load_extension("dap")
+t.load_extension("sdcv")
+-- t.load_extension("noice")
 
 local no_preview = themes.get_dropdown({
   winblend = 20,
@@ -59,6 +62,7 @@ function M.edit_cfg()
   opt.prompt_title = "CFG Files>"
   require("telescope.builtin").find_files(opt)
 end
+
 function M.edit_zsh()
   local opt = vim.deepcopy(no_preview)
   opt.cwd = vim.env["XDG_CONFIG_HOME"] .. "/zsh"
