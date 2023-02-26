@@ -41,6 +41,8 @@ aucmd("FileType", {
   end,
 })
 
+local ok, Job = pcall(require, "plenary.job")
+if ok then
 local Job = require("plenary.job")
 -- local zig_ns = vim.api.nvim_create_namespace("Zig linter?")
 -- local zig_lint = augroup("zig_lint", {})
@@ -157,6 +159,7 @@ end
 --   end,
 -- })
 vim.custom.zig = zig
+end
 
 local norg = augroup("norg_stuf", {})
 aucmd("FileType", {

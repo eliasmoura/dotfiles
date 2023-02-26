@@ -64,6 +64,7 @@ vim.keymap.set("n", "<m-s-n>", "<cmd>cnext<cr>")
 vim.keymap.set("n", "<m-s-p>", "<cmd>cprev<cr>")
 
 --Telescope
+if pcall(require, "telescope") then
 local tl = require("custom.telescope")
 vim.keymap.set("n", "<leader>tt", tl.builtin, { desc = "Telescope builtin." })
 vim.keymap.set(
@@ -119,7 +120,9 @@ vim.keymap.set(
   { desc = "Telescope find_files." }
 )
 vim.keymap.set("n", "<leader>rr", tl.reloader, { desc = "Telescope reloader." })
+end
 
+if pcall(require, "dap") then
 vim.keymap.set("n", "<leader>db", function()
   return require("dap").toggle_breakpoint()
 end, { desc = "Toggle breakpoint." })
@@ -170,6 +173,7 @@ vim.keymap.set("n", "<leader>td", function()
   return require("dap-go").debug_test()
 end, { desc = "Debug test" })
 vim.keymap.set("n", "<leader>dj", "<cmd>call v:lua.dap_prompt_expr()<cr>")
+end
 
 vim.keymap.set(
   "n",
@@ -181,8 +185,10 @@ vim.keymap.set("n", "cu", ":UndotreeToggle<cr>")
 vim.keymap.set("n", "gl", ":EasyAlign<cr>")
 vim.keymap.set("v", "gl", ":EasyAlign<cr>")
 
+if pcall(require, "neogen") then
 vim.keymap.set("n", "<leader>ng", function()
   return require("neogen").generate()
 end, { desc = "neogen: Start docummenting the code." })
+end
 
 return M

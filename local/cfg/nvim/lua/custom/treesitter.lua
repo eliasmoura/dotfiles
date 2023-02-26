@@ -45,6 +45,11 @@ require("nvim-treesitter.configs").setup({
     "css",
     "javascript",
     "typescript",
+    -- noice
+    "markdown",
+    "regex", -- cmdline regex
+    "vim", -- cmdline
+    "markdown_inline", -- cmdline
   },
   incremental_selection = {
     enable = true,

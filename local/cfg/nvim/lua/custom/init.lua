@@ -27,11 +27,14 @@ M.setup = function(opts)
     end
   end
 
-  require("custom.sets")
-  require("custom.autocmd")
   if opts.plugmgr then
     require("custom.plugins")
+    if opts.bootstrap then
+        require("packer").sync()
+    end
   end
+  require("custom.sets")
+  require("custom.autocmd")
   require("custom.mappings")
   -- vim.schedule(function()
   --   require("custom.mappings")

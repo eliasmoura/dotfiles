@@ -43,7 +43,7 @@ t.load_extension("packer")
 t.load_extension("ui-select")
 t.load_extension("file_browser")
 t.load_extension("dap")
-t.load_extension("sdcv")
+-- t.load_extension("sdcv")
 -- t.load_extension("noice")
 
 local no_preview = themes.get_dropdown({

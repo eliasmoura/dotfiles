@@ -92,7 +92,7 @@ lspconfig.clangd.setup({
 })
 vim.lsp.set_log_level("error")
 
-lspconfig.sumneko_lua.setup({
+lspconfig.lua_ls.setup({
   on_attach = on_attach,
   cmd = {
     "/usr/bin/lua-language-server",
