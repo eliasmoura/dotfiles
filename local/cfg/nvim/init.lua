@@ -35,3 +35,4 @@ end
 vim.notify("Finished downloading packer. Starting plugins setup.", vim.log.levels.INFO)
 vim.cmd("packadd packer.nvim")
 require("custom").setup({ plugmgr = packer_ok , bootstrap = true})
+vim.cmd(string.format("so %s/init.lua", vim.fn.stdpath("config")))

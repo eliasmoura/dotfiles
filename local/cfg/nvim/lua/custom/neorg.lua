@@ -33,11 +33,11 @@ norg.setup({
         index = "index.norg",
       },
     },
-    ["core.gtd.base"] = {
-      config = {
-        workspace = "gtd",
-        custom_tag_completion = true,
-      },
-    },
+    -- ["core.gtd.base"] = {
+    --   config = {
+    --     workspace = "gtd",
+    --     custom_tag_completion = true,
+    --   },
+    -- },
   },
 })
